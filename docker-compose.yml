@@ -11,14 +11,12 @@ services:
 
     client:
         container_name: w-frontend
-        build:
-            context: "./vue"
-            dockerfile: "../docker/Frontend"
+        build: ./vue
         volumes:
             - ./vue/:/var/www/html/
             - /var/www/html/node_modules
         ports:
-            - "9090:8080"
+            - "8080:8080"
         depends_on:
             - server
         restart: always
