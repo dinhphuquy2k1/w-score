@@ -1,7 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-
-createApp(App).use(store).use(router).mount('#app')
+const app = createApp(App);
+app.directive('tooltip', Tooltip);
+app.use(store)
+    .use(PrimeVue)
+    .use(router)
+    .mount('#app')
