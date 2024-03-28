@@ -170,6 +170,7 @@ import Skeleton from 'primevue/skeleton';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
+import {get} from '/api/grade-master';
 
 export default {
     components: {
@@ -195,7 +196,18 @@ export default {
             ],
         }
     },
-    methods: {}
+    methods: {
+        loadData() {
+            get().then(res => {
+                console.log(res)
+            }).catch(error => {
+                console.log(error)
+            })
+        }
+    },
+    created() {
+        this.loadData()
+    }
 }
 </script>
 
@@ -243,6 +255,7 @@ export default {
             left: 50%;
             top: 36vh;
         }
+
         .rotate {
             transform: translateX(-50%) translateY(-50%) rotate(-90deg);
         }
