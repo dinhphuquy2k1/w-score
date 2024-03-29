@@ -6,8 +6,8 @@
                 <div class="right-toolbar d-flex flex-row">
                     <Button
                         class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
-                        <div class="icon-only icon-simple_cart"></div>
                         <div class="fw-semibold">Chấm thi</div>
+                        <div class="icon-only icon-simple_cart"></div>
                     </Button>
                 </div>
             </div>
@@ -83,17 +83,18 @@
                         <div class="mb-20">
                             <Panel header="1. Thông tin file" :collapsed="examResult.length > 0" toggleable
                                    class="customPanel flex1" :toggle-button-props="{ 'aria-label': 'customPanel' }">
-                                <Stepper linear>
+                                <Stepper linear :activeStep="1">
                                     <StepperPanel header="File danh sách thi">
                                         <template #content="{ nextCallback }">
                                             <input type="file" hidden ref="file" accept=".xlsx" id="assetsFieldHandle"
                                                    @change="onChangeFile($event, valuesFile[0])">
-                                            <div class="flex1 d-flex" @dragover="dragover" @dragleave="dragleave"
-                                                 @drop="drop">
-                                                <label for="assetsFieldHandle" class="flex1 upload-wrapper">
-                                                    <div class="d-flex">
-                                                        <div class="upload-container flex1 flex-center"
-                                                             v-if="!fileSelected">
+                                            <div class="flex-grow-1 d-flex" @dragover="dragover" @dragleave="dragleave"
+                                                 @drop="drop($event, valuesFile[0])">
+                                                <label for="assetsFieldHandle" class="flex-grow-1 upload-wrapper">
+                                                    <div class="d-flex flex-grow-1">
+                                                        <div
+                                                            class="upload-container flex-grow-1 d-flex justify-content-center align-items-center"
+                                                            v-if="!fileSelected">
                                                             <div class="no-file d-flex file-xlsx">
                                                             </div>
                                                         </div>
@@ -110,7 +111,8 @@
                                                                 <div class="file-size text-left">
                                                                     {{ formatSize(fileSelected.size) }}
                                                                 </div>
-                                                                <div class="file-accepted text-left d-flex">
+                                                                <div
+                                                                    class="file-accepted text-left d-flex justify-content-between">
                                                                     <div class="icon-success" v-if="FileSuccess"></div>
                                                                     <div v-if="FileSuccess">Hợp lệ</div>
                                                                     <div class="icon-unsuccess"
@@ -118,7 +120,7 @@
                                                                     <div v-if="!FileSuccess">Không hợp lệ</div>
                                                                 </div>
                                                                 <div
-                                                                    class="change-file blue-text pointer text-left text-link mw-maxcontent">
+                                                                    class="change-file blue-text pointer text-left text-link mw-maxcontent justify-content-end">
                                                                     Đổi
                                                                     tệp khác
                                                                 </div>
@@ -128,8 +130,15 @@
                                                                              v-if="isLoading"></ProgressBar>
                                                                 <div class="file-caution-img">
                                                                 </div>
-                                                                <div class="file-caution-center mt-20">
+                                                                <div class="file-caution-center mt-20 text-center">
+                                                                    Lưu ý
+                                                                    <span data-v-6d95cd2a="" data-v-30ce9692=""
+                                                                          style="color: red;">*</span>
+                                                                    : Bạn vui lòng chọn sheet muốn nhập khẩu và
+                                                                    <br>
+                                                                    dòng tiêu đề của sheet đó.
                                                                 </div>
+
                                                             </div>
                                                             <div class="file-error" v-else>
                                                                 <div class="file-error-title red-text"> Lý do không hợp
@@ -143,9 +152,13 @@
                                                     </div>
                                                 </label>
                                             </div>
-                                            <div class="flex pt-4 justify-content-end">
-                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
+                                            <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
+                                                <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
                                                         @click="fileSelectedOnUpload = valuesFile[0], uploadEvent()"/>
+                                            </div>
+                                            <div class="flex pt-4 justify-content-end" v-else>
+                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
+                                                        @click="fileSelectedOnUpload = valuesFile[0], nextCallback()"/>
                                             </div>
                                         </template>
                                     </StepperPanel>
@@ -156,7 +169,88 @@
                                                        id="assetsFieldHandle"
                                                        @change="onChangeFile($event, valuesFile[1])">
                                                 <div class="flex1 d-flex" @dragover="dragover" @dragleave="dragleave"
-                                                     @drop="drop">
+                                                     @drop="drop($event, valuesFile[1])">
+                                                    <label for="assetsFieldHandle" class="flex1 upload-wrapper">
+                                                        <div class="d-flex">
+                                                            <div class="upload-container flex1 flex-center"
+                                                                 v-if="!fileSelected">
+                                                                <div class="no-file d-flex file-xlsx">
+                                                                </div>
+                                                            </div>
+                                                            <div class="import-attachment-container flex1"
+                                                                 v-if="fileSelected">
+                                                                <div class="file-info d-flex">
+                                                                    <div class="d-flex text-truncate">
+                                                                        <div class="file-icon text-left "
+                                                                             style="width: 20px;"></div>
+                                                                        <div class="file-name text-left">
+                                                                            {{ fileSelected.name }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="file-size text-left">
+                                                                        {{ formatSize(fileSelected.size) }}
+                                                                    </div>
+                                                                    <div class="file-accepted text-left d-flex">
+                                                                        <div class="icon-success"
+                                                                             v-if="FileSuccess"></div>
+                                                                        <div v-if="FileSuccess">Hợp lệ</div>
+                                                                        <div class="icon-unsuccess"
+                                                                             v-if="!FileSuccess"></div>
+                                                                        <div v-if="!FileSuccess">Không hợp lệ</div>
+                                                                    </div>
+                                                                    <div
+                                                                        class="change-file blue-text pointer text-left text-link mw-maxcontent">
+                                                                        Đổi
+                                                                        tệp khác
+                                                                    </div>
+                                                                </div>
+                                                                <div class="file-caution" v-if="FileSuccess">
+                                                                    <ProgressBar :value="progress" :showValue="false"
+                                                                                 v-if="isLoading"></ProgressBar>
+                                                                    <div class="file-caution-img">
+                                                                    </div>
+                                                                    <div class="file-caution-center mt-20">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="file-error" v-else>
+                                                                    <div class="file-error-title red-text"> Lý do không
+                                                                        hợp
+                                                                        lệ:
+                                                                    </div>
+                                                                    <div class="file-error-title red-text">- Dung lượng
+                                                                        quá
+                                                                        lớn
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
+                                                <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
+                                                        @click="fileSelectedOnUpload = valuesFile[1], uploadEvent()"/>
+                                            </div>
+                                            <div class="flex pt-4 justify-content-end" v-else>
+                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
+                                                        @click="fileSelectedOnUpload = valuesFile[1], nextCallback()"/>
+                                            </div>
+<!--                                            <div class="flex pt-4 justify-content-between">-->
+<!--                                                <Button label="Back" severity="secondary" icon="pi pi-arrow-left"-->
+<!--                                                        @click="prevCallback"/>-->
+<!--                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"-->
+<!--                                                        @click="nextCallback"/>-->
+<!--                                            </div>-->
+                                        </template>
+                                    </StepperPanel>
+                                    <StepperPanel header="File bài thi">
+                                        <template #content="{ prevCallback, nextCallback }">
+                                            <div class="flex flex-column h-12rem">
+                                                <input type="file" hidden ref="file" accept=".zip"
+                                                       id="assetsFieldHandle"
+                                                       @change="onChangeFile($event, valuesFile[1])">
+                                                <div class="flex1 d-flex" @dragover="dragover" @dragleave="dragleave"
+                                                     @drop="drop($event, valuesFile[1])">
                                                     <label for="assetsFieldHandle" class="flex1 upload-wrapper">
                                                         <div class="d-flex">
                                                             <div class="upload-container flex1 flex-center"
@@ -346,6 +440,7 @@ import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
 import Resumable from 'resumablejs';
 import ProgressBar from 'primevue/progressbar';
+import {FILE_TYPE} from "@/common/enums";
 
 import {get} from '/api/grade-master';
 
@@ -374,7 +469,7 @@ export default {
                     FileSelected: null,
                     ResourcePath: null,
                     FileName: null,
-                    FileType: 1,
+                    FileType: FILE_TYPE.LIST,
                     FileAccept: '.xlsx',
                     MaxFileSize: 30 * 1024 * 1024
                 },
@@ -386,11 +481,12 @@ export default {
                     FileSelected: null,
                     ResourcePath: null,
                     FileName: null,
-                    FileType: 2,
+                    FileType: FILE_TYPE.EXAM,
                     FileAccept: '.zip',
                     MaxFileSize: 800 * 1024 * 1024
                 },
             ],
+            isNextStepper: false,
             columnsFile: [
                 {field: 'STT', header: 'STT'},
                 {field: 'Type', header: 'Loại file'},
@@ -485,19 +581,6 @@ export default {
          */
         showToast(message, severity = 'success') {
             this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
-        },
-
-        /**
-         * Sự kiện kéo thả file
-         * @param {*} event
-         */
-        drop(event) {
-            event.preventDefault();
-            this.$refs.file.files = event.dataTransfer.files;
-            this.onChangeFile(event); // Trigger the onChange event manually
-            // Clean up
-            event.currentTarget.classList.add('bg-gray-100');
-            event.currentTarget.classList.remove('bg-green-300');
         },
 
         /**
@@ -648,6 +731,20 @@ export default {
         },
 
         /**
+         * Sự kiện kéo thả file
+         * @param {*} event
+         * @param data
+         */
+        drop(event, data) {
+            event.preventDefault();
+            this.$refs.file.files = event.dataTransfer.files;
+            this.onChangeFile(event, data); // Trigger the onChange event manually
+            // Clean up
+            event.currentTarget.classList.add('bg-gray-100');
+            event.currentTarget.classList.remove('bg-green-300');
+        },
+
+        /**
          * Sự kiện kéo file vào
          * @param {*} event
          */
@@ -781,7 +878,7 @@ export default {
                 //     return;
                 // }
                 //xlsx
-                if (data.FileType === 1) {
+                if (data.FileType === FILE_TYPE.LIST) {
                     var validExts = new Array(".xlsx", ".xls");
                     var fileExt = this.$refs.file.files[0].name;
                     fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
@@ -813,67 +910,17 @@ export default {
         uploadEvent() {
             try {
                 this.isLoading = true;
-                switch (this.fileSelectedOnUpload.FileType) {
-                    //xlsx
-                    case 1:
-                        //đổi tên để kiểm tra trên backend
-                        this.fileSelected = new File([this.fileSelected], 'DS@' + this.fileSelected.name, {type: this.fileSelected.type});
-                        break;
-                    //zip
-                    case 2:
-                        //đổi tên để kiểm tra trên backend
-                        this.fileSelected = new File([this.fileSelected], 'BT@' + this.fileSelected.name, {type: this.fileSelected.type});
-                        break;
-                    default:
-                        break;
-                }
                 //tên kì thi
                 // this.resumable.opts.query.ExamName = this.examManager.find(_item => _item.ExamId == this.selectedManager).ExamName;
-                //cập nhật param
-                // this.resumable.opts.query.DepartmentId = this.selectedDepartment;
-                // this.resumable.opts.query.ExamId = this.selectedManager;
-                // this.resumable.opts.query.ExamShiftId = this.selectedExamShift;
+                // cập nhật param
+                this.resumable.opts.query.departmentId = 1;
+                this.resumable.opts.query.examId = 2;
+                this.resumable.opts.query.examShiftId = 3;
+                this.resumable.opts.query.fileType = 3;
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
 
             }
-            get().then(res => {
-                console.log(res)
-            });
-
-        },
-
-        /**
-         * Khởi tạo Resumable upload file
-         */
-        createResumable() {
-            this.resumable = new Resumable({
-                target: 'http://localhost:9000/api/word/upload-file',
-                method: 'POST',
-                // query: {
-                //     _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Thêm CSRF token để tránh lỗi 419
-                // },
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Disposition': 'form-data; name="title"',
-                },
-                testChunks: false,
-                throttleProgressCallbacks: 1,
-                simultaneousUploads: 4,
-            });
-            this.resumable.on('fileAdded', this.onFileAdded);
-            this.resumable.on('fileProgress', this.onFileProgress);
-            this.resumable.on('fileSuccess', this.onFileSuccess);
-            this.resumable.on('fileError', this.onFileError);
-        },
-
-        /**
-         * Thêm file
-         * @param {*} file
-         */
-        onFileAdded(file) {
-            this.progress = 0;
-            this.resumable.upload();
         },
 
         /**
@@ -913,11 +960,63 @@ export default {
         },
 
         /**
+         * Khởi tạo Resumable upload file
+         */
+        createResumable() {
+            this.resumable = new Resumable({
+                target: 'http://localhost:9000/api/word/upload-file',
+                method: 'POST',
+                query: {
+                },
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Disposition': 'form-data; name="title"',
+                },
+                testChunks: false,
+                throttleProgressCallbacks: 1,
+                simultaneousUploads: 4,
+            });
+            this.resumable.on('fileAdded', this.onFileAdded);
+            this.resumable.on('fileProgress', this.onFileProgress);
+            this.resumable.on('fileSuccess', this.onFileSuccess);
+            this.resumable.on('fileError', this.onFileError);
+        },
+
+        /**
+         * Thêm file
+         * @param {*} file
+         */
+        onFileAdded(file) {
+            this.progress = 0;
+            this.resumable.upload();
+        },
+
+        /**
          *
          * @param {*} file
          */
         onFileProgress(file) {
             this.progress = Math.floor(file.progress() * 100);
+        },
+
+        /**
+         *
+         * @param {*} file
+         * @param {*} response
+         */
+        async onFileSuccess(file, response) {
+            this.progress = 100;
+            this.isLoading = false;
+            this.showToast('Tải file thành công');
+            await this.loadExamManager();
+            //cập nhật lại thông tin file trên view
+            this.resumable.removeFile(file);
+            this.fileSelected = null
+
+        },
+
+        onFileError(file, message) {
+            console.log('File error:', file, message);
         },
 
         /**
@@ -954,27 +1053,6 @@ export default {
             this.fileSelected = null;
             this.isShowPopupUploadFile = false;
             this.fileSelected = null
-        },
-
-        /**
-         *
-         * @param {*} file
-         * @param {*} response
-         */
-        async onFileSuccess(file, response) {
-            this.progress = 100;
-            this.isLoading = false;
-            this.showToast('Tải file thành công');
-            this.isShowPopupUploadFile = false;
-            await this.loadExamManager();
-            //cập nhật lại thông tin file trên view
-            this.updateFileInformation();
-            this.resumable.removeFile(file);
-
-        },
-
-        onFileError(file, message) {
-            console.log('File error:', file, message);
         },
 
         /**
@@ -1286,14 +1364,13 @@ export default {
         border: 1px dashed #ddd;
         border-radius: 4px;
         display: flex;
+        height: 329px;
         justify-content: center;
     }
 
     .import-attachment-container {
         border-radius: 4px;
-        border: 1px solid #ddd;
         height: 329px;
-        margin-bottom: 16px;
         cursor: pointer;
 
         .file-info {
@@ -1301,7 +1378,7 @@ export default {
             height: 48px;
             align-items: center;
             padding: 0 16px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px dashed #ddd;
 
             .file-icon {
                 width: 16px;
