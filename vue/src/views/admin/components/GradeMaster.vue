@@ -83,7 +83,7 @@
                         <div class="mb-20">
                             <Panel header="1. Thông tin file" :collapsed="examResult.length > 0" toggleable
                                    class="customPanel flex1" :toggle-button-props="{ 'aria-label': 'customPanel' }">
-                                <Stepper linear>
+                                <Stepper linear :activeStep="1">
                                     <StepperPanel header="File danh sách thi">
                                         <template #content="{ nextCallback }">
                                             <input type="file" hidden ref="file" accept=".xlsx" id="assetsFieldHandle"
@@ -227,12 +227,20 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="flex pt-4 justify-content-between">
-                                                <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
-                                                        @click="prevCallback"/>
-                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
-                                                        @click="nextCallback"/>
+                                            <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
+                                                <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
+                                                        @click="fileSelectedOnUpload = valuesFile[1], uploadEvent()"/>
                                             </div>
+                                            <div class="flex pt-4 justify-content-end" v-else>
+                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
+                                                        @click="fileSelectedOnUpload = valuesFile[1], nextCallback()"/>
+                                            </div>
+<!--                                            <div class="flex pt-4 justify-content-between">-->
+<!--                                                <Button label="Back" severity="secondary" icon="pi pi-arrow-left"-->
+<!--                                                        @click="prevCallback"/>-->
+<!--                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"-->
+<!--                                                        @click="nextCallback"/>-->
+<!--                                            </div>-->
                                         </template>
                                     </StepperPanel>
                                     <StepperPanel header="File bài thi">
@@ -432,6 +440,7 @@ import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
 import Resumable from 'resumablejs';
 import ProgressBar from 'primevue/progressbar';
+import {FILE_TYPE} from "@/common/enums";
 
 import {get} from '/api/grade-master';
 
@@ -460,7 +469,7 @@ export default {
                     FileSelected: null,
                     ResourcePath: null,
                     FileName: null,
-                    FileType: 1,
+                    FileType: FILE_TYPE.LIST,
                     FileAccept: '.xlsx',
                     MaxFileSize: 30 * 1024 * 1024
                 },
@@ -472,7 +481,7 @@ export default {
                     FileSelected: null,
                     ResourcePath: null,
                     FileName: null,
-                    FileType: 2,
+                    FileType: FILE_TYPE.EXAM,
                     FileAccept: '.zip',
                     MaxFileSize: 800 * 1024 * 1024
                 },
@@ -869,7 +878,7 @@ export default {
                 //     return;
                 // }
                 //xlsx
-                if (data.FileType === 1) {
+                if (data.FileType === FILE_TYPE.LIST) {
                     var validExts = new Array(".xlsx", ".xls");
                     var fileExt = this.$refs.file.files[0].name;
                     fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
@@ -901,27 +910,13 @@ export default {
         uploadEvent() {
             try {
                 this.isLoading = true;
-                switch (this.fileSelectedOnUpload.FileType) {
-                    //xlsx
-                    case 1:
-                        //đổi tên để kiểm tra trên backend
-                        this.fileSelected = new File([this.fileSelected], 'DS@' + this.fileSelected.name, {type: this.fileSelected.type});
-                        break;
-                    //zip
-                    case 2:
-                        //đổi tên để kiểm tra trên backend
-                        this.fileSelected = new File([this.fileSelected], 'BT@' + this.fileSelected.name, {type: this.fileSelected.type});
-                        break;
-                    default:
-                        break;
-                }
                 //tên kì thi
                 // this.resumable.opts.query.ExamName = this.examManager.find(_item => _item.ExamId == this.selectedManager).ExamName;
                 // cập nhật param
                 this.resumable.opts.query.departmentId = 1;
                 this.resumable.opts.query.examId = 2;
                 this.resumable.opts.query.examShiftId = 3;
-                this.resumable.opts
+                this.resumable.opts.query.fileType = 3;
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
 
