@@ -6,22 +6,23 @@ services:
             dockerfile: "docker/Backend"
         volumes:
             - ./:/var/www/html
+            - ./docker/config/php:/usr/local/etc/
         ports:
             - 9000:80
 
-    client:
-        container_name: w-frontend
-        build:
-            context: ./vue
-            dockerfile: ../docker/Frontend
-        volumes:
-            - ./vue/:/var/www/html/
-            - /var/www/html/node_modules
-        ports:
-            - "8080:8080"
-        depends_on:
-            - server
-        restart: always
+#    client:
+#        container_name: w-frontend
+#        build:
+#            context: ./vue
+#            dockerfile: ../docker/Frontend
+#        volumes:
+#            - ./vue/:/var/www/html/
+#            - /var/www/html/node_modules
+#        ports:
+#            - "9090:8080"
+#        depends_on:
+#            - server
+#        restart: always
 
     mysql_db:
         container_name: w-mysql

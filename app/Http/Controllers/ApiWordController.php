@@ -7,6 +7,9 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 class ApiWordController extends Controller
 {
     public function index(): array
@@ -21,12 +24,24 @@ class ApiWordController extends Controller
         }
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
-            dd(1);
             $file = $fileReceived->getFile(); // get file
-            $new_name = $request->ExamId.'-'.$request->ExamShiftId.'-'.$request->DepartmentId;
+            // Đọc tệp Excel
+            $spreadsheet = IOFactory::load($file);
+            // Lấy sheet đầu tiên
+            $sheet = $spreadsheet->getActiveSheet();
+            // Lấy dữ liệu từ các ô trong sheet
+            $data = [];
+            foreach ($sheet->getRowIterator() as $row) {
+                $rowData = [];
+                foreach ($row->getCellIterator() as $cell) {
+                    $rowData[] = $cell->getValue();
+                }
+                $data[] = $rowData;
+            }
             $attributes = [
                 'ResourcePath' => "ExcelGrader/ExcelScore/{$request->ExamId}/{$new_name}",
             ];
+            dd(3);
             $find = DB::table('examshiftdetail')->where('DepartmentId',$request->DepartmentId)->where('ExamShiftId',$request->ExamShiftId);
             if(substr($file->getClientOriginalName(),0,3) === 'DS@'){
                 //nếu đã tồn tại đường dẫn thì thực hiện xóa
