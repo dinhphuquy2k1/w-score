@@ -10,16 +10,29 @@ use Illuminate\Support\Facades\File;
 use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpWord\IOFactory as PHPIOFactory;
+use PhpOffice\PhpWord\Shared\Converter;
 use App\Enums\FileType;
 use Illuminate\Http\Response;
 use ZipArchive;
+use App\Models\Criteria;
+use App\Enums\PropertyType;
+use App\Enums\PageSize;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use function Symfony\Component\String\b;
 
 class ApiWordController extends Controller
 {
 
+    public $_PATH_EXTRACTED = 'app/extracted';
+
     private const START_ROW = 1;
+
+    public function __construct()
+    {
+        $this->_PATH_EXTRACTED = storage_path($this->_PATH_EXTRACTED);
+    }
 
     public function index(): array
     {
@@ -62,29 +75,31 @@ class ApiWordController extends Controller
                         return $this->sendResponseError(['message' => 'Không có dữ liệu']);
                     }
                     // lưu data vào cache
-                    $cacheKey = 'cache_' . Str::random(10) . '_' . time();
-                    Cache::put($cacheKey, $data, null);
+                    $cacheKey = 'cache_list';
+                    Cache::store('file')->put($cacheKey, $data, null);
                     return $this->sendResponseSuccess([
-                        'data' => '2f058da8e78e44bc6776dc6ed896bcbe5681c216',
+                        'cakeListName' => $cacheKey,
                     ]);
                 } else {
-                    $listData = Cache::get('cache_LzRFQMxpTE_1711706123');
                     // folder lưu file tải lên
-                    $tempDir = storage_path('app/temp');
+                    $tempDir = storage_path('app/temp/');
+                    //xóa các file trước đó
+//                    File::deleteDirectory($tempDir);
+//                    File::deleteDirectory(storage_path('app/extracted/'));
+                    $listData = Cache::get('cache_N4THOc1MKQ_1711764801');
                     // Di chuyển tệp đã tải lên vào thư mục tạm
                     $filePath = $file->move($tempDir, $file->getClientOriginalName());
                     $valid_docx = array('docx');
-                    $extractPath = storage_path('app/extracted/K0F5Y4fMNV_1711707823');
-//                    $extractPath = storage_path('app/extracted/' . Str::random(10) . '_' . time());
-//                    $zip = new ZipArchive;
-//                    $res = $zip->open($filePath);
-//                    if ($res === TRUE) {
-//                        // Extract file
-//                        $zip->extractTo($extractPath);
-//                        $zip->close();
-//                    } else {
-//                        echo '<br><font color=red><b>failed!</b></font>';
-//                    }
+                    $extractPath = $this->_PATH_EXTRACTED;
+                    $zip = new ZipArchive;
+                    $res = $zip->open($filePath);
+                    if ($res === TRUE) {
+                        // Extract file
+                        $zip->extractTo($extractPath);
+                        $zip->close();
+                    } else {
+                        return $this->sendResponseError(['message' => 'Lỗi giải nén']);
+                    }
 
                     $handleParent = opendir($extractPath);
                     $pathTo = "P";
@@ -96,10 +111,7 @@ class ApiWordController extends Controller
                                 $dirChild = $extractPath . '/' . $fileParent;
                                 $parts = explode('_', $fileParent);
                                 $studentID = $parts[0];                                       //mã sinh viên
-                                // $infos = explode(' ',explode('-',$parts[1])[1]);
-                                // $key_student =  $infos[0];                                          //Khóa
-                                // $studentDepartment = $infos[1];                                     //Khoa
-                                if ($handleChild = opendir($dirChild)) {
+                                if (is_dir($dirChild) && $handleChild = opendir($dirChild)) {
                                     while (($fileChild = readdir($handleChild)) !== FALSE) {
                                         if (!in_array($fileChild, array('.', '..')) && !is_dir($dirChild . $fileChild)) {
                                             $ext = strtolower(pathinfo($fileChild, PATHINFO_EXTENSION));
@@ -124,11 +136,105 @@ class ApiWordController extends Controller
                 if (empty($students)) {
                     return $this->sendResponseError(['message' => 'Dữ liệu trống']);
                 }
+                $cacheKey = 'cache_student';
+                Cache::store('file')->put($cacheKey, $students, null);
                 $students['files'] = [
                     'extractPath' => $extractPath,
                 ];
-                dd($students);
+                $students['cakeStudentName'] = $cacheKey;
+                $students['cakeListName'] = $request->cakeListName;
+                return $this->sendResponseSuccess($students);
+            } else {
+                return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
             }
+        }
+    }
+
+    public function calculate(Request $request)
+    {
+        $filePath = $this->_PATH_EXTRACTED;
+        $list = Cache::get('cache_list') ?? [];
+        $listStudent = Cache::get('cache_student') ? Cache::get('cache_student')['data'] : [];
+        if (empty($list) || empty($listStudent)) {
+            return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
+        }
+
+        $criterias = Criteria::where('exam_bank_id', 1)->get();
+
+
+        foreach ($listStudent as $student) {
+            $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
+            // Lấy danh sách các sections trong tài liệu
+            $point = 0;
+            $sections = $phpWord->getSections();
+            foreach ($criterias as $criteria) {
+                switch ($criteria->property_type) {
+                    case PropertyType::PAGE_SIZE:
+                        $isValid = true;
+                        foreach ($sections as $section) {
+                            // page size trong bài thi
+                            $pageSize = $section->getStyle()->getPaperSize();
+                            // page size trong DB
+                            $typeSize = PageSize::getKey((int)$criteria->content);
+                            if ($pageSize != $typeSize){
+                                $isValid = false;
+                            }
+                        }
+                        if ($isValid) $point+=$criteria->point;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            dd($point);
+
+        }
+
+    }
+
+    /**
+     * Kiểm tra khổ giấy
+     * **/
+    function checkPageSize($pageSize, $typeSize)
+    {
+        switch ($typeSize) {
+            case PageSize::Letter:
+                if ($pageSize === 1 || $pageSize === 2) {
+                    return true;
+                }
+            case PageSize::Tabloid:
+                if ($pageSize === 3) {
+                    return true;
+                }
+            case PageSize::Legal:
+                if ($pageSize === 5) {
+                    return true;
+                }
+            case PageSize::Statement:
+                if ($pageSize === 6) {
+                    return true;
+                }
+            case PageSize::Executive:
+                if ($pageSize === 7) {
+                    return true;
+                }
+            case PageSize::A3:
+                if ($pageSize === 8) {
+                    return true;
+                }
+            case PageSize::A4:
+                if ($pageSize === 9 || $pageSize === 10) {
+                    return true;
+                }
+                break;
+            case PageSize::B4:
+                if ($pageSize === 12) {
+                    return true;
+                }
+            case PageSize::B5:
+                if ($pageSize === 13) {
+                    return true;
+                }
         }
     }
 }

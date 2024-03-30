@@ -25,3 +25,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/users', [ApiWordController::class, 'index']);
 Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
+Route::post('/word/calculate', [ApiWordController::class, 'calculate']);

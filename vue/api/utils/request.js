@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '../../src/store'
 const service = axios.create({
     baseURL: "http://localhost:9000/api/", // uri = baseURL + apiFunction truyền tới
-    timeout: 5000,
+    timeout: 10000,
     headers: { // Request Headers
         'content-type': 'application/json',
         'Accept': 'application/json'

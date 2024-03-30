@@ -83,7 +83,7 @@
                         <div class="mb-20">
                             <Panel header="1. Thông tin file" :collapsed="examResult.length > 0" toggleable
                                    class="customPanel flex1" :toggle-button-props="{ 'aria-label': 'customPanel' }">
-                                <Stepper linear :activeStep="1">
+                                <Stepper linear :activeStep="activeStep">
                                     <StepperPanel header="File danh sách thi">
                                         <template #content="{ nextCallback }">
                                             <input type="file" hidden ref="file" accept=".xlsx" id="assetsFieldHandle"
@@ -154,6 +154,7 @@
                                             </div>
                                             <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
+                                                        :disabled="!fileSelected"
                                                         @click="fileSelectedOnUpload = valuesFile[0], uploadEvent()"/>
                                             </div>
                                             <div class="flex pt-4 justify-content-end" v-else>
@@ -171,10 +172,11 @@
                                                 <div class="flex1 d-flex" @dragover="dragover" @dragleave="dragleave"
                                                      @drop="drop($event, valuesFile[1])">
                                                     <label for="assetsFieldHandle" class="flex1 upload-wrapper">
-                                                        <div class="d-flex">
-                                                            <div class="upload-container flex1 flex-center"
-                                                                 v-if="!fileSelected">
-                                                                <div class="no-file d-flex file-xlsx">
+                                                        <div class="d-flex flex-grow-1">
+                                                            <div
+                                                                class="upload-container flex-grow-1 d-flex justify-content-center align-items-center"
+                                                                v-if="!fileSelected">
+                                                                <div class="no-file d-flex file-zip">
                                                                 </div>
                                                             </div>
                                                             <div class="import-attachment-container flex1"
@@ -227,23 +229,16 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
+                                            <div class="flex pt-4 justify-content-between">
+                                                <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
+                                                        @click="prevCallback, this.activeStep= 0"/>
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
+                                                        :disabled="!fileSelected"
                                                         @click="fileSelectedOnUpload = valuesFile[1], uploadEvent()"/>
                                             </div>
-                                            <div class="flex pt-4 justify-content-end" v-else>
-                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
-                                                        @click="fileSelectedOnUpload = valuesFile[1], nextCallback()"/>
-                                            </div>
-<!--                                            <div class="flex pt-4 justify-content-between">-->
-<!--                                                <Button label="Back" severity="secondary" icon="pi pi-arrow-left"-->
-<!--                                                        @click="prevCallback"/>-->
-<!--                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"-->
-<!--                                                        @click="nextCallback"/>-->
-<!--                                            </div>-->
                                         </template>
                                     </StepperPanel>
-                                    <StepperPanel header="File bài thi">
+                                    <StepperPanel header="Kiểm tra thông tin">
                                         <template #content="{ prevCallback, nextCallback }">
                                             <div class="flex flex-column h-12rem">
                                                 <input type="file" hidden ref="file" accept=".zip"
@@ -325,6 +320,8 @@
                                                 </div>
                                             </div>
                                             <div class="flex pt-4 justify-content-start">
+                                                <Button label="Chấm thi" severity="secondary" icon="pi pi-arrow-left"
+                                                        @click="calculate"/>
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
                                                         @click="prevCallback"/>
                                             </div>
@@ -442,7 +439,7 @@ import Resumable from 'resumablejs';
 import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE} from "@/common/enums";
 
-import {get} from '/api/grade-master';
+import {get, calculate} from '/api/grade-master';
 
 export default {
     components: {
@@ -520,6 +517,8 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
+            activeStep: 3,
+            fileInfoResponse: [],
 
             resultDetail: [],
             visibleExamResultDetail: false,
@@ -916,11 +915,23 @@ export default {
                 this.resumable.opts.query.departmentId = 1;
                 this.resumable.opts.query.examId = 2;
                 this.resumable.opts.query.examShiftId = 3;
-                this.resumable.opts.query.fileType = 3;
+                this.resumable.opts.query.fileType = this.fileSelectedOnUpload.FileType;
+                this.resumable.opts.query.cakeListName = this.cakeListName;
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
 
             }
+        },
+
+        /**
+         * click button chấm thi
+         */
+        calculate() {
+            calculate(this.fileInfoResponse).then(res => {
+                console.log(res)
+            }).catch(error => {
+                console.log(error)
+            });
         },
 
         /**
@@ -966,8 +977,7 @@ export default {
             this.resumable = new Resumable({
                 target: 'http://localhost:9000/api/word/upload-file',
                 method: 'POST',
-                query: {
-                },
+                query: {},
                 headers: {
                     'Accept': 'application/json',
                     'Content-Disposition': 'form-data; name="title"',
@@ -1007,8 +1017,9 @@ export default {
         async onFileSuccess(file, response) {
             this.progress = 100;
             this.isLoading = false;
+            this.fileInfoResponse = response;
+            this.activeStep++;
             this.showToast('Tải file thành công');
-            await this.loadExamManager();
             //cập nhật lại thông tin file trên view
             this.resumable.removeFile(file);
             this.fileSelected = null
@@ -1438,6 +1449,16 @@ export default {
             height: calc(100% - 74px);
             background: url('@public/assets/icons/img_import.7804e3d3.svg') no-repeat 50%;
         }
+    }
+
+    .file-zip {
+        background: url('@public/assets/icons/upload-zip.svg') no-repeat;
+        width: 334px;
+        height: 110px;
+        margin-top: 20px;
+        background-size: contain;
+        background-position: center;
+        margin-bottom: 20px;
     }
 }
 

@@ -10,3 +10,15 @@ export function get() {
         method: 'GET',
     })
 }
+
+/**
+ * Lấy thông tin kì thi, ca thi, phòng thi
+ * @returns
+ */
+export function calculate(data) {
+    return request({
+        url: 'word/calculate',
+        method: 'POST',
+        data: data
+    })
+}

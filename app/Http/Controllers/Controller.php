@@ -38,7 +38,7 @@ class Controller extends BaseController
         $content = [
             'statusCode' => Response::HTTP_OK,
             'message' => $message,
-            'body' => $body,
+            'data' => $body,
         ];
         return response()->json($content)
             ->header('Content-Type', 'json')
