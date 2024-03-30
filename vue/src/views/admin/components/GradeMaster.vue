@@ -916,7 +916,6 @@ export default {
                 this.resumable.opts.query.examId = 2;
                 this.resumable.opts.query.examShiftId = 3;
                 this.resumable.opts.query.fileType = this.fileSelectedOnUpload.FileType;
-                this.resumable.opts.query.cakeListName = this.cakeListName;
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
 
