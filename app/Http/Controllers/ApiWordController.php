@@ -71,7 +71,7 @@ class ApiWordController extends Controller
                             $studentCode = $sheet->getCell("B{$index}")->getValue();
                             $studentName = $sheet->getCell("C{$index}")->getValue();
                             $department = $sheet->getCell("D{$index}")->getValue();
-                            if ($studentCode && $studentName && $department) {
+                            if ($studentCode && $studentName) {
                                 $data[$studentCode] = [
                                     'studentCode' => $studentCode,
                                     'studentName' => $studentName,
@@ -195,6 +195,7 @@ class ApiWordController extends Controller
             $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
             // Lấy danh sách các sections trong tài liệu
             $sections = $phpWord->getSections();
+            $images = $this->getImages($sections);
             $ret[$student['studentID']]['totalPoint'] = 0;
             foreach ($criterias as $criteria) {
                 $ret[$student['studentID']][$criteria->id] = [
@@ -214,8 +215,7 @@ class ApiWordController extends Controller
                             // page size trong DB
                             $typeSize = PageSize::getKey((int)$criteria->content);
                             if ($pageSize != $typeSize) {
-                                $ret[$student['studentID']][$criteria->id]['flag'] = false;
-                                $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
+                                $this->setPointFail($ret, $student, $criteria);
                             }
                         }
                         break;
@@ -236,8 +236,7 @@ class ApiWordController extends Controller
                             }
                         }
                         if (!str_contains($this->stripUnicode($value), $this->stripUnicode($headerName))) {
-                            $ret[$student['studentID']][$criteria->id]['flag'] = false;
-                            $ret[$student['studentID']][$criteria->id]['realPoint'] = false;
+                            $this->setPointFail($ret, $student, $criteria);
                         }
                         break;
                     case PropertyType::FOOTER_ALL:
@@ -257,8 +256,7 @@ class ApiWordController extends Controller
                             }
                         }
                         if (!str_contains($this->stripUnicode($value), $this->stripUnicode($footerName))) {
-                            $ret[$student['studentID']][$criteria->id]['flag'] = false;
-                            $ret[$student['studentID']][$criteria->id]['realPoint'] = false;
+                            $this->setPointFail($ret, $student, $criteria);
                         }
                         break;
                     case PropertyType::MERGE_LEFT_ALL:
@@ -269,6 +267,13 @@ class ApiWordController extends Controller
                         break;
                     case PropertyType::STYLE:
                         $this->checkStyles($criteria, $student, $ret);
+                        break;
+                    case PropertyType::IMAGE:
+                        if (!$images) {
+                            $this->setPointFail($ret, $student, $criteria);
+                        } else {
+                            $this->checkImages($student, $criteria, $ret, $images);
+                        }
                         break;
                     case PropertyType::MODIFY_STYLE:
                         $this->checkModifyStyle($criteria, $student, $ret);
@@ -288,6 +293,89 @@ class ApiWordController extends Controller
             }
         }
         return $this->sendResponseSuccess($ret);
+    }
+
+    /**
+     * @param $sections
+     * @return array
+     */
+    public function getImages($sections): array
+    {
+        $ret = [];
+        // Duyệt qua từng section để tìm hình ảnh
+        foreach ($sections as $section) {
+            foreach ($section->getElements() as $element) {
+                // Kiểm tra xem phần tử có phải là TextRun không
+                if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                    // Duyệt qua các phần tử con của TextRun để tìm hình ảnh
+                    foreach ($element->getElements() as $index => $subElement) {
+                        // Kiểm tra xem phần tử con có phải là hình ảnh không
+                        if ($subElement instanceof \PhpOffice\PhpWord\Element\Image) {
+                            $imageName = pathinfo($subElement->getName(), PATHINFO_FILENAME);
+
+                            $ret[$imageName] = [
+                                'imageSource' => $subElement->getSource(),
+                                'imageStyle' => $subElement->getStyle(),
+                                'width' => round($subElement->getStyle()->getWidth() / 219, 1),
+                                'height' => round($subElement->getStyle()->getHeight() / 269, 1),
+                                'imageName' => $imageName,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * @param array $student
+     * @param Criteria $criteria
+     * @param array $ret
+     * @param array $images
+     * @return void
+     */
+    public function checkImages(array $student, Criteria $criteria, array &$ret, array $images)
+    {
+        try {
+            if (!empty($images) && !empty($criteria->content)) {
+                $content = json_decode($criteria->content, true);
+                $key = pathinfo($content['name'], PATHINFO_FILENAME);
+                if (array_key_exists($key, $images)) {
+                    foreach ($content['value'] as $item) {
+                        switch ((int)$item['key']) {
+                            case PropertyType::NAME_IMAGE:
+                                $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                                break;
+                            case PropertyType::WIDTH_IMAGE:
+                                if ($images[$key]['width'] == $item['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                                }
+                                break;
+                            case PropertyType::HIGH_IMAGE:
+                                if ($images[$key]['height'] == $item['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            \Log::info('ApiWord.checkImages', [$th]);
+        }
+    }
+
+    /**
+     * @param array $ret
+     * @param array $student
+     * @param $criteria
+     * @return void
+     */
+    public function setPointFail(array &$ret, array $student, $criteria)
+    {
+        $ret[$student['studentID']][$criteria->id]['flag'] = false;
+        $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
     }
 
     /**
@@ -403,7 +491,33 @@ class ApiWordController extends Controller
                                     $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
                                 }
                                 break;
-
+                            case PropertyType::SPECIAL_HANGING:
+                                if ($style['indent_hanging'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::INDENTATION_LEFT:
+                                if ($style['indent_left'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::ALIGNMENT_CENTERD:
+                            case PropertyType::ALIGNMENT_RIGHT:
+                            case PropertyType::NUMBERING:
+                            case PropertyType::ALIGNMENT_JUSTIFITED:
+                            case PropertyType::ALL_CAPS:
+                                $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                break;
+                            case PropertyType::ALIGNMENT_LEFT:
+                                if (!$style['alignment']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::LINE_SPACING:
+                                if ($style['line_spacing_value'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
                         }
                     }
                 }

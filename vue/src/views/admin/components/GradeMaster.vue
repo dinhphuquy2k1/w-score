@@ -4,11 +4,11 @@
             <div class="d-flex flex-row title-box">
                 <div class="list-title flex-grow-1 text-start">Thực hiện chấm thi</div>
                 <div class="right-toolbar d-flex flex-row">
-                    <Button
-                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
-                        <div class="fw-semibold">Chấm thi</div>
-                        <div class="icon-only icon-simple_cart"></div>
-                    </Button>
+<!--                    <Button-->
+<!--                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">-->
+<!--                        <div class="fw-semibold">Chấm thi</div>-->
+<!--                        <div class="icon-only icon-simple_cart"></div>-->
+<!--                    </Button>-->
                 </div>
             </div>
             <!--            <div class="d-flex flex-row toolbar-box justify-content-between">-->
@@ -498,7 +498,7 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
-            activeStep: 0,
+            activeStep: 3,
             fileInfoResponse: [],
 
             resultDetail: [],
@@ -908,6 +908,7 @@ export default {
          * click button chấm thi
          */
         calculate() {
+            this.examResult = [];
             calculate(this.fileInfoResponse).then(res => {
                 this.examResult = res.data;
             }).catch(error => {

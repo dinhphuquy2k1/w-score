@@ -11,15 +11,20 @@ use BenSampo\Enum\Enum;
  */
 final class PropertyType extends Enum
 {
-    const FONT =   0;
-    const FONT_STYLE =   1;
+    const FONT = 0;
+    const FONT_STYLE = 1;
     const FONT_SIZE = 2;
     const FONT_COLOR = 3;
-    const SPACING_BEFORE = 4;
-    const SPACING_AFTER = 5;
-    const INDENTATION_LEFT = 6;
+    const SPECIAL_HANGING = 4;
+    const SPACING_BEFORE = 5;
+    const SPACING_AFTER = 6;
+    const INDENTATION_LEFT = 7;
+    const IMAGE = 8;
+    const NAME_IMAGE = 9;
+    const WIDTH_IMAGE = 10;
+    const HIGH_IMAGE = 11;
     const MODIFY_STYLE = 12;
-    const STYLE  = 13;
+    const STYLE = 13;
     const STYLE_ALL = 14;
     const HEADER = 15;
     const HEADER_ALL = 16;
@@ -38,7 +43,14 @@ final class PropertyType extends Enum
     const MERGE_RIGHT = 28;
     const MERGE_TOP = 29;
     const MERGE_BOTTOM = 30;
-
     const TITLE = 32;
     const AUTHOR = 33;
+    const NUMBERING = 34;
+    const ALIGNMENT_LEFT = 35;
+    const ALIGNMENT_CENTERD = 36;
+    const ALIGNMENT_RIGHT = 37;
+    const ALIGNMENT_JUSTIFITED = 38;
+    const LINE_SPACING = 39;
+    const ALL_CAPS = 40;
+
 }

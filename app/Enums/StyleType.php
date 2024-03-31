@@ -19,7 +19,7 @@ final class StyleType extends Enum
 
     const HEADING_1 = 'Heading1';
     const HEADING_2 = 5;
-    const TITLE = 6;
+    const TITLE = 'Title';
     const SUB_TITLE = 7;
     const SUBTLE_EMPHASIS = 8;
     const EMPHASIS = 'Emphasis';
