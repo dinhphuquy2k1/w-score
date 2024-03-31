@@ -241,67 +241,57 @@
                                     <StepperPanel header="Kiểm tra thông tin">
                                         <template #content="{ prevCallback, nextCallback }">
                                             <div class="flex flex-column h-12rem">
-                                                <input type="file" hidden ref="file" accept=".zip"
-                                                       id="assetsFieldHandle"
-                                                       @change="onChangeFile($event, valuesFile[1])">
-                                                <div class="flex1 d-flex" @dragover="dragover" @dragleave="dragleave"
-                                                     @drop="drop($event, valuesFile[1])">
-                                                    <label for="assetsFieldHandle" class="flex1 upload-wrapper">
-                                                        <div class="d-flex">
-                                                            <div class="upload-container flex1 flex-center"
-                                                                 v-if="!fileSelected">
-                                                                <div class="no-file d-flex file-xlsx">
-                                                                </div>
+                                                <DataTable class="flex1 mt-10 flex-column" :class="{ 'loading': isLoading }"
+                                                           :loading="isLoading" table-class="grid-group"
+                                                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : fileInfoResponse.data"
+                                                           tableStyle="min-width: 100%" rowHover>
+
+                                                    <Column header="Số báo danh" field="studentName" style="width: 40px;"
+                                                            class="text-center">
+                                                        <template #body="{ data, field, slotProps }">
+                                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                                            <div v-else>
+                                                                <Skeleton height="18px" class="mb-2"></Skeleton>
                                                             </div>
-                                                            <div class="import-attachment-container flex1"
-                                                                 v-if="fileSelected">
-                                                                <div class="file-info d-flex">
-                                                                    <div class="d-flex text-truncate">
-                                                                        <div class="file-icon text-left "
-                                                                             style="width: 20px;"></div>
-                                                                        <div class="file-name text-left">
-                                                                            {{ fileSelected.name }}
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="file-size text-left">
-                                                                        {{ formatSize(fileSelected.size) }}
-                                                                    </div>
-                                                                    <div class="file-accepted text-left d-flex">
-                                                                        <div class="icon-success"
-                                                                             v-if="FileSuccess"></div>
-                                                                        <div v-if="FileSuccess">Hợp lệ</div>
-                                                                        <div class="icon-unsuccess"
-                                                                             v-if="!FileSuccess"></div>
-                                                                        <div v-if="!FileSuccess">Không hợp lệ</div>
-                                                                    </div>
-                                                                    <div
-                                                                        class="change-file blue-text pointer text-left text-link mw-maxcontent">
-                                                                        Đổi
-                                                                        tệp khác
-                                                                    </div>
-                                                                </div>
-                                                                <div class="file-caution" v-if="FileSuccess">
-                                                                    <ProgressBar :value="progress" :showValue="false"
-                                                                                 v-if="isLoading"></ProgressBar>
-                                                                    <div class="file-caution-img">
-                                                                    </div>
-                                                                    <div class="file-caution-center mt-20">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="file-error" v-else>
-                                                                    <div class="file-error-title red-text"> Lý do không
-                                                                        hợp
-                                                                        lệ:
-                                                                    </div>
-                                                                    <div class="file-error-title red-text">- Dung lượng
-                                                                        quá
-                                                                        lớn
-                                                                    </div>
-                                                                </div>
+                                                        </template>
+                                                    </Column>
+                                                    <Column header="Mã sinh viên" field="studentID" style="width: 100px"
+                                                            class="text-center">
+                                                        <template #body="{ data, field, slotProps }">
+                                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                                            <div v-else>
+                                                                <Skeleton height="18px" class="mb-2"></Skeleton>
                                                             </div>
-                                                        </div>
-                                                    </label>
-                                                </div>
+                                                        </template>
+                                                    </Column>
+                                                    <Column header="Họ và tên" field="studentName" style="width: 80px;"
+                                                            class="text-left">
+                                                        <template #body="{ data, field, slotProps }">
+                                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                                            <div v-else>
+                                                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                                                            </div>
+                                                        </template>
+                                                    </Column>
+                                                    <Column header="Phòng thi" field="studentName" style="width: 100px;"
+                                                            class="text-center">
+                                                        <template #body="{ data, field, slotProps }">
+                                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                                            <div v-else>
+                                                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                                                            </div>
+                                                        </template>
+                                                    </Column>
+                                                    <Column header="Đề thi" field="studentName" style="width: 50px;"
+                                                            class="text-center">
+                                                        <template #body="{ data, field, slotProps }">
+                                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                                            <div v-else>
+                                                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                                                            </div>
+                                                        </template>
+                                                    </Column>
+                                                </DataTable>
                                             </div>
                                             <div class="flex pt-4 justify-content-between">
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
@@ -320,10 +310,10 @@
                                                 </div>
                                             </div>
                                             <div class="flex pt-4 justify-content-start">
-                                                <Button label="Chấm thi" severity="secondary" icon="pi pi-arrow-left"
-                                                        @click="calculate"/>
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
                                                         @click="prevCallback"/>
+                                                <Button label="Chấm thi" icon="pi pi-arrow-right"
+                                                        @click="calculate"/>
                                             </div>
                                         </template>
                                     </StepperPanel>
@@ -356,7 +346,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Số báo danh" field="CandidateNumber" style="width: 40px;"
+                                    <Column header="Số báo danh" field="studentId" style="width: 40px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -365,7 +355,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Họ và tên" field="StudentName" style="width: 80px;"
+                                    <Column header="Họ và tên" field="studentName" style="width: 80px;"
                                             class="text-left">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -374,7 +364,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Phòng thi" field="DepartmentName" style="width: 100px;"
+                                    <Column header="Phòng thi" field="departmentName" style="width: 100px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -383,16 +373,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Mã sinh viên" field="StudentCode" style="width: 100px"
-                                            class="text-center">
-                                        <template #body="{ data, field, slotProps }">
-                                            <div v-if="!isLoading"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
-                                        </template>
-                                    </Column>
-                                    <Column header="Tổng điểm" field="TotalScore" style="width: 50px;"
+                                    <Column header="Tổng điểm" field="totalPoint" style="width: 50px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -517,7 +498,7 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
-            activeStep: 3,
+            activeStep: 0,
             fileInfoResponse: [],
 
             resultDetail: [],
@@ -908,6 +889,7 @@ export default {
          */
         uploadEvent() {
             try {
+                this.progress = 0;
                 this.isLoading = true;
                 //tên kì thi
                 // this.resumable.opts.query.ExamName = this.examManager.find(_item => _item.ExamId == this.selectedManager).ExamName;
@@ -927,7 +909,7 @@ export default {
          */
         calculate() {
             calculate(this.fileInfoResponse).then(res => {
-                console.log(res)
+                this.examResult = res.data;
             }).catch(error => {
                 console.log(error)
             });
@@ -1016,7 +998,12 @@ export default {
         async onFileSuccess(file, response) {
             this.progress = 100;
             this.isLoading = false;
-            this.fileInfoResponse = response;
+            try {
+                this.fileInfoResponse = JSON.parse(response).data;
+            }catch (error) {
+                console.log(error)
+            }
+            console.log(this.fileInfoResponse)
             this.activeStep++;
             this.showToast('Tải file thành công');
             //cập nhật lại thông tin file trên view

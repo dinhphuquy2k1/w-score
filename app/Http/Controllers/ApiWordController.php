@@ -20,6 +20,9 @@ use App\Models\Criteria;
 use App\Enums\PropertyType;
 use App\Enums\InfoType;
 use App\Enums\PageSize;
+use App\Enums\StyleType;
+use App\Enums\FontType;
+use App\Enums\FontColor;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use function Symfony\Component\String\b;
@@ -89,6 +92,13 @@ class ApiWordController extends Controller
                     //xóa các file trước đó
                     File::deleteDirectory($this->_PATH_ZIP);
                     File::deleteDirectory($this->_PATH_EXTRACTED);
+                    // Tạo thư mục nếu chưa tồn tại
+                    if (!File::exists($this->_PATH_ZIP)) {
+                        File::makeDirectory($this->_PATH_ZIP, 0777, true);
+                    }
+                    if (!File::exists($this->_PATH_EXTRACTED)) {
+                        File::makeDirectory($this->_PATH_EXTRACTED, 0777, true);
+                    }
                     $listData = Cache::get(self::CAKE_LIST_NAME);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
                     $filePath = $file->move($this->_PATH_ZIP, $file->getClientOriginalName());
@@ -126,6 +136,7 @@ class ApiWordController extends Controller
                                                         'studentName' => $listData[$studentID]['studentName'],
                                                         'studentID' => $studentID,
                                                         'studentAssignment' => [$fileChild],
+                                                        'style' => $this->getListStyles($extractPath . '/' . $fileParent . '/' . $fileChild),
                                                         'path' => $extractPath . '/' . $fileParent,
                                                     ];
                                                 }
@@ -149,6 +160,7 @@ class ApiWordController extends Controller
                 ];
                 $students['cakeStudentName'] = self::CAKE_STUDENT_NAME;
                 $students['cakeListName'] = self::CAKE_LIST_NAME;
+                Cache::store('file')->put(self::CAKE_STUDENT_NAME, $students, null);
                 return $this->sendResponseSuccess($students);
             } else {
                 return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
@@ -158,7 +170,7 @@ class ApiWordController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|object|void
+     * @return \Illuminate\Http\JsonResponse|object
      */
     public function calculate(Request $request)
     {
@@ -169,14 +181,20 @@ class ApiWordController extends Controller
             return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
         }
 
-        $criterias = Criteria::where('exam_bank_id', 1)->get();
+        $examBankId = 1;
+        $criterias = Criteria::where('exam_bank_id', $examBankId)->get();
 
         $ret = [];
         foreach ($listStudent as $student) {
+            $ret[$student['studentID']] = [
+                'studentName' => $student['studentName'],
+                'studentId' => $student['studentID'],
+                'departmentName' => '',
+                'examBankName' => 'Đề 8',
+            ];
             $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
             // Lấy danh sách các sections trong tài liệu
             $sections = $phpWord->getSections();
-            $totalPoint = 0;
             $ret[$student['studentID']]['totalPoint'] = 0;
             foreach ($criterias as $criteria) {
                 $ret[$student['studentID']][$criteria->id] = [
@@ -184,7 +202,6 @@ class ApiWordController extends Controller
                     'realPoint' => $criteria->point,
                     'flag' => true,
                     'criteriaName' => $criteria->property_name,
-                    'studentId' => $student['studentID'],
                 ];
                 switch ($criteria->property_type) {
                     case PropertyType::FONT:
@@ -202,27 +219,46 @@ class ApiWordController extends Controller
                             }
                         }
                         break;
-                    case PropertyType::FOOTER_ALL:
+                    case PropertyType::HEADER_ALL:
+                        $value = $criteria->content;
+                        $headerName = '';
                         foreach ($sections as $section) {
-                            $footers = $section->getFooters()[1]->getElements()[0];
-                            dd($footers);
-                            if (count($footers) > 0) {
-                                $footerText = '';
-                                foreach ($footers as $footer) {
-                                    // Lấy nội dung của footer
-                                    $elements = $footer->getElements();
-                                    dd($elements[0]);
+                            $headers = $section->getHeaders();
+                            if (count($headers) > 0) {
+                                foreach ($headers as $header) {
+                                    $elements = $header->getElements();
                                     foreach ($elements as $element) {
                                         if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                                            $footerText .= $element->getText();
+                                            $headerName .= $element->getText();
                                         }
                                     }
-                                    // Lấy kiểu của footer
-                                    $footerType = $footer->getType();
                                 }
-                                $footerInfo = $footerText;
                             }
-
+                        }
+                        if (!str_contains($this->stripUnicode($value), $this->stripUnicode($headerName))) {
+                            $ret[$student['studentID']][$criteria->id]['flag'] = false;
+                            $ret[$student['studentID']][$criteria->id]['realPoint'] = false;
+                        }
+                        break;
+                    case PropertyType::FOOTER_ALL:
+                        $value = $criteria->content;
+                        $footerName = '';
+                        foreach ($sections as $section) {
+                            $footers = $section->getFooters();
+                            if (count($footers) > 0) {
+                                foreach ($footers as $footer) {
+                                    $elements = $footer->getElements();
+                                    foreach ($elements as $element) {
+                                        if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                                            $footerName .= $element->getText();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (!str_contains($this->stripUnicode($value), $this->stripUnicode($footerName))) {
+                            $ret[$student['studentID']][$criteria->id]['flag'] = false;
+                            $ret[$student['studentID']][$criteria->id]['realPoint'] = false;
                         }
                         break;
                     case PropertyType::MERGE_LEFT_ALL:
@@ -230,6 +266,12 @@ class ApiWordController extends Controller
                     case PropertyType::MERGE_TOP_ALL:
                     case PropertyType::MERGE_BOTTOM_ALL:
                         $this->checkMarginAll($sections, $criteria, $student, $ret);
+                        break;
+                    case PropertyType::STYLE:
+                        $this->checkStyles($criteria, $student, $ret);
+                        break;
+                    case PropertyType::MODIFY_STYLE:
+                        $this->checkModifyStyle($criteria, $student, $ret);
                         break;
                     case PropertyType::TITLE:
                         $title = $phpWord->getDocInfo()->getTitle();
@@ -245,7 +287,7 @@ class ApiWordController extends Controller
                 $ret[$student['studentID']]['totalPoint'] += $ret[$student['studentID']][$criteria->id]['realPoint'];
             }
         }
-        dd($ret);
+        return $this->sendResponseSuccess($ret);
     }
 
     /**
@@ -277,6 +319,98 @@ class ApiWordController extends Controller
                 $ret[$student['studentID']][$criteria->id]['flag'] = false;
                 $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
             }
+        }
+    }
+
+    /**
+     * @param $criteria
+     * @param $student
+     * @param $ret
+     * @return void
+     */
+    public function checkStyles($criteria, $student, &$ret)
+    {
+        // các đoạn văn áp dụng style
+        $paragraphs = explode(",", 1);
+        // duyệt các đoan
+        foreach ($paragraphs as $paragraph) {
+            if (!empty($student['style']) && array_key_exists($paragraph, $student['style'])) {
+                if ($student['style'][$paragraph]['style']['name'] != $criteria->content) {
+                    $ret[$student['studentID']][$criteria->id]['flag'] = false;
+                    $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $criteria
+     * @param $student
+     * @param $ret
+     * @return void
+     */
+    public function checkModifyStyle($criteria, $student, &$ret)
+    {
+        try {
+            $content = json_decode($criteria->content, true);
+            $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
+            $key = $content['key'];
+            $values = $content['value'] ?? [];
+            $style = [];
+            if (!empty($student['style'])) {
+                $ret[$student['studentID']][$criteria->id]['flag'] = false;
+                $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
+                foreach ($student['style'] as $item) {
+                    // Kiểm tra nếu style có font là Times New Roman
+                    if ($item['style']['name'] == $key) {
+                        $ret[$student['studentID']][$criteria->id]['flag'] = true;
+                        $style = $item['style'];
+                        break;
+                    }
+                }
+                if ($ret[$student['studentID']][$criteria->id]['flag']) {
+                    foreach ($values as $value) {
+                        switch ((int)$value['key']) {
+                            case PropertyType::FONT:
+                                $style['font'] = !empty($style['font']) ? $style['font'] : FontType::TIME_NEW_ROMAN;
+                                if ($style['font'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::FONT_SIZE:
+                                if ($style['font_size'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::FONT_STYLE:
+                                if ($style['font_style'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::FONT_COLOR:
+                                if ($style['font_color'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::SPACING_BEFORE:
+                                if ($style['space_before'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+                            case PropertyType::SPACING_AFTER:
+                                if ($style['space_after'] == $value['value']) {
+                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $value['point'];
+                                }
+                                break;
+
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            dd($th);
+            \Log::info('ApiWord.checkModifyStyle', [$th]);
         }
     }
 
@@ -357,7 +491,6 @@ class ApiWordController extends Controller
     {
         $text = '';
 
-
         // Iterate through text elements in the paragraph
         foreach ($paragraph->xpath('.//w:t') as $textElement) {
             // Append text content to the result
@@ -368,52 +501,53 @@ class ApiWordController extends Controller
         return $text;
     }
 
-
-    public function getListStyles($filePath)
+    /**
+     * @param string $filePath
+     * @return array
+     */
+    public function getListStyles(string $filePath): array
     {
-        // Đọc file DOCX như một tệp nén
-        $zip = new ZipArchive();
-        if ($zip->open($filePath) === true) {
-            // Đọc nội dung của file styles.xml trong tệp nén
-            $stylesContent = $zip->getFromName('word/styles.xml');
-            // Đọc nội dung của file word/document.xml trong tệp nén
-            $documentContent = $zip->getFromName('word/document.xml');
-            $zip->close();
-
-            if (!empty($stylesContent) && !empty($documentContent)) {
-                // Lấy danh sách các style từ file styles.xml
-                $styles = $this->extractStyles($stylesContent);
-
-
-                // Lấy danh sách các đoạn văn cùng với thông tin style tương ứng
-                $contentWithStyles = $this->extractContentWithStyles($documentContent, $styles);
-
+        try {
+            $ret = [];
+            // Đọc file DOCX như một tệp nén
+            $zip = new ZipArchive();
+            if ($zip->open($filePath) === true) {
+                // Đọc nội dung của file styles.xml trong tệp nén
+                $stylesContent = $zip->getFromName('word/styles.xml');
+                // Đọc nội dung của file word/document.xml trong tệp nén
+                $documentContent = $zip->getFromName('word/document.xml');
+                $zip->close();
+                if (!empty($stylesContent) && !empty($documentContent)) {
+                    // Lấy danh sách các style từ file styles.xml
+                    $styles = $this->extractStyles($stylesContent);
+                    // Lấy danh sách các đoạn văn cùng với thông tin style tương ứng
+                    $ret = $this->extractContentWithStyles($documentContent, $styles);
+                } else {
+                    echo "Failed to read styles.xml or document.xml";
+                }
             } else {
-                echo "Failed to read styles.xml or document.xml";
+                echo "Failed to open the DOCX file";
             }
-        } else {
-            echo "Failed to open the DOCX file";
+            return $ret;
+        } catch (\Exception $e) {
+            return [];
         }
     }
 
-    private function extractStyles($stylesXml)
+    /**
+     * @param $stylesXml
+     * @return array
+     */
+    private function extractStyles($stylesXml): array
     {
         $styles = [];
-
-
         // Load XML content
         $xml = simplexml_load_string($stylesXml);
-
-        // Register namespaces
         $namespaces = $xml->getDocNamespaces();
         $ns_w = $xml->getNamespaces(true)['w'];
-
-
         // Iterate through styles
         foreach ($xml->xpath('//w:style') as $style) {
             $styleName = (string)($style->attributes($ns_w)->styleId);
-
-
             // Extract font name
             $fontName = null;
             $fontElement = $style->xpath('.//w:rFonts');
@@ -421,14 +555,12 @@ class ApiWordController extends Controller
                 $fontName = (string)($fontElement[0]->attributes($ns_w)->ascii);
             }
 
-
             // Extract font size
             $fontSize = null;
             $fontSizeElement = $style->xpath('.//w:sz');
             if (!empty($fontSizeElement)) {
                 $fontSize = (string)($fontSizeElement[0]->attributes($ns_w)->val);
             }
-
 
             // Extract font style
             $fontStyle = null;
@@ -442,7 +574,6 @@ class ApiWordController extends Controller
                 }
             }
 
-
             // Extract font color
             $fontColor = null;
             $fontColorElement = $style->xpath('.//w:color');
@@ -450,84 +581,130 @@ class ApiWordController extends Controller
                 $fontColor = (string)($fontColorElement[0]->attributes($ns_w)->val);
             }
 
-
             // Extract indent information
             $indentLeft = null;
+            $indentRight = null;
             $indentHanging = null;
+            $indentFirstLine = null;
             $indentElement = $style->xpath('.//w:ind');
-
-
             if (!empty($indentElement)) {
-                $indentLeft = (string)($indentElement[0]->attributes($ns_w)->left ?? null);
-                $indentHanging = (string)($indentElement[0]->attributes($ns_w)->hanging ?? null);
+                $indentLeft = (string)($indentElement[0]->attributes($ns_w)->left / 1440); // Convert from twips to inches
+                $indentRight = (string)($indentElement[0]->attributes($ns_w)->right / 1440); // Convert from twips to inches
+                $indentHanging = (string)($indentElement[0]->attributes($ns_w)->hanging / 1440); // Convert from twips to inches
+                $indentFirstLine = (string)($indentElement[0]->attributes($ns_w)->firstLine / 1440); // Convert from twips to inches
             }
+
             // Extract spacing information
             $spaceBefore = null;
             $spaceAfter = null;
             $spacingElement = $style->xpath('.//w:spacing');
             if (!empty($spacingElement)) {
-                $spaceBefore = (string)($spacingElement[0]->attributes($ns_w)->before ?? null);
-                $spaceAfter = (string)($spacingElement[0]->attributes($ns_w)->after ?? null);
+                $spaceBefore = (string)($spacingElement[0]->attributes($ns_w)->before / 20); // Convert from twips to points
+                $spaceAfter = (string)($spacingElement[0]->attributes($ns_w)->after / 20); // Convert from twips to points
             }
-
 
             // Extract line spacing
-            $lineSpacing = null;
+            $lineSpacingType = null;
+            $lineSpacingValue = null;
             $lineSpacingElement = $style->xpath('.//w:spacing');
             if (!empty($lineSpacingElement)) {
-                $lineSpacing = (string)($lineSpacingElement[0]->attributes($ns_w)->line ?? null);
+                $lineSpacingType = (string)($lineSpacingElement[0]->attributes($ns_w)->lineRule ?? null);
+                switch ($lineSpacingType) {
+                    case 'auto':
+                        $lineSpacingType = 'Automatic';
+                        break;
+                    case 'atLeast':
+                        $lineSpacingType = 'At Least';
+                        break;
+                    case 'exact':
+                        $lineSpacingType = 'Exactly';
+                        break;
+                    case 'multiple':
+                        $lineSpacingType = 'Multiple';
+                        break;
+                    default:
+                        $lineSpacingType = null;
+                }
+
+                if ($lineSpacingType === 'Multiple' || $lineSpacingType === 'Automatic') {
+                    $lineSpacingValue = (string)($lineSpacingElement[0]->attributes($ns_w)->line / 240.0); // Convert from twips to lines
+                } else if ($lineSpacingType === 'At Least' || $lineSpacingType === 'Exactly') {
+                    $lineSpacingValue = (string)($lineSpacingElement[0]->attributes($ns_w)->line / 20); // Convert from twips to points
+                }
             }
 
-
-            // Extract numbering format
-            $numberingFormat = null;
-            $numPrElement = $style->xpath('.//w:numPr');
-            if (!empty($numPrElement)) {
-                $numId = (string)($numPrElement[0]->xpath('.//w:numId')[0]->attributes($ns_w)->val ?? null);
-                $numberingFormat = $this->getNumberingFormat($numId, $xml, $ns_w);
+            // Extract alignment
+            $alignment = null;
+            $alignmentElement = $style->xpath('.//w:jc');
+            if (!empty($alignmentElement)) {
+                $alignmentValue = (string)($alignmentElement[0]->attributes($ns_w)->val);
+                switch ($alignmentValue) {
+                    case 'left':
+                        $alignment = 'Left';
+                        break;
+                    case 'right':
+                        $alignment = 'Right';
+                        break;
+                    case 'center':
+                        $alignment = 'Center';
+                        break;
+                    case 'both':
+                        $alignment = 'Both';
+                        break;
+                    case 'distribute':
+                        $alignment = 'Distributed';
+                        break;
+                    case 'justify':
+                        $alignment = 'Justified';
+                        break;
+                    default:
+                        $alignment = null;
+                }
             }
-
 
             $styles[] = [
                 'name' => $styleName,
                 'font' => $fontName,
-                'font_size' => $fontSize,
+                'font_size' => $fontSize / 2,
                 'font_style' => $fontStyle,
                 'font_color' => $fontColor,
-                'indent_left' => $indentLeft,
-                'indent_hanging' => $indentHanging,
+                'indent_left' => round($indentLeft, 2),
+                'indent_right' => round($indentRight, 2),
+                'indent_hanging' => round($indentHanging, 2),
+                'indent_first_line' => round($indentFirstLine, 2),
                 'space_before' => $spaceBefore,
                 'space_after' => $spaceAfter,
-                'line_spacing' => $lineSpacing,
-                'numbering_format' => $numberingFormat,
+                'line_spacing_type' => $lineSpacingType,
+                'line_spacing_value' => $lineSpacingValue,
+                'alignment' => $alignment,
             ];
         }
 
-        dd($styles);
+
         return $styles;
     }
 
-
-    private function extractContentWithStyles($documentXml, $styles)
+    /**
+     * @param $documentXml
+     * @param $styles
+     * @return array
+     */
+    private function extractContentWithStyles($documentXml, $styles): array
     {
         $contentWithStyles = [];
-
 
         // Load XML content
         $xml = simplexml_load_string($documentXml);
 
-
         // Register namespaces
         $namespaces = $xml->getDocNamespaces();
         $ns_w = $xml->getNamespaces(true)['w'];
-
 
         // Iterate through paragraphs
         foreach ($xml->xpath('//w:p') as $paragraph) {
             // Get paragraph style ID
             $styleId = (string)($paragraph->xpath('./w:pPr/w:pStyle/@w:val')[0] ?? null);
             $textContent = $this->getTextContent($paragraph, $ns_w);
-
 
             // Find the corresponding style
             $style = null;
@@ -537,7 +714,6 @@ class ApiWordController extends Controller
                     break;
                 }
             }
-
 
             // If no style found, use default style
             if ($style === null) {
@@ -549,18 +725,29 @@ class ApiWordController extends Controller
                     }
                 }
             }
-
-
-            // Add content with style to the list
-            $contentWithStyles[] = [
-                'style' => $style,
-                'text' => $textContent,
-            ];
+            // bỏ qua text xuống dòng
+            if (!empty($textContent)) {
+                // Add content with style to the list
+                $contentWithStyles[] = [
+                    'type' => StyleType::PARAGRAPH,
+                    'style' => $style,
+                    'text' => $textContent,
+                ];
+            }
         }
 
-
+        // Iterate through textboxes
+        foreach ($xml->xpath('//w:pict/v:shape') as $shape) {
+            if ($shape->xpath('./v:textbox')) {
+                $textboxContent = $shape->xpath('./v:textbox/w:txbxContent/w:p/w:r/w:t')[0] ?? null;
+                if ($textboxContent !== null) {
+                    $contentWithStyles[] = [
+                        'type' => StyleType::TEXT_BOX,
+                        'content' => (string)$textboxContent,
+                    ];
+                }
+            }
+        }
         return $contentWithStyles;
     }
-
-
 }
