@@ -10,5 +10,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import url('../public/scss/main.scss');
+@import url('@public/scss/main.scss');
 </style>
