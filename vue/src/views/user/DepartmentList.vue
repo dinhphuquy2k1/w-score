@@ -118,6 +118,7 @@
     </Dialog>
 
     <Dialog v-model:visible="isShowModal" @keydown.enter.prevent="doSave" modal
+            @afterHide="afterHideDialog"
             :header="modePopup == FormMode.INSERT ? 'Thêm phòng thi' : 'Sửa phòng thi'" :style="{ width: '30vw' }"
             closeOnEscape>
         <div class="w-full flex flex-column">
@@ -320,6 +321,15 @@ export default {
             this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
         },
 
+
+        afterHideDialog() {
+            this.department = {
+                id: null,
+                department_name: null,
+                department_code: null,
+            };
+        },
+
         /**
          * Xóa phòng thi
          * @param {*} data
@@ -358,18 +368,6 @@ export default {
             this.department = {...data};
             this.dataChanged = data;
             this.isShowModal = true;
-        },
-
-        /**
-         * Click nút thêm phòng thi
-         */
-        btnInsertDepartment() {
-            //set form mode
-            this.modePopup = this.FormMode.INSERT;
-            //mở popup
-            this.isShowModal = true;
-            this.department = {};
-
         },
 
         /**
