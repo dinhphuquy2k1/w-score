@@ -20,9 +20,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/login',
                 components: {
-                    header: () => import('@/views/admin/components/Header.vue'),
                     content: () => import('@/components/Login.vue'),
-                    navbar: () => import('@/views/admin/components/NavBar.vue'),
                 },
             },
             {

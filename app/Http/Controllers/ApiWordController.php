@@ -184,7 +184,7 @@ class ApiWordController extends Controller
             return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
         }
 
-        $examBankId = 1;
+        $examBankId = 2;
         $criterias = Criteria::where('exam_bank_id', $examBankId)->orderBy('priority', 'DESC')->get();
         $ret = [];
         foreach ($listStudent as $student) {

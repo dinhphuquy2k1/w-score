@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiWordController;
 use App\Http\Controllers\ApiDepartmentController;
+use App\Http\Controllers\ApiUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,9 +25,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/users', [ApiWordController::class, 'index']);
 Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
 Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
-Route::get('/department', [ApiDepartmentController::class, 'get']);
-Route::post('/department', [ApiDepartmentController::class, 'save']);
-Route::put('/department/{id}', [ApiDepartmentController::class, 'update']);
+Route::get('/departments', [ApiDepartmentController::class, 'get']);
+Route::post('/departments', [ApiDepartmentController::class, 'save']);
+Route::put('/departments/{id}', [ApiDepartmentController::class, 'update']);
+Route::get('/users', [ApiUserController::class, 'get']);
+Route::post('/users', [ApiUserController::class, 'save']);
+Route::put('/users/{id}', [ApiUserController::class, 'update']);

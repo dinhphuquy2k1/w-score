@@ -30,7 +30,7 @@ export function logout() {
  */
 export function getUsers() {
     return request({
-        url: 'api/user',
+        url: '/users',
         method: 'GET',
     })
 }
@@ -41,7 +41,7 @@ export function getUsers() {
  */
 export function saveUser(data) {
     return request({
-        url: 'api/user',
+        url: 'users',
         method: 'POST',
         data: data,
     })
@@ -53,7 +53,7 @@ export function saveUser(data) {
  */
 export function updateUser(data) {
     return request({
-        url: 'api/user/1',
+        url: `users/${data.id}`,
         method: 'PUT',
         data: data,
     })

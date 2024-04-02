@@ -498,7 +498,7 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
-            activeStep: 3,
+            activeStep: 0,
             fileInfoResponse: [],
 
             resultDetail: [],
@@ -1000,6 +1000,7 @@ export default {
             this.progress = 100;
             this.isLoading = false;
             try {
+                console.log(JSON.parse(response))
                 this.fileInfoResponse = JSON.parse(response).data;
             }catch (error) {
                 console.log(error)

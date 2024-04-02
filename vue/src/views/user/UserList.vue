@@ -7,13 +7,13 @@
             <div class="d-flex flex-row toolbar-box justify-content-between">
                 <div class="left-toolbar d-flex flex-row">
                     <div class="m-search_form flex-row d-flex align-items-center d-flex">
-                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
+                        <InputText type="search" v-model="search" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
                         <div class="icon24 icon search-right search"></div>
                     </div>
                 </div>
                 <div class="right-toolbar d-flex flex-row">
-                    <Button
-                        class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                    <Button @click="isShowModal = !isShowModal"
+                            class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm tài khoản</div>
                     </Button>
@@ -22,7 +22,7 @@
             <div class="box list-content flex-grow-1 flex-row">
                 <DataTable paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="flex1 flex-column"
                            :class="{ 'loading': isLoading }" :loading="isLoading"
-                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : data"
+                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : users"
                            currentPageReportTemplate="{first} to {last} of {totalRecords}"
                            paginatorTemplate="FirstPageLink PrevPageLink flex1 CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
                            @rowDblclick="onRowSelect($event.data)" tableStyle="min-width: 100%" rowHover>
@@ -45,7 +45,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentCode" style="width: 30vw;" header="Mã phòng thi">
+                    <Column field="user_code" style="width: 15vw;" header="Mã tài khoản">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -53,7 +53,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentName" dataKey="id" header="Tên phòng thi">
+                    <Column field="name" dataKey="id" header="Họ và tên" style="width: 20vw;">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -61,26 +61,15 @@
                             </div>
                         </template>
                     </Column>
-                    <Column dataKey="id" header="Trạng thái" style="width: 200px;">
+                    <Column field="email" dataKey="id" header="Email">
                         <template #body="{ data, field, slotProps }">
-                            <div v-if="!isLoading">
-                                <div class="d-flex status-ctn max-content" v-if="data['is_exist']"
-                                     style="background-color: rgb(229, 250, 237);">
-                                    <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
-                                    <div class="status-text" style="color: rgb(0, 200, 83);">Đang sử dụng</div>
-                                </div>
-                                <div class="d-flex status-ctn max-content" v-else
-                                     style="background-color: rgb(254, 243, 231);">
-                                    <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
-                                    <div class="status-text" style="color: rgb(243, 141, 21);">Không sử dụng</div>
-                                </div>
-                            </div>
+                            <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
                                 <Skeleton height="18px" class="mb-2"></Skeleton>
                             </div>
                         </template>
                     </Column>
-                    <Column alignFrozen="right" style="width: 100px; text-align: center;" frozen header="Thao tác">
+                    <Column alignFrozen="right" style="width: 15vw; text-align: center;" frozen header="Thao tác">
                         <template #body="slotProps">
                             <div class="row-actions flex-row" v-if="!isLoading">
                                 <div class="item" @click="onRowSelect(slotProps.data)">
@@ -117,41 +106,64 @@
         </template>
     </Dialog>
 
-    <Dialog v-model:visible="isShowModal" @keydown.enter.prevent="doSave" modal
-            :header="modeModal == FormMode.Insert ? 'Thêm đề thi' : 'Sửa đề thi'" @afterHide="afterHide"
-            :style="{ width: '35vw' }" closeOnEscape>
-        <TheLoadingProgress v-if="popupLoading"/>
+    <Dialog v-model:visible="isShowModal" @keydown.enter.prevent="doSave" modal @afterHide="afterHideDialog"
+            :header="modeModal == FormMode.INSERT ? 'Thêm tài khoản' : 'Sửa tài khoản'" :style="{ width: '50vw' }"
+            closeOnEscape>
+        <TheLoadingProgress v-if="isLoadingComponent"/>
         <div class="w-full flex flex-column">
             <div class="form-group flex-row">
                 <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Tên đề thi
-                        <span class="required">*</span>
-                    </div>
-                    <div class="ms-input ms-editor w-100">
-                        <InputText v-model="selectedData.ExamBankName" type="text" class="ms-input-item flex1"
-                                   :class="{ 'error': invalidData['ExamBankName'] }" placeholder="Nhập tên phòng thi"
-                                   @input="handlerGenerateCode"/>
-                        <div class="error-text" v-if="invalidData['ExamBankName']">
-                            {{ invalidData['ExamBankName'] }}
+                    <div class="group-form_box">
+                        <div class="label"> Họ và tên<span class="required">*</span></div>
+                        <div class="mt-2">
+                            <InputText v-model="selectedUsers.name" placeholder="Nhập họ tên"
+                                       :class="{ 'error': invalidData['name'] }"
+                                       @input="handlerGenerateCode"></InputText>
                         </div>
-                    </div>
-                    <div class="flex1">
-                        <div class="ms-input ms-editor w-100"></div>
+                        <div class="ms-error-text" v-if="invalidData['name']">
+                            {{ invalidData['name'] }}
+                        </div>
                     </div>
                 </div>
                 <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Mã phòng thi
-                        <span class="required">*</span>
+                    <div class="group-form_box">
+                        <div class="label">Mã tài khoản<span class="required">*</span></div>
+                        <div class="mt-2">
+                            <InputText v-model="selectedUsers.user_code" placeholder="Tên phòng thi"
+                                       :class="{ 'error': invalidData['user_code'] }"
+                                       @keypress="handlerInputCode"
+                                       @input="modeGenerate = selectedUsers.user_code ? false : true;"></InputText>
+                        </div>
+                        <div class="ms-error-text" v-if="invalidData['user_code']">
+                            {{ invalidData['user_code'] }}
+                        </div>
                     </div>
-                    <div class="ms-input ms-editor w-100">
-                        <InputText v-model="selectedData.ExamBankCode" type="text" class="ms-input-item flex1"
-                                   :class="{ 'error': invalidData['ExamBankCode'] }" placeholder="Nhập mã phòng thi"
-                                   @keypress="handlerInputCode"
-                                   @input="modeGenerate = selectedData.DepartmentCode ? false : true;"/>
-                        <div class="error-text" v-if="invalidData['ExamBankCode']">
-                            {{ invalidData['ExamBankCode'] }}
+                </div>
+            </div>
+            <div class="form-group flex-row">
+                <div class="flex1 mr-10">
+                    <div class="group-form_box">
+                        <div class="label">Email<span class="required">*</span></div>
+                        <div class="mt-2">
+                            <InputText v-model="selectedUsers.email" placeholder="Nhập email"
+                                       :class="{ 'error': invalidData['user_code'] }"
+                                       @keypress="validateSpace"></InputText>
+                        </div>
+                        <div class="ms-error-text" v-if="invalidData['email']">
+                            {{ invalidData['email'] }}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex1 mr-10">
+                    <div class="group-form_box">
+                        <div class="label">Loại tài khoản<span class="required">*</span></div>
+                        <div class="mt-2">
+                            <Dropdown v-model="selectedUsers.level" optionLabel="description" optionValue="value"
+                                      :class="{ 'error': invalidData['level'] }" :options="levelOptions" showClear
+                                      placeholder="Chọn loại tài khoản"/>
+                        </div>
+                        <div class="ms-error-text" v-if="invalidData['level']">
+                            {{ invalidData['level'] }}
                         </div>
                     </div>
                     <div class="flex1">
@@ -161,81 +173,12 @@
             </div>
             <div class="form-group flex-row">
                 <div class="flex1 mr-10">
-                    <div class="content-step d-flex">
-                        <div class="upload-container flex1 flex-center" v-if="!File.FileName"
-                             @click="$refs.fileInput.click()">
-                            <div class="no-file d-flex">
-                                <input type="file" id="fileInput" ref="fileInput" @change="onFileChange('fileInput')"
-                                       accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                       hidden>
-                            </div>
-                        </div>
-                        <div class="import-attachment-container flex1" v-else>
-                            <div class="file-info d-flex">
-                                <div class="d-flex flex1">
-                                    <div class="file-icon text-left"></div>
-                                    <div class="file-name flex text-left">{{ File.FileName }}</div>
-                                </div>
-                                <div class="file-size text-left flex1"> {{ File.FileSize }}</div>
-                                <div class="file-accepted text-left d-flex flex1">
-                                    <div class="icon-success" v-if="File.Success"></div>
-                                    <div v-if="File.Success">Hợp lệ</div>
-                                    <div class="icon-unsuccess" v-if="!File.Success"></div>
-                                    <div v-if="!File.Success">Không hợp lệ</div>
-                                </div>
-                                <input type="file" ref="fileInput1" hidden @change="onFileChange('fileInput1')"
-                                       accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                                <div class="change-file blue-text pointer flex1 text-right text-link"
-                                     @click="$refs.fileInput1.click()"> Đổi tệp khác
-                                </div>
-                            </div>
-                            <div class="file-caution" v-if="File.Success">
-                                <div class="file-caution-img"></div>
-                                <div class="file-caution-center mt-20">
-                                    Lưu ý <span style="color: red;">*</span>: Bạn vui lòng chọn sheet tư
-                                    liệu và dòng tiêu đề
-                                    <br>của sheet đó.
-                                </div>
-                            </div>
-                            <div class="file-error" v-if="!File.Success">
-                                <div class="file-error-title red-text"> Lý do không hợp lệ:</div>
-                                <div class="file-error-title red-text">- Dung lượng quá lớn</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group flex-row">
-                <div class="flex1 mr-10">
                     <div class="form-group-label d-flex label-form">
-                        Sheet tư liệu
-                        <span class="required">*</span>
+                        Ghi chú
                     </div>
                     <div class="ms-input ms-editor w-100">
-                        <Dropdown :options="sheetOptions" optionLabel="sheetName" optionValue="sheetIndex"
-                                  :class="{ 'error': invalidData['SheetIndexReference'] }"
-                                  v-model="selectedData.SheetIndexReference"
-                                  dropdownIcon="icon-combo--dropdown dropdown-list"/>
-                        <div class="error-text" v-if="invalidData['SheetIndexReference']">
-                            {{ invalidData['SheetIndexReference'] }}
-                        </div>
-                    </div>
-                    <div class="flex1">
-                        <div class="ms-input ms-editor w-100"></div>
-                    </div>
-                </div>
-                <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Dòng tiêu đề
-                        <span class="required">*</span>
-                    </div>
-                    <div class="ms-input ms-editor w-100">
-                        <InputNumber v-model="selectedData.RowReference" ref="RowReference" showButtons :min="1"
-                                     :class="{ 'error': invalidData['RowReference'] }" :max-fraction-digits="5"
-                                     :max="100"/>
-                        <div class="error-text" v-if="invalidData['RowReference']">
-                            {{ invalidData['RowReference'] }}
-                        </div>
+                            <Textarea v-model="selectedUsers.note" autoResize rows="5" cols="30"
+                                      placeholder="Nhập ghi chú"/>
                     </div>
                     <div class="flex1">
                         <div class="ms-input ms-editor w-100"></div>
@@ -246,10 +189,13 @@
         <template #footer>
             <div class="d-flex flex-row">
                 <div class="flex1"></div>
-                <Button label="Đóng" class="ms-button btn detail-button secondary"
-                        @click="isShowModal = false, selectedData = defaultData"/>
-                <Button label="Lưu" class="ms-button btn detail-button primary" @click="doSave" @keyup.enter="doSave"/>
+                <Button label="Đóng" class="ms-button btn detail-button secondary" @click="isShowModal = false"/>
+                <Button @click="doSave" @keyup.enter="doSave"
+                        class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                    <div class="fw-semibold">Lưu</div>
+                </Button>
             </div>
+
         </template>
     </Dialog>
 
@@ -262,11 +208,10 @@
             <Button label="Đóng" class="ms-button btn detail-button secondary" @click="warningVisible = false"/>
         </template>
     </Dialog>
-    <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
 </template>
 
 <script>
-import { generateCode } from '@/common/functions';
+import {generateCode} from '@/common/functions';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -277,7 +222,9 @@ import Dropdown from 'primevue/dropdown';
 import Skeleton from 'primevue/skeleton';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
-import { getUsers, saveUser, updateUser, deleteUser } from '/api/user';
+import {RESPONSE_STATUS} from "@/common/enums";
+import {getUsers, saveUser, updateUser, deleteUser} from '/api/user';
+
 export default {
     components: {
         DataTable,
@@ -293,15 +240,16 @@ export default {
     },
     data() {
         return {
-            dialogVisible: false,
+            isShowModal: false,
             columns: [
-                { field: 'username', header: 'Họ và tên' },
-                { field: 'usercode', header: 'Mã user' },
-                { field: 'email', header: 'email' },
-                { field: 'level', header: 'Loại tài khoản' },
-                { field: 'note', header: 'Ghi chú' },
+                {field: 'name', header: 'Họ và tên'},
+                {field: 'user_code', header: 'Mã user'},
+                {field: 'email', header: 'email'},
+                {field: 'level', header: 'Loại tài khoản'},
+                {field: 'note', header: 'Ghi chú'},
             ],
 
+            department: {},
             exam: {},
             levelOptions: [
                 {
@@ -317,26 +265,25 @@ export default {
                     value: 3,
                 },
             ],
-
+            search: null,
             isLoadingComponent: false,
             isPopupDelete: false,
 
             isLoading: true,
             isDisable: false,
             selectedUsers: {
-                username: null,
-                usercode: null,
+                name: null,
+                user_code: null,
                 email: null,
                 note: null,
                 level: null,
             },
 
 
-
-            modeModal: this.FormMode.Insert,
+            modeModal: this.FormMode.INSERT,
             users: [],
             modeGenerate: true, //cho phép sinh mã theo tên
-
+            warningVisible: false,
             invalidData: [],
 
         }
@@ -345,93 +292,104 @@ export default {
     methods: {
 
         /**
-        * Xử lý hàm sinh mã theo tên
-        */
+         * Xử lý hàm sinh mã theo tên
+         */
         handlerGenerateCode() {
             if (this.modeGenerate)
-                this.selectedUsers.usercode = generateCode(this.selectedUsers.username);
+                this.selectedUsers.user_code = generateCode(this.selectedUsers.name);
         },
 
         /**
-       * Hiển thị toast message
-       * @param {*} message
-       */
+         * Hiển thị toast message
+         * @param {*} message
+         */
         showToast(message, severity = 'success') {
-            this.$toast.add({ severity: severity, summary: 'Thông báo', detail: message, life: 3000 });
+            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
         },
 
         doSave() {
             try {
-                this.isLoadingComponent = true;
                 this.isDisable = true;
                 if (this.validateData()) {
-                    if (this.modeModal === this.FormMode.Insert) {
+                    this.isLoadingComponent = true;
+                    if (this.modeModal === this.FormMode.INSERT) {
                         saveUser(this.selectedUsers).then(res => {
                             this.loadUsers();
                             this.showToast("Thêm tài khoản thành công");
-                            this.dialogVisible = false;
-                            this.modeModal = this.FormMode.Insert;
+                            this.isShowModal = false;
+                            this.modeModal = this.FormMode.INSERT;
                             this.selectedUsers = {
-                                username: null,
-                                usercode: null,
+                                name: null,
+                                user_code: null,
                                 email: null,
                                 note: null,
                                 level: null,
                             };
                         }).catch(error => {
                             this.isDisable = false;
-                            if (error.response.status == 422) {
+                            if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
                                 for (var itemError in error.response.data.errors) {
                                     console.log(error.response.data.errors);
                                     this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                 }
                             }
-                        })
-                    }
-                    else if (this.modeModal === this.FormMode.Update) {
+                        }).finally(() =>
+                            setTimeout(() => {
+                                this.isLoadingComponent = false;
+                            }, 750));
+                    } else if (this.modeModal === this.FormMode.UPDATE) {
                         updateUser(this.selectedUsers).then(res => {
                             this.loadUsers();
-                            this.showToast("Thêm tài khoản thành công");
-                            this.dialogVisible = false;
-                            this.modeModal = this.FormMode.Insert;
+                            this.showToast("Cập nhật tài khoản thành công");
+                            this.isShowModal = false;
+                            this.modeModal = this.FormMode.INSERT;
                             this.selectedUsers = {
-                                username: null,
-                                usercode: null,
+                                name: null,
+                                user_code: null,
                                 email: null,
                                 note: null,
                                 level: null,
                             };
                         }).catch(error => {
                             console.log(error);
-                        });
+                        }).finally(() =>
+                            setTimeout(() => {
+                                this.isLoadingComponent = false;
+                            }, 750));
                     }
                 }
                 this.isDisable = false;
-
-                setTimeout(() => {
-                    this.isLoadingComponent = false;
-                }, 750);
             } catch (error) {
                 this.isDisable = false;
-                console.log(error);
+                this.isLoadingComponent = false;
                 this.showToast("Đã xảy ra lỗi", 'error');
             }
         },
 
         /**
-        * Lấy thông tin bản ghi
-        * @param {*} data
-        */
+         * Lấy thông tin bản ghi
+         * @param {*} data
+         */
         onRowSelect(data) {
-            this.modeModal = this.FormMode.Update;
-            this.selectedUsers = { ...data };
-            this.dialogVisible = true;
+            this.modeModal = this.FormMode.UPDATE;
+            this.selectedUsers = {...data};
+            this.isShowModal = true;
+        },
+
+        afterHideDialog() {
+            this.selectedUsers = {
+                name: null,
+                user_code: null,
+                email: null,
+                note: null,
+                level: null,
+            };
         },
 
         /**
-        * Xóa phòng thi
-        * @param {*} data
-        */
+         * Xóa phòng thi
+         * @param {*} data
+         */
         deleteRowSelect(data) {
             this.isPopupDelete = true;
             this.selectedUsers = data;
@@ -456,23 +414,23 @@ export default {
         validateData() {
             var invalid = true;
             this.invalidData = [];
-            if (this.selectedUsers.username == null || String(this.selectedUsers.username).trim() == '') {
-                this.invalidData['username'] = 'Tên tài khoản không được để trống';
+            if (this.selectedUsers.name == null || String(this.selectedUsers.name).trim() == '') {
+                this.invalidData['name'] = 'Tên tài khoản không được để trống';
                 invalid = false;
             }
 
-            if (this.selectedUsers.usercode == null || String(this.selectedUsers.usercode).trim() == '') {
-                this.invalidData['usercode'] = 'Mã tài khoản không được để trống';
+            if (this.selectedUsers.user_code == null || String(this.selectedUsers.user_code).trim() == '') {
+                this.invalidData['user_code'] = 'Mã tài khoản không được để trống';
                 invalid = false;
             }
 
             if (this.selectedUsers.email != null && !this.validateemail()) {
-                this.invalidData['email'] = 'email không đúng định dạng';
+                this.invalidData['email'] = 'Email không đúng định dạng';
                 invalid = false;
             }
 
             if (this.selectedUsers.email == null) {
-                this.invalidData['email'] = 'email không được để trống';
+                this.invalidData['email'] = 'Email không được để trống';
                 invalid = false;
             }
 
@@ -494,10 +452,10 @@ export default {
         },
 
         /**
-       * Validate mã phòng thi
-       * Ko cho phép nhập các kí tự đặc biệt
-       * @param {*} event
-       */
+         * Validate mã phòng thi
+         * Ko cho phép nhập các kí tự đặc biệt
+         * @param {*} event
+         */
         handlerInputDepartmentCode(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
@@ -507,10 +465,10 @@ export default {
         },
 
         /**
-        * Validate mã phòng thi
-        * Ko cho phép nhập các kí tự đặc biệt
-        * @param {*} event
-        */
+         * Validate mã phòng thi
+         * Ko cho phép nhập các kí tự đặc biệt
+         * @param {*} event
+         */
         handlerInputCode(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
@@ -520,9 +478,9 @@ export default {
         },
 
         /**
-        * Không cho nhập khoảng trắng
-        * @param {*} event
-        */
+         * Không cho nhập khoảng trắng
+         * @param {*} event
+         */
         validateSpace(event) {
             if (event.keyCode === 32) {
                 event.preventDefault();
@@ -535,7 +493,7 @@ export default {
         async loadUsers() {
             this.isLoading = true;
             await getUsers().then(res => {
-                this.users = res;
+                this.users = res.data;
             }).catch(error => {
                 console.log(error);
             }).finally(() => {

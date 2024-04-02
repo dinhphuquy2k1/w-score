@@ -162,10 +162,10 @@
                 <div class="flex1"></div>
                 <Button label="Đóng" class="ms-button btn detail-button secondary"
                         @click="isShowModal = false"/>
-                <Button @click="doSave" @keyup.enter="doSave"
-                        class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
-                    <div class="fw-semibold">Lưu</div>
-                </Button>
+                    <Button @click="doSave" @keyup.enter="doSave"
+                            class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                        <div class="fw-semibold">Lưu</div>
+                    </Button>
             </div>
 
         </template>
