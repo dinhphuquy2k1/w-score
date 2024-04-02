@@ -263,7 +263,6 @@
         </template>
     </Dialog>
     <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
-    <Toast/>
 </template>
 
 <script>

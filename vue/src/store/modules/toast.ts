@@ -1,6 +1,6 @@
 // myStore.ts
 import {createStore} from 'vuex';
-import {handleServerError, handleSuccess} from "@/main";
+import {handleServerError, handleSuccess, handleWarning} from "@/main";
 
 export default {
     state: {
@@ -14,8 +14,11 @@ export default {
             // Hiển thị Toast
             handleServerError();
         },
-        handleSuccess(context: any, message: any){
+        handleSuccess(context: any, message: any) {
             handleSuccess({message: message})
+        },
+        handleWarning(context: any, message: any) {
+            handleWarning({message: message})
         }
 
     },

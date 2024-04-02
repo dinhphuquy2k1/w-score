@@ -172,11 +172,9 @@
         </template>
     </Dialog>
     <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
-    <Toast/>
 </template>
 
 <script>
-import Toast from 'primevue/toast';
 import Skeleton from 'primevue/skeleton';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
@@ -187,7 +185,6 @@ import {generateCode} from '@/common/functions'
 import {saveData, getDataDepartment, updateDepartment, deleteDepartment} from '/api/department';
 import ExamSetup from "@/views/user/components/ExamSetup.vue";
 import TheLoadingProgress from "@/components/LoadingProgress.vue";
-import {handleSuccess} from "@/main";
 
 export default {
     name: "DepartmentList",
@@ -196,7 +193,6 @@ export default {
         Dialog,
         Button,
         InputText,
-        Toast,
         DataTable,
         Column,
         Skeleton,
@@ -396,6 +392,7 @@ export default {
     },
 
     created() {
+        this.$store.dispatch("handleServerError")
         this.loadData();
     },
 

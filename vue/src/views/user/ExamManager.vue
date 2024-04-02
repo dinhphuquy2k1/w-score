@@ -110,7 +110,6 @@
 
 <script>
 import { generateCode, convertTimezoneToDatetime } from '@/common/functions';
-import Toast from 'primevue/toast';
 import ExamManagerPopup from './components/ExamManagerPopup.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -131,7 +130,6 @@ export default {
         Calendar,
         InputText,
         Dropdown,
-        Toast,
         Skeleton,
         ExamManagerPopup,
         TheLoadingProgress

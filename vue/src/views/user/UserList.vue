@@ -263,12 +263,10 @@
         </template>
     </Dialog>
     <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
-    <Toast/>
 </template>
 
 <script>
 import { generateCode } from '@/common/functions';
-import Toast from 'primevue/toast';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -290,7 +288,6 @@ export default {
         Calendar,
         InputText,
         Dropdown,
-        Toast,
         TheLoadingProgress,
         Skeleton,
     },
