@@ -22,6 +22,8 @@ use App\Enums\InfoType;
 use App\Enums\PageSize;
 use App\Enums\StyleType;
 use App\Enums\FontType;
+use App\Enums\FooterType;
+use App\Enums\NumberingType;
 use App\Enums\FontColor;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -34,6 +36,7 @@ class ApiWordController extends Controller
     public $_PATH_ZIP = 'app/temp';
     private const CAKE_LIST_NAME = 'cache_list';
     private const CAKE_STUDENT_NAME = 'cache_student';
+    private $paragraphWithout = []; // các đoạn văn bản bỏ qua khi check áp dụng văn bản toàn bộ
 
     private const START_ROW = 1;
 
@@ -182,8 +185,7 @@ class ApiWordController extends Controller
         }
 
         $examBankId = 1;
-        $criterias = Criteria::where('exam_bank_id', $examBankId)->get();
-
+        $criterias = Criteria::where('exam_bank_id', $examBankId)->orderBy('priority', 'DESC')->get();
         $ret = [];
         foreach ($listStudent as $student) {
             $ret[$student['studentID']] = [
@@ -195,7 +197,7 @@ class ApiWordController extends Controller
             $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
             // Lấy danh sách các sections trong tài liệu
             $sections = $phpWord->getSections();
-            $images = $this->getImages($sections);
+            [$images, $footnotes, $footers] = $this->getListData($sections);
             $ret[$student['studentID']]['totalPoint'] = 0;
             foreach ($criterias as $criteria) {
                 $ret[$student['studentID']][$criteria->id] = [
@@ -205,9 +207,6 @@ class ApiWordController extends Controller
                     'criteriaName' => $criteria->property_name,
                 ];
                 switch ($criteria->property_type) {
-                    case PropertyType::FONT:
-
-                        break;
                     case PropertyType::PAGE_SIZE_ALL:
                         foreach ($sections as $section) {
                             // page size trong bài thi
@@ -239,34 +238,31 @@ class ApiWordController extends Controller
                             $this->setPointFail($ret, $student, $criteria);
                         }
                         break;
+                    case PropertyType::FOOTER_TYPE_ALL:
+                        $this->checkFooterTypeAll($criteria, $footers, $student, $ret);
+                        break;
                     case PropertyType::FOOTER_ALL:
-                        $value = $criteria->content;
-                        $footerName = '';
-                        foreach ($sections as $section) {
-                            $footers = $section->getFooters();
-                            if (count($footers) > 0) {
-                                foreach ($footers as $footer) {
-                                    $elements = $footer->getElements();
-                                    foreach ($elements as $element) {
-                                        if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                                            $footerName .= $element->getText();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (!str_contains($this->stripUnicode($value), $this->stripUnicode($footerName))) {
+                        $this->checkFooterAll($criteria, $footers, $student, $ret);
+                        break;
+                    case PropertyType::FOOTNOTE:
+                        if (empty($footnotes)) {
                             $this->setPointFail($ret, $student, $criteria);
+                        } else {
+                            $this->setPointFail($ret, $student, $criteria);
+                            $this->checkFootNote($criteria, $footnotes, $student, $ret);
                         }
+                        break;
+                    case PropertyType::APPLY_STYLE:
+                        $this->checkApplyStyle($criteria, $student, $ret);
+                        break;
+                    case PropertyType::APPLY_STYLE_ALL:
+                        $this->checkApplyStyleAll($criteria, $student, $ret);
                         break;
                     case PropertyType::MERGE_LEFT_ALL:
                     case PropertyType::MERGE_RIGHT_ALL:
                     case PropertyType::MERGE_TOP_ALL:
                     case PropertyType::MERGE_BOTTOM_ALL:
                         $this->checkMarginAll($sections, $criteria, $student, $ret);
-                        break;
-                    case PropertyType::STYLE:
-                        $this->checkStyles($criteria, $student, $ret);
                         break;
                     case PropertyType::IMAGE:
                         if (!$images) {
@@ -291,6 +287,7 @@ class ApiWordController extends Controller
                 }
                 $ret[$student['studentID']]['totalPoint'] += $ret[$student['studentID']][$criteria->id]['realPoint'];
             }
+            $ret[$student['studentID']]['totalPoint'] = round($ret[$student['studentID']]['totalPoint'], 2);
         }
         return $this->sendResponseSuccess($ret);
     }
@@ -299,11 +296,33 @@ class ApiWordController extends Controller
      * @param $sections
      * @return array
      */
-    public function getImages($sections): array
+    public function getListData($sections): array
     {
-        $ret = [];
+        $images = [];
+        $footNotes = [];
+        $footers = [];
         // Duyệt qua từng section để tìm hình ảnh
         foreach ($sections as $section) {
+            $footerName = null;
+            $footerType = null;
+            if (count($section->getFooters()) > 0) {
+                foreach ($section->getFooters() as $footer) {
+                    $elements = $footer->getElements();
+                    foreach ($elements as $element) {
+                        if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                            $footerName .= $element->getText();
+                        }
+                    }
+                    $footerType = $footer->getType() == FooterType::DEFAULT ? FooterType::BLANK : $footer->getType();
+                }
+
+                $footers[] = [
+                    'footerName' => $footerName,
+                    'footerType' => $footerType,
+                ];
+            }
+
+
             foreach ($section->getElements() as $element) {
                 // Kiểm tra xem phần tử có phải là TextRun không
                 if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
@@ -313,7 +332,7 @@ class ApiWordController extends Controller
                         if ($subElement instanceof \PhpOffice\PhpWord\Element\Image) {
                             $imageName = pathinfo($subElement->getName(), PATHINFO_FILENAME);
 
-                            $ret[$imageName] = [
+                            $images[$imageName] = [
                                 'imageSource' => $subElement->getSource(),
                                 'imageStyle' => $subElement->getStyle(),
                                 'width' => round($subElement->getStyle()->getWidth() / 219, 1),
@@ -321,12 +340,185 @@ class ApiWordController extends Controller
                                 'imageName' => $imageName,
                             ];
                         }
+                        if ($subElement instanceof \PhpOffice\PhpWord\Element\Footnote) {
+                            if (!empty($subElement->getElements()[1])) {
+                                // Lấy nội dung của chú thích chân trang
+                                $noteText = $subElement->getElements()[1]->getText(); // Assuming the footnote text is at index 1
+                                // Lấy kiểu đánh số và vị trí của chú thích
+                                $numberingType = $this->getFootnoteNumberingType($subElement);
+                                $footnotePosition = $subElement->getPosition();
+                                // Thêm thông tin về kiểu đánh số và vị trí vào mảng $footNotes
+                                $footNotes[] = [
+                                    'content' => $noteText,
+                                    'numberingType' => $numberingType,
+                                    'position' => $footnotePosition,
+                                ];
+                            }
+                        }
                     }
                 }
             }
         }
-        return $ret;
+        return [$images, $footNotes, $footers];
     }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $footers
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function checkFooterTypeAll(Criteria $criteria, array $footers, array $student, array &$ret)
+    {
+        foreach ($footers as $footer) {
+            if ($footer['footerType'] != $criteria->content) {
+                $this->setPointFail($ret, $student, $criteria);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $footers
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function checkFooterAll(Criteria $criteria, array $footers, array $student, array &$ret)
+    {
+        foreach ($footers as $footer) {
+            try {
+                $content = $criteria->content;
+                if (!str_contains($this->stripUnicode($footer['footerName']), $this->stripUnicode($content))) {
+                    $this->setPointFail($ret, $student, $criteria);
+                    break;
+                }
+            } catch (\Throwable $th) {
+                dd($criteria->content);
+            }
+        }
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function checkApplyStyle(Criteria $criteria, array $student, array &$ret)
+    {
+        if (!empty($student['style']) && !empty($criteria->content)) {
+            $content = json_decode($criteria->content, true);
+            $paragraphs = explode(',', $content['value']);
+            $this->paragraphWithout = array_merge($this->paragraphWithout, $paragraphs);
+            $ret[$student['studentID']][$criteria->id]['realPoint'] = $criteria->point;
+            $ret[$student['studentID']][$criteria->id]['flag'] = true;
+            // duyệt từng đoạn văn bản cần áp dụng style
+            foreach ($paragraphs as $paragraph) {
+                foreach ($student['style'] as $style) {
+                    // kiểm tra trong file word có chứa đoạn văn ko, nếu có thì kiểm tra tên có trùng khớp
+                    if (str_contains($this->stripUnicode($paragraph), $this->stripUnicode($style['text'])) && $content['key'] != $style['style']['name']) {
+                        $ret[$student['studentID']][$criteria->id]['flag'] = false;
+                        break;
+                    }
+                }
+            }
+        } else $this->setPointFail($ret, $student, $criteria);
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function checkApplyStyleAll(Criteria $criteria, array $student, array &$ret)
+    {
+        if ($student['style']) {
+            $paragraphWithout = implode(',', $this->paragraphWithout);
+            foreach ($student['style'] as $style) {
+                if (!str_contains($this->stripUnicode($style['text']), $this->stripUnicode($paragraphWithout)) && $criteria->content != $style['style']['name']) {
+                    break;
+                }
+            }
+        } else $this->setPointFail($ret, $student, $criteria);
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $footnotes
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function checkFootNote(Criteria $criteria, array $footnotes, array $student, array &$ret)
+    {
+        try {
+            $content = json_decode($criteria->content, true);
+            foreach ($footnotes as $footnote) {
+                if (str_contains($this->stripUnicode($content['key']), $this->stripUnicode($footnote['content']))) {
+                    foreach ($content['value'] as $item) {
+                        if ((int)$item['key'] == PropertyType::FOOTNOTE_TYPE) {
+                            if ($footnote['numberingType'] == $item['value']) {
+                                $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                            }
+                        } elseif ((int)$item['key'] == PropertyType::INSERT_FOOTNOTE || (int)$item['key'] == PropertyType::FOOTNOTE_CONTENT) {
+                            $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (\Throwable $th) {
+            \Log::info('ApiWord.checkFootNote', [$th]);
+        }
+    }
+
+    /**
+     * @param $footnote
+     * @return string|null
+     */
+    private function getFootnoteNumberingType($footnote): ?string
+    {
+        // Lấy danh sách các phần tử trong chú thích
+        $footnoteElements = $footnote->getElements();
+
+        // Kiểm tra xem chú thích có phần tử không
+        if (!empty($footnoteElements)) {
+            // Lấy phần tử đầu tiên của chú thích
+            $firstElement = $footnoteElements[0];
+
+            // Lấy nội dung của phần tử đầu tiên
+            $firstElementText = $firstElement->getText();
+
+            // Kiểm tra ký tự đầu tiên của nội dung để xác định kiểu đánh số
+            $firstCharacter = mb_substr($firstElementText, 0, 1);
+
+            // Thiết lập kiểu đánh số tương ứng
+            $numberingType = '';
+            switch ($firstCharacter) {
+                case '*':
+                    $numberingType = NumberingType::NUMBER_MATH;
+                    break;
+                case 'a':
+                    $numberingType = NumberingType::NUMBER_ABC;
+                    break;
+                case 'i':
+                    $numberingType = NumberingType::LOWER_CASE_ROMAN_NUMBER;
+                    break;
+                default:
+                    $numberingType = NumberingType::NUMBER_123;
+                    break;
+            }
+
+            return $numberingType;
+        }
+
+        return null;
+    }
+
 
     /**
      * @param array $student
@@ -335,31 +527,56 @@ class ApiWordController extends Controller
      * @param array $images
      * @return void
      */
-    public function checkImages(array $student, Criteria $criteria, array &$ret, array $images)
+    public
+    function checkImages(array $student, Criteria $criteria, array &$ret, array $images)
     {
         try {
             if (!empty($images) && !empty($criteria->content)) {
                 $content = json_decode($criteria->content, true);
                 $key = pathinfo($content['name'], PATHINFO_FILENAME);
-                if (array_key_exists($key, $images)) {
-                    foreach ($content['value'] as $item) {
-                        switch ((int)$item['key']) {
-                            case PropertyType::NAME_IMAGE:
-                                $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
-                                break;
-                            case PropertyType::WIDTH_IMAGE:
-                                if ($images[$key]['width'] == $item['value']) {
+                // mặc định cho điểm tên
+                foreach ($content['value'] as $item) {
+                    switch ((int)$item['key']) {
+                        case PropertyType::NAME_IMAGE:
+                            $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                            break;
+                        case PropertyType::WIDTH_IMAGE:
+                            foreach ($images as $image) {
+                                if ($image['width'] == $item['value']) {
                                     $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                                    break;
                                 }
-                                break;
-                            case PropertyType::HIGH_IMAGE:
-                                if ($images[$key]['height'] == $item['value']) {
+                            }
+                            break;
+                        case PropertyType::HIGH_IMAGE:
+                            foreach ($images as $image) {
+                                if ($image['height'] == $item['value']) {
                                     $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+                                    break;
                                 }
-                                break;
-                        }
+                            }
+                            break;
                     }
                 }
+//                if (array_key_exists($key, $images)) {
+//                    foreach ($content['value'] as $item) {
+//                        switch ((int)$item['key']) {
+//                            case PropertyType::NAME_IMAGE:
+//                                $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+//                                break;
+//                            case PropertyType::WIDTH_IMAGE:
+//                                if ($images[$key]['width'] == $item['value']) {
+//                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+//                                }
+//                                break;
+//                            case PropertyType::HIGH_IMAGE:
+//                                if ($images[$key]['height'] == $item['value']) {
+//                                    $ret[$student['studentID']][$criteria->id]['realPoint'] += $item['point'];
+//                                }
+//                                break;
+//                        }
+//                    }
+//                }
             }
         } catch (\Throwable $th) {
             \Log::info('ApiWord.checkImages', [$th]);
@@ -372,7 +589,8 @@ class ApiWordController extends Controller
      * @param $criteria
      * @return void
      */
-    public function setPointFail(array &$ret, array $student, $criteria)
+    public
+    function setPointFail(array &$ret, array $student, $criteria)
     {
         $ret[$student['studentID']][$criteria->id]['flag'] = false;
         $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
@@ -385,7 +603,8 @@ class ApiWordController extends Controller
      * @param $ret
      * @return void
      */
-    public function checkMarginAll($sections, $criteria, $student, &$ret)
+    public
+    function checkMarginAll($sections, $criteria, $student, &$ret)
     {
         $value = 0;
         foreach ($sections as $section) {
@@ -416,29 +635,8 @@ class ApiWordController extends Controller
      * @param $ret
      * @return void
      */
-    public function checkStyles($criteria, $student, &$ret)
-    {
-        // các đoạn văn áp dụng style
-        $paragraphs = explode(",", 1);
-        // duyệt các đoan
-        foreach ($paragraphs as $paragraph) {
-            if (!empty($student['style']) && array_key_exists($paragraph, $student['style'])) {
-                if ($student['style'][$paragraph]['style']['name'] != $criteria->content) {
-                    $ret[$student['studentID']][$criteria->id]['flag'] = false;
-                    $ret[$student['studentID']][$criteria->id]['realPoint'] = 0;
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * @param $criteria
-     * @param $student
-     * @param $ret
-     * @return void
-     */
-    public function checkModifyStyle($criteria, $student, &$ret)
+    public
+    function checkModifyStyle($criteria, $student, &$ret)
     {
         try {
             $content = json_decode($criteria->content, true);
@@ -535,7 +733,8 @@ class ApiWordController extends Controller
      * @param $value
      * @return void
      */
-    public function checkInfos($criteria, $student, &$ret, $value)
+    public
+    function checkInfos($criteria, $student, &$ret, $value)
     {
         $content = json_decode($criteria->content, true);
         if (is_array($content) && !array_key_exists($content['key'], $content) && !array_key_exists($content['value'], $content)) {
@@ -601,7 +800,8 @@ class ApiWordController extends Controller
         return str_replace(' ', '', $str);
     }
 
-    private function getTextContent($paragraph, $ns_w)
+    private
+    function getTextContent($paragraph, $ns_w)
     {
         $text = '';
 
@@ -619,7 +819,8 @@ class ApiWordController extends Controller
      * @param string $filePath
      * @return array
      */
-    public function getListStyles(string $filePath): array
+    public
+    function getListStyles(string $filePath): array
     {
         try {
             $ret = [];
@@ -652,7 +853,8 @@ class ApiWordController extends Controller
      * @param $stylesXml
      * @return array
      */
-    private function extractStyles($stylesXml): array
+    private
+    function extractStyles($stylesXml): array
     {
         $styles = [];
         // Load XML content
@@ -803,7 +1005,8 @@ class ApiWordController extends Controller
      * @param $styles
      * @return array
      */
-    private function extractContentWithStyles($documentXml, $styles): array
+    private
+    function extractContentWithStyles($documentXml, $styles): array
     {
         $contentWithStyles = [];
 

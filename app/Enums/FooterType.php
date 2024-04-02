@@ -11,7 +11,6 @@ use BenSampo\Enum\Enum;
  */
 final class FooterType extends Enum
 {
-    const OptionOne =   0;
-    const OptionTwo =   1;
-    const OptionThree = 2;
+    const BLANK = 'Blank';
+    const DEFAULT = 'default';
 }

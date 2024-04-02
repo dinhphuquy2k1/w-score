@@ -23,6 +23,7 @@ class CreateCriteriasTable extends Migration
             $table->string('property_name');
             $table->integer('property_type');
             $table->double('point');
+            $table->integer('priority')->default(0); // độ ưu tiên
             $table->timestamps();
         });
     }

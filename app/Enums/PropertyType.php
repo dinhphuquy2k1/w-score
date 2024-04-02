@@ -52,5 +52,11 @@ final class PropertyType extends Enum
     const ALIGNMENT_JUSTIFITED = 38;
     const LINE_SPACING = 39;
     const ALL_CAPS = 40;
-
+    const FOOTNOTE = 41;
+    const INSERT_FOOTNOTE = 42;
+    const FOOTNOTE_CONTENT = 43;
+    const FOOTNOTE_TYPE= 44;
+    const APPLY_STYLE = 45;
+    const APPLY_STYLE_ALL = 46;
+    const MODIFY_STYLE_AND_APPLY = 47;
 }
