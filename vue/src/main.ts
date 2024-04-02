@@ -4,15 +4,21 @@ import PrimeVue from 'primevue/config';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import {FORM_MODE} from '@/common/enums';
-import Toast from 'primevue/toast';
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
 
 const app = createApp(App);
 app.directive('tooltip', Tooltip);
-app.component('Toast', Toast);
 app.config.globalProperties.FormMode = FORM_MODE;
+export function handleServerError() {
+    app.config.globalProperties.$toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Có lỗi xảy ra, vui lòng liên hệ nhà phát triển.', life: 3000 });
+};
+
+export function handleSuccess({message}: { message: any }) {
+    app.config.globalProperties.$toast.add({ severity: 'success', summary: 'Thông báo', detail: message, life: 3000 });
+};
+
 app.use(store)
     .use(PrimeVue)
     .use(router)

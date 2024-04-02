@@ -26,3 +26,8 @@ export const FILE_TYPE = {
     LIST: 2, // file danh sách
     EXAM: 3, // file bài thi
 };
+
+export const RESPONSE_STATUS = {
+    HTTP_OK: 200,
+    HTTP_INTERNAL_SERVER_ERROR: 500,
+};

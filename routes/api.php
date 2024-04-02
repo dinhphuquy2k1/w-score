@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiWordController;
+use App\Http\Controllers\ApiDepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/users', [ApiWordController::class, 'index']);
 Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
 Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
+Route::get('/department', [ApiDepartmentController::class, 'get']);
+Route::post('/department', [ApiDepartmentController::class, 'save']);

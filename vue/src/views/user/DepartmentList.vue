@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="right-toolbar d-flex flex-row">
-                    <Button
+                    <Button @click="isShowModal = !isShowModal"
                         class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm phòng thi</div>
@@ -45,7 +45,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentCode" style="width: 30vw;" header="Mã phòng thi">
+                    <Column field="department_code" style="width: 30vw;" header="Mã phòng thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -53,7 +53,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentName" dataKey="id" header="Tên phòng thi">
+                    <Column field="department_name" dataKey="id" header="Tên phòng thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -118,123 +118,28 @@
     </Dialog>
 
     <Dialog v-model:visible="isShowModal" @keydown.enter.prevent="doSave" modal
-            :header="modeModal == FormMode.Insert ? 'Thêm đề thi' : 'Sửa đề thi'" @afterHide="afterHide"
-            :style="{ width: '35vw' }" closeOnEscape>
-        <TheLoadingProgress v-if="popupLoading"/>
+            :header="modePopup == FormMode.Insert ? 'Thêm phòng thi' : 'Sửa phòng thi'" :style="{ width: '30vw' }" closeOnEscape>
         <div class="w-full flex flex-column">
             <div class="form-group flex-row">
                 <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Tên đề thi
-                        <span class="required">*</span>
-                    </div>
-                    <div class="ms-input ms-editor w-100">
-                        <InputText v-model="selectedData.ExamBankName" type="text" class="ms-input-item flex1"
-                                   :class="{ 'error': invalidData['ExamBankName'] }" placeholder="Nhập tên phòng thi"
-                                   @input="handlerGenerateCode"/>
-                        <div class="error-text" v-if="invalidData['ExamBankName']">
-                            {{ invalidData['ExamBankName'] }}
+                    <div class="group-form_box">
+                        <div class="label">Tên phòng thi<span class="required">*</span></div>
+                        <div class="mt-2">
+                            <InputText v-model="department.department_name" placeholder="Tên phòng thi" :class="{ 'error': invalidData['department_name'] }"
+                                       @input="handlerGenerateCode"></InputText>
                         </div>
-                    </div>
-                    <div class="flex1">
-                        <div class="ms-input ms-editor w-100"></div>
+                        <div class="ms-error-text" v-if="invalidData['department_name']">{{ invalidData['department_name'] }}</div>
                     </div>
                 </div>
                 <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Mã phòng thi
-                        <span class="required">*</span>
-                    </div>
                     <div class="ms-input ms-editor w-100">
-                        <InputText v-model="selectedData.ExamBankCode" type="text" class="ms-input-item flex1"
-                                   :class="{ 'error': invalidData['ExamBankCode'] }" placeholder="Nhập mã phòng thi"
-                                   @keypress="handlerInputCode"
-                                   @input="modeGenerate = selectedData.DepartmentCode ? false : true;"/>
-                        <div class="error-text" v-if="invalidData['ExamBankCode']">
-                            {{ invalidData['ExamBankCode'] }}
-                        </div>
-                    </div>
-                    <div class="flex1">
-                        <div class="ms-input ms-editor w-100"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group flex-row">
-                <div class="flex1 mr-10">
-                    <div class="content-step d-flex">
-                        <div class="upload-container flex1 flex-center" v-if="!File.FileName"
-                             @click="$refs.fileInput.click()">
-                            <div class="no-file d-flex">
-                                <input type="file" id="fileInput" ref="fileInput" @change="onFileChange('fileInput')"
-                                       accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                       hidden>
+                        <div class="group-form_box">
+                            <div class="label">Mã phòng thi<span class="required">*</span></div>
+                            <div class="mt-2">
+                                <InputText v-model="department.department_code" placeholder="Mã phòng thi" :class="{ 'error': invalidData['department_name'] }"
+                                           @keypress="handlerInputdepartment_code" @input="modeGenerate = department.department_code ? false : true;" ></InputText>
                             </div>
-                        </div>
-                        <div class="import-attachment-container flex1" v-else>
-                            <div class="file-info d-flex">
-                                <div class="d-flex flex1">
-                                    <div class="file-icon text-left"></div>
-                                    <div class="file-name flex text-left">{{ File.FileName }}</div>
-                                </div>
-                                <div class="file-size text-left flex1"> {{ File.FileSize }}</div>
-                                <div class="file-accepted text-left d-flex flex1">
-                                    <div class="icon-success" v-if="File.Success"></div>
-                                    <div v-if="File.Success">Hợp lệ</div>
-                                    <div class="icon-unsuccess" v-if="!File.Success"></div>
-                                    <div v-if="!File.Success">Không hợp lệ</div>
-                                </div>
-                                <input type="file" ref="fileInput1" hidden @change="onFileChange('fileInput1')"
-                                       accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                                <div class="change-file blue-text pointer flex1 text-right text-link"
-                                     @click="$refs.fileInput1.click()"> Đổi tệp khác
-                                </div>
-                            </div>
-                            <div class="file-caution" v-if="File.Success">
-                                <div class="file-caution-img"></div>
-                                <div class="file-caution-center mt-20">
-                                    Lưu ý <span style="color: red;">*</span>: Bạn vui lòng chọn sheet tư
-                                    liệu và dòng tiêu đề
-                                    <br>của sheet đó.
-                                </div>
-                            </div>
-                            <div class="file-error" v-if="!File.Success">
-                                <div class="file-error-title red-text"> Lý do không hợp lệ:</div>
-                                <div class="file-error-title red-text">- Dung lượng quá lớn</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group flex-row">
-                <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Sheet tư liệu
-                        <span class="required">*</span>
-                    </div>
-                    <div class="ms-input ms-editor w-100">
-                        <Dropdown :options="sheetOptions" optionLabel="sheetName" optionValue="sheetIndex"
-                                  :class="{ 'error': invalidData['SheetIndexReference'] }"
-                                  v-model="selectedData.SheetIndexReference"
-                                  dropdownIcon="icon-combo--dropdown dropdown-list"/>
-                        <div class="error-text" v-if="invalidData['SheetIndexReference']">
-                            {{ invalidData['SheetIndexReference'] }}
-                        </div>
-                    </div>
-                    <div class="flex1">
-                        <div class="ms-input ms-editor w-100"></div>
-                    </div>
-                </div>
-                <div class="flex1 mr-10">
-                    <div class="form-group-label d-flex label-form">
-                        Dòng tiêu đề
-                        <span class="required">*</span>
-                    </div>
-                    <div class="ms-input ms-editor w-100">
-                        <InputNumber v-model="selectedData.RowReference" ref="RowReference" showButtons :min="1"
-                                     :class="{ 'error': invalidData['RowReference'] }" :max-fraction-digits="5"
-                                     :max="100"/>
-                        <div class="error-text" v-if="invalidData['RowReference']">
-                            {{ invalidData['RowReference'] }}
+                            <div class="ms-error-text" v-if="invalidData['department_name']">{{ invalidData['department_code'] }}</div>
                         </div>
                     </div>
                     <div class="flex1">
@@ -247,9 +152,13 @@
             <div class="d-flex flex-row">
                 <div class="flex1"></div>
                 <Button label="Đóng" class="ms-button btn detail-button secondary"
-                        @click="isShowModal = false, selectedData = defaultData"/>
-                <Button label="Lưu" class="ms-button btn detail-button primary" @click="doSave" @keyup.enter="doSave"/>
+                        @click="departmentPopupVisible = false" />
+                <Button @click="doSave" @keyup.enter="doSave"
+                    class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                    <div class="fw-semibold">Lưu</div>
+                </Button>
             </div>
+
         </template>
     </Dialog>
 
@@ -278,6 +187,7 @@ import {generateCode} from '@/common/functions'
 import {saveData, getDataDepartment, updateDepartment, deleteDepartment} from '/api/department';
 import ExamSetup from "@/views/user/components/ExamSetup.vue";
 import TheLoadingProgress from "@/components/LoadingProgress.vue";
+import {handleSuccess} from "@/main";
 
 export default {
     name: "DepartmentList",
@@ -298,13 +208,15 @@ export default {
             modePopup: this.FormMode.Insert,
             department: {
                 DepartmentId: null,
-                DepartmentName: null,
-                DepartmentCode: null,
+                department_name: null,
+                department_code: null,
             },
             warningVisible: false,
             dataChanged: null,
 
             data: [],  // data table
+            isShowModal: false,
+            popupLoading: false,
 
             isLoading: false,
 
@@ -320,7 +232,7 @@ export default {
          * Xử lý hàm sinh mã theo tên
          */
         handlerGenerateCode() {
-            if (this.modeGenerate) this.department.DepartmentCode = generateCode({value: this.department.DepartmentName});
+            if (this.modeGenerate) this.department.department_code = generateCode({value: this.department.department_name});
         },
 
         /**
@@ -328,7 +240,7 @@ export default {
          * Ko cho phép nhập các kí tự đặc biệt
          * @param {*} event
          */
-        handlerInputDepartmentCode(event) {
+        handlerInputdepartment_code(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
             if (res) {
@@ -348,6 +260,7 @@ export default {
                         saveData(this.department).then(res => {
                             this.department = {};
                             this.showToast('Thêm thành công');
+                            this.loadData();
                             this.departmentPopupVisible = false;
                         }).catch(error => {
                             if (error.response.status == 422) {
@@ -381,7 +294,6 @@ export default {
                 }
             }
             this.modeGenerate = true;
-            this.loadData();
         },
 
         /**
@@ -423,12 +335,12 @@ export default {
          */
         validateData() {
             var invalid = true;
-            if (this.department.DepartmentName == null) {
-                this.invalidData['DepartmentName'] = "Tên phòng thi không được để trống";
+            if (this.department.department_name == null) {
+                this.invalidData['department_name'] = "Tên phòng thi không được để trống";
                 invalid = false;
             }
-            if (this.department.DepartmentCode == null) {
-                this.invalidData['DepartmentCode'] = "Mã phòng thi không được để trống";
+            if (this.department.department_code == null) {
+                this.invalidData['department_code'] = "Mã phòng thi không được để trống";
                 invalid = false;
             }
             return invalid;
@@ -477,7 +389,7 @@ export default {
             // console.log(this.data);
             // console.log(Array.from({ length: 10 }, () => ({ ...this.department })));
             // this.data = [
-            //     { DepartmentCode: 1, DepartmentName: 1 }
+            //     { department_code: 1, department_name: 1 }
             // ]
             // debugger
         }

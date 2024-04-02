@@ -2608,7 +2608,7 @@ export default {
          * @param {*} range Vùng cần validate
          */
         validateRangeRef(range) {
-            if (this.regex.REGEXP_RANGEREF.test(range)) {
+            if (this.regex.REGEXP_RANGEREF.test({context: range})) {
                 return true;
             }
             return false;
@@ -2619,7 +2619,7 @@ export default {
          * @param {*} cell Cell cần validate
          */
         validateCellRef(cell) {
-            if (this.regex.REGEXP_CELLREF.test(cell)) {
+            if (this.regex.REGEXP_CELLREF.test({context: cell})) {
                 return true;
             }
             return false;
@@ -2630,7 +2630,7 @@ export default {
          * @param {*} range Vùng cần validate
          */
         validateRangeNoRef(range) {
-            if (this.regex.REGEXP_RANGE_NO_REF.test(range)) {
+            if (this.regex.REGEXP_RANGE_NO_REF.test({context: range})) {
                 var ranges = Coordinate.splitRange(range)[0];
                 let [rangeStart, rangeEnd] = ranges;
                 let [startColumn, startRow] = Coordinate.coordinateFromStringT(rangeStart);
@@ -2652,7 +2652,7 @@ export default {
          * @param {*} cell Cell cần validate
          */
         validateCellNoRef(cell) {
-            if (this.regex.REGEXP_CELL_NO_REF.test(cell)) {
+            if (this.regex.REGEXP_CELL_NO_REF.test({context: cell})) {
                 return true;
             }
             return false;

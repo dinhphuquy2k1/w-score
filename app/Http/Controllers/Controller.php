@@ -24,7 +24,6 @@ class Controller extends BaseController
             'data' => $body,
         ];
         return response()->json($content)
-            ->header('Content-Type', 'json')
             ->setStatusCode($status);
     }
 
@@ -41,7 +40,6 @@ class Controller extends BaseController
             'data' => $body,
         ];
         return response()->json($content)
-            ->header('Content-Type', 'json')
             ->setStatusCode(Response::HTTP_OK);
     }
 
@@ -56,7 +54,6 @@ class Controller extends BaseController
             'data' => $body,
         ];
         return response()->json($content)
-            ->header('Content-Type', 'json')
             ->setStatusCode(Response::HTTP_BAD_REQUEST);
     }
 
