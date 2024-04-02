@@ -13,7 +13,7 @@
                 </div>
                 <div class="right-toolbar d-flex flex-row">
                     <Button @click="isShowModal = !isShowModal"
-                        class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                            class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm phòng thi</div>
                     </Button>
@@ -118,17 +118,21 @@
     </Dialog>
 
     <Dialog v-model:visible="isShowModal" @keydown.enter.prevent="doSave" modal
-            :header="modePopup == FormMode.Insert ? 'Thêm phòng thi' : 'Sửa phòng thi'" :style="{ width: '30vw' }" closeOnEscape>
+            :header="modePopup == FormMode.INSERT ? 'Thêm phòng thi' : 'Sửa phòng thi'" :style="{ width: '30vw' }"
+            closeOnEscape>
         <div class="w-full flex flex-column">
             <div class="form-group flex-row">
                 <div class="flex1 mr-10">
                     <div class="group-form_box">
                         <div class="label">Tên phòng thi<span class="required">*</span></div>
                         <div class="mt-2">
-                            <InputText v-model="department.department_name" placeholder="Tên phòng thi" :class="{ 'error': invalidData['department_name'] }"
+                            <InputText v-model="department.department_name" placeholder="Tên phòng thi"
+                                       :class="{ 'error': invalidData['department_name'] }"
                                        @input="handlerGenerateCode"></InputText>
                         </div>
-                        <div class="ms-error-text" v-if="invalidData['department_name']">{{ invalidData['department_name'] }}</div>
+                        <div class="ms-error-text" v-if="invalidData['department_name']">
+                            {{ invalidData['department_name'] }}
+                        </div>
                     </div>
                 </div>
                 <div class="flex1 mr-10">
@@ -136,10 +140,14 @@
                         <div class="group-form_box">
                             <div class="label">Mã phòng thi<span class="required">*</span></div>
                             <div class="mt-2">
-                                <InputText v-model="department.department_code" placeholder="Mã phòng thi" :class="{ 'error': invalidData['department_name'] }"
-                                           @keypress="handlerInputdepartment_code" @input="modeGenerate = department.department_code ? false : true;" ></InputText>
+                                <InputText v-model="department.department_code" placeholder="Mã phòng thi"
+                                           :class="{ 'error': invalidData['department_code'] }"
+                                           @keypress="handlerInputdepartment_code"
+                                           @input="modeGenerate = department.department_code ? false : true;"></InputText>
                             </div>
-                            <div class="ms-error-text" v-if="invalidData['department_name']">{{ invalidData['department_code'] }}</div>
+                            <div class="ms-error-text" v-if="invalidData['department_code']">
+                                {{ invalidData['department_code'] }}
+                            </div>
                         </div>
                     </div>
                     <div class="flex1">
@@ -152,9 +160,9 @@
             <div class="d-flex flex-row">
                 <div class="flex1"></div>
                 <Button label="Đóng" class="ms-button btn detail-button secondary"
-                        @click="departmentPopupVisible = false" />
+                        @click="isShowModal = false"/>
                 <Button @click="doSave" @keyup.enter="doSave"
-                    class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                        class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                     <div class="fw-semibold">Lưu</div>
                 </Button>
             </div>
@@ -182,6 +190,7 @@ import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import {generateCode} from '@/common/functions'
+import {RESPONSE_STATUS} from "@/common/enums";
 import {saveData, getDataDepartment, updateDepartment, deleteDepartment} from '/api/department';
 import ExamSetup from "@/views/user/components/ExamSetup.vue";
 import TheLoadingProgress from "@/components/LoadingProgress.vue";
@@ -200,8 +209,7 @@ export default {
 
     data() {
         return {
-            departmentPopupVisible: false,
-            modePopup: this.FormMode.Insert,
+            modePopup: this.FormMode.INSERT,
             department: {
                 DepartmentId: null,
                 department_name: null,
@@ -252,27 +260,26 @@ export default {
             this.invalidData = [];
             if (this.validateData()) {
                 switch (this.modePopup) {
-                    case this.FormMode.Insert:
+                    case this.FormMode.INSERT:
                         saveData(this.department).then(res => {
                             this.department = {};
                             this.showToast('Thêm thành công');
+                            this.isShowModal = false;
                             this.loadData();
-                            this.departmentPopupVisible = false;
                         }).catch(error => {
-                            if (error.response.status == 422) {
-                                for (var itemError in error.response.data.errors) {
-                                    // console.log(error.response.data.errors);
+                            if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                                this.$store.dispatch('handleError');
+                                for (const itemError in error.response.data.errors) {
                                     this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                 }
                             }
-                            return;
                         })
                         break;
-                    case this.FormMode.Update:
+                    case this.FormMode.UPDATE:
                         if (JSON.stringify(this.dataChanged) !== JSON.stringify(this.department)) {
                             updateDepartment(this.department).then(res => {
                                 this.department = {};
-                                this.departmentPopupVisible = false;
+                                this.isShowModal = false;
                                 this.showToast('Cập nhật thành công');
                                 this.loadData();
                             }).catch(error => {
@@ -283,7 +290,7 @@ export default {
                                 }
                                 return;
                             });
-                        } else this.departmentPopupVisible = false;
+                        } else this.isShowModal = false;
                         break;
                     default:
                         break;
@@ -347,10 +354,10 @@ export default {
          * @param {*} data
          */
         onRowSelect(data) {
-            this.modePopup = this.FormMode.Update;
+            this.modePopup = this.FormMode.UPDATE;
             this.department = {...data};
             this.dataChanged = data;
-            this.departmentPopupVisible = true;
+            this.isShowModal = true;
         },
 
         /**
@@ -358,9 +365,9 @@ export default {
          */
         btnInsertDepartment() {
             //set form mode
-            this.modePopup = this.FormMode.Insert;
+            this.modePopup = this.FormMode.INSERT;
             //mở popup
-            this.departmentPopupVisible = true;
+            this.isShowModal = true;
             this.department = {};
 
         },
@@ -372,7 +379,7 @@ export default {
             this.isLoading = true;
             // this.data = Array.from({ length: 5 }, () => ({ ...this.department }));
             await getDataDepartment().then(res => {
-                this.data = res;
+                this.data = res.data;
             }).catch(error => {
                 console.log(error);
             })
@@ -392,7 +399,6 @@ export default {
     },
 
     created() {
-        this.$store.dispatch("handleServerError")
         this.loadData();
     },
 

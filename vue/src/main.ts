@@ -18,6 +18,9 @@ export function handleServerError() {
 export function handleSuccess({message}: { message: any }) {
     app.config.globalProperties.$toast.add({ severity: 'success', summary: 'Thông báo', detail: message, life: 3000 });
 }
+export function handleError({message}: { message: any }) {
+    app.config.globalProperties.$toast.add({ severity: 'error', summary: 'Thông báo', detail: message, life: 3000 });
+}
 
 export function handleWarning({message}: { message: any }) {
     app.config.globalProperties.$toast.add({ severity: 'warn', summary: 'Thông báo', detail: message, life: 3000 });

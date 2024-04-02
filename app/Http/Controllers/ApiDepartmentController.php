@@ -21,7 +21,23 @@ class ApiDepartmentController extends Controller
         Department::insert($attribute);
     }
 
+
+    public function update(Request $request, $id)
+    {
+        $attribute = $request->validate([
+            'department_name' => 'required',
+            'department_code' => "required|unique:departments,department_code,{$id}",
+        ],
+            [
+                'department_name.required' => 'Tên phòng thi không được để trống',
+                'department_code.required' => 'Mã phòng thi không được để trống',
+                'department_code.unique' => 'Mã phòng thi đã tồn tại',
+            ]);
+        department::where('id', $id)->update($attribute);
+    }
+
     public function get()
     {
+        return $this->sendResponseSuccess(Department::all()->toArray());
     }
 }

@@ -29,3 +29,4 @@ Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
 Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
 Route::get('/department', [ApiDepartmentController::class, 'get']);
 Route::post('/department', [ApiDepartmentController::class, 'save']);
+Route::put('/department/{id}', [ApiDepartmentController::class, 'update']);
