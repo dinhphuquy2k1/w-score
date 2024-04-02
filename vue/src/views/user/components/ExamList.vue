@@ -1,163 +1,109 @@
 <template>
-    <div class="main-view flex1 flex-column" v-if="!isconfigureExam">
-        <div class="form-list flex-column flex1">
-            <div class="flex-column flex1">
-                <div class="flex-row title-box">
-                    <div class="list-title flex1">Ngân hàng đề thi</div>
+    <div class="form-list flex-grow-1 d-flex">
+        <div class="d-flex flex-column flex-grow-1">
+            <div class="d-flex flex-row title-box">
+                <div class="list-title flex-grow-1 text-start">Danh sách kì thi</div>
+            </div>
+            <div class="d-flex flex-row toolbar-box justify-content-between">
+                <div class="left-toolbar d-flex flex-row">
+                    <div class="m-search_form flex-row d-flex align-items-center d-flex">
+                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
+                        <div class="icon24 icon search-right search"></div>
+                    </div>
                 </div>
-                <div class="flex-row toolbar-box">
-                    <div class="left-toolbar flex-row">
-                        <div class="ms-input ms-editor w-100 search-box mr-2">
-                            <div class="flex-row border flex1">
-                                <input type="text" class="ms-input-item flex1" placeholder="Tìm kiếm...">
-                                <div class="icon24 error error-icon" style="display: none;"></div>
-                                <div class="icon24 icon search-right search"></div>
-                            </div>
+                <div class="right-toolbar d-flex flex-row">
+                    <Button
+
+                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                        <div class="icon-only icon-simple_cart"></div>
+                        <div class="fw-semibold">Thêm sản phẩm</div>
+                    </Button>
+                </div>
+            </div>
+            <div class="box list-content flex-grow-1 flex-row">
+                <DataTable paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="flex1 flex-column"
+                           :class="{ 'loading': isLoading }" :loading="isLoading"
+                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : data"
+                           currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                           paginatorTemplate="FirstPageLink PrevPageLink flex1 CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
+                           @rowDblclick="onRowSelect($event.data)" tableStyle="min-width: 100%" rowHover>
+                    <template #paginatorstart>
+                        <Button type="button" icon="pi pi-refresh" text/>
+                    </template>
+                    <template #paginatorend>
+                        bản ghi/trang
+                    </template>
+                    <template #empty>
+                        <div>
+                            Không có dữ liệu
                         </div>
-                    </div>
-                    <div class="right-toolbar flex-row">
-                        <button class="ms-button btn primary" @click="showModal(FormMode.Insert)">
-                            <div class="icon24 icon left add-white"></div>
-                            <div class="text pl-0">Thêm đề thi</div>
-                        </button>
-                    </div>
-                </div>
-                <div class="box list-content flex1 flex-row">
-                    <DataTable paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="flex1 flex-column"
-                               currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                               @rowDblclick="onRowSelect($event.data), onRowUpdate()" :loading="isLoading"
-                               paginatorTemplate="FirstPageLink PrevPageLink flex1 CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
-                               :value="examBankData" scrollable contextMenu tableStyle="min-width: 100%" rowHover>
-                        <template #empty>
-                            <div>
-                                Không có dữ liệu
+                    </template>
+                    <Column header="STT" style="width: 100px;" class="text-center">
+                        <template #body="slotProps">
+                            <div v-if="!isLoading"> {{ slotProps.index + 1 }}</div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
                             </div>
                         </template>
-                        <template #paginatorstart>
-                            <Button type="button" icon="pi pi-refresh" text/>
+                    </Column>
+                    <Column field="DepartmentCode" style="width: 30vw;" header="Mã phòng thi">
+                        <template #body="{ data, field, slotProps }">
+                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                            </div>
                         </template>
-                        <template #paginatorend>
-                            bản ghi/trang
+                    </Column>
+                    <Column field="DepartmentName" dataKey="id" header="Tên phòng thi">
+                        <template #body="{ data, field, slotProps }">
+                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                            </div>
                         </template>
-                        <Column header="STT" style="width: 100px;" class="text-center">
-                            <template #body="slotProps">
-                                <div v-if="!isLoading"> {{ slotProps.index + 1 }}</div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </Column>
+                    <Column dataKey="id" header="Trạng thái" style="width: 200px;">
+                        <template #body="{ data, field, slotProps }">
+                            <div v-if="!isLoading">
+                                <div class="d-flex status-ctn max-content" v-if="data['is_exist']"
+                                     style="background-color: rgb(229, 250, 237);">
+                                    <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
+                                    <div class="status-text" style="color: rgb(0, 200, 83);">Đang sử dụng</div>
                                 </div>
-                            </template>
-                        </Column>
-                        <Column field="ExamBankCode" dataKey="id" header="Mã đề thi">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading"> {{ data[field] }}</div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
+                                <div class="d-flex status-ctn max-content" v-else
+                                     style="background-color: rgb(254, 243, 231);">
+                                    <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
+                                    <div class="status-text" style="color: rgb(243, 141, 21);">Không sử dụng</div>
                                 </div>
-                            </template>
-                        </Column>
-                        <Column field="ExamBankName" dataKey="id" header="Tên đề thi">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading"> {{ data[field] }}</div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column field="ResourceFile" dataKey="id" header="File tư liệu">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading"> {{ data[field] }}</div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column field="RowReference" dataKey="id" header="Dòng tiêu đề">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading"> {{ data[field] }}</div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column dataKey="id" header="Trạng thái đề thi" style="width: 200px;">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading" class="flex-row">
-                                    <div class="d-flex status-ctn max-content" v-if="data['isUse']"
-                                         style="background-color: rgb(229, 250, 237);">
-                                        <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
-                                        <div class="status-text" style="color: rgb(0, 200, 83);">Đã thiết lập</div>
-                                    </div>
-                                    <div class="d-flex status-ctn max-content" v-else
-                                         style="background-color: rgb(254, 243, 231);">
-                                        <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
-                                        <div class="status-text" style="color: rgb(243, 141, 21);">Chưa thiết lập</div>
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column dataKey="id" header="Trạng thái sử dụng" style="width: 200px;">
-                            <template #body="{ data, field, slotProps }">
-                                <div v-if="!isLoading" class="flex-row">
-                                    <div class="d-flex status-ctn max-content" v-if="data['is_exist']"
-                                         style="background-color: rgb(229, 250, 237);">
-                                        <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
-                                        <div class="status-text" style="color: rgb(0, 200, 83);">Đang sử dụng</div>
-                                    </div>
-                                    <div class="d-flex status-ctn max-content" v-else
-                                         style="background-color: rgb(254, 243, 231);">
-                                        <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
-                                        <div class="status-text" style="color: rgb(243, 141, 21);">Không sử dụng</div>
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column style="width: 100px;" header="Thao tác" frozen="" alignFrozen="right">
-                            <template #body="{ slotProps, index, data }">
-                                <div class="row-actions" :ref="`busstop${index}`" @dblclick.stop="unDbl"
-                                     v-if="!isLoading">
-                                    <div class="position-relative flex-row">
-                                        <div class="item" @click="onRowSelect(data), onRowUpdate()">
-                                            <div class="v-popover popover">
-                                                <div class="trigger">
-                                                    <div class="icon24 edit"></div>
-                                                </div>
-                                            </div>
+                            </div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column alignFrozen="right" style="width: 100px; text-align: center;" frozen header="Thao tác">
+                        <template #body="slotProps">
+                            <div class="row-actions flex-row" v-if="!isLoading">
+                                <div class="item" @click="onRowSelect(slotProps.data)">
+                                    <div class="v-popover popover">
+                                        <div class="trigger">
+                                            <div class="icon24 edit"></div>
                                         </div>
-                                        <div class="item" @click="showActions(index, data)">
-                                            <div class="v-popover popover">
-                                                <div class="icon24 more"></div>
-                                            </div>
-                                        </div>
-                                        <ul class="v-context" :style="{ top: `${top}px`, left: `${left}px` }"
-                                            v-if="isShowActions" v-click-outside="() => isShowActions = false"
-                                            @mouseleave="isShowActions = false" @mouseover="">
-                                            <!-- toggleConfigureExam(data.ExamBankId) -->
-                                            <li class="li-active" @click="isconfigureExam = true">
-                                                <div class="action-menu menu-item">
-                                                    <div>Thiết lập đề</div>
-                                                </div>
-                                            </li>
-                                            <li class="li-Delete" @click="onRowDelete()">
-                                                <div class="action-menu menu-item text-danger">
-                                                    <div>Xóa</div>
-                                                </div>
-                                            </li>
-                                        </ul>
                                     </div>
                                 </div>
-                                <div v-else>
-                                    <Skeleton height="18px" class="mb-2"></Skeleton>
+                                <div class="item" @click="deleteRowSelect(slotProps.data)">
+                                    <div class="v-popover popover">
+                                        <div class="icon24 delete"></div>
+                                    </div>
                                 </div>
-                            </template>
-                        </Column>
-                    </DataTable>
-                </div>
+                            </div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                            </div>
+                        </template>
+                    </Column>
+
+                </DataTable>
             </div>
         </div>
     </div>
@@ -755,7 +701,7 @@ export default {
                 target: 'exambank',
                 method: 'POST',
                 query: {
-                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Thêm CSRF token để tránh lỗi 419
+                    // _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Thêm CSRF token để tránh lỗi 419
                 },
                 headers: {
                     'Accept': 'application/json',

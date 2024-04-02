@@ -38,6 +38,15 @@ const routes: Array<RouteRecordRaw> = [
                     title: 'Quản lý đề thi'
                 }
             },
+            {
+                path: '/calculate',
+                name: 'calculate',
+                components: {
+                    header: () => import('@/views/admin/components/Header.vue'),
+                    content: () => import('@/views/admin/components/GradeMaster.vue'),
+                    navbar: () => import('@/views/admin/components/NavBar.vue'),
+                },
+            },
         ],
     },
     {

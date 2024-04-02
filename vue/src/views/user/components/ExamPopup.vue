@@ -672,7 +672,7 @@ button.btn {
 }
 
 .content-step .upload-container .no-file {
-    background: url(../../assets/icon/add_attachment.c604b695.svg) no-repeat;
+    background: url('@public/assets/icons/add_attachment.c604b695.svg') no-repeat;
     width: 334px;
     height: 110px;
 }
@@ -706,7 +706,7 @@ button.btn {
 .file-info .file-icon {
     width: 50px;
     height: 16px;
-    background: transparent url(../../assets/icon/ic_file_gray.84c03213.svg) no-repeat -2px 0;
+    background: transparent url('@public/assets/icons/ic_file_gray.84c03213.svg') no-repeat -2px 0;
     margin-right: 8px;
 }
 
@@ -733,7 +733,7 @@ button.btn {
 .file-info .icon-unsuccess {
     width: 16px;
     height: 16px;
-    background: transparent url(../../assets/icon/ic_warning_red.68e15434.svg) no-repeat;
+    background: transparent url('@public/assets/icons/ic_warning_red.68e15434.svg') no-repeat;
     margin-right: 8px;
 }
 
@@ -753,7 +753,7 @@ button.btn {
 .file-info .icon-success {
     width: 16px;
     height: 16px;
-    background: transparent url(../../assets/icon/ic_check_green.d1ac113b.svg) no-repeat;
+    background: transparent url('@public/assets/icons/ic_check_green.d1ac113b.svg') no-repeat;
     margin-right: 8px;
 }
 
