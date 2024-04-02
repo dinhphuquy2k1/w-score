@@ -29,13 +29,52 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/exam-list',
                 name: 'exam-list',
                 components: {
-                    content: () => import('@/views/user/components/ExamList.vue'),
+                    content: () => import('@/views/user/ExamList.vue'),
                     header: () => import('@/views/admin/components/Header.vue'),
                     navbar: () => import('@/views/admin/components/NavBar.vue')
                 },
                 meta: {
                     auth: true,
-                    title: 'Quản lý đề thi'
+                    title: 'Ngân hàng đề thi'
+                }
+            },
+            {
+                path: '/exam-manager',
+                name: 'exam-manager',
+                components: {
+                    content: () => import('@/views/user/ExamManager.vue'),
+                    header: () => import('@/views/admin/components/Header.vue'),
+                    navbar: () => import('@/views/admin/components/NavBar.vue')
+                },
+                meta: {
+                    auth: true,
+                    title: 'Danh sách kì thi'
+                }
+            },
+            {
+                path: '/departments',
+                name: 'department',
+                components: {
+                    content: () => import('@/views/user/DepartmentList.vue'),
+                    header: () => import('@/views/admin/components/Header.vue'),
+                    navbar: () => import('@/views/admin/components/NavBar.vue')
+                },
+                meta: {
+                    auth: true,
+                    title: 'Danh sách phòng thi'
+                }
+            },
+            {
+                path: '/users',
+                name: 'users',
+                components: {
+                    content: () => import('@/views/user/UserList.vue'),
+                    header: () => import('@/views/admin/components/Header.vue'),
+                    navbar: () => import('@/views/admin/components/NavBar.vue')
+                },
+                meta: {
+                    auth: true,
+                    title: 'Quản lý tài khoản'
                 }
             },
             {
@@ -46,6 +85,10 @@ const routes: Array<RouteRecordRaw> = [
                     content: () => import('@/views/admin/components/GradeMaster.vue'),
                     navbar: () => import('@/views/admin/components/NavBar.vue'),
                 },
+                meta: {
+                    auth: true,
+                    title: 'Thực hiện chấm thi'
+                }
             },
         ],
     },

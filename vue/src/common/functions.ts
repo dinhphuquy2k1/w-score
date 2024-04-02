@@ -3,7 +3,7 @@
  * @param {*} value Giá trị
  * @returns
  */
-export function generateCode(value) {
+export function generateCode({value}: { value: any }) {
     var result = '';
     try {
         //xóa khoảng trắng thừa trong chuỗi VD: Đinh     Phú Quý => Đinh Phú QUý
@@ -23,7 +23,7 @@ export function generateCode(value) {
  * @param {*} tzValue Giá trị cần convert
  * @returns
  */
-export function convertTimezoneToDatetime(tzValue) {
+export function convertTimezoneToDatetime({tzValue}: { tzValue: any }) {
     let tz = new Date(tzValue);
     let y = tz.getFullYear();
     let m = '' + (tz.getMonth() + 1);
@@ -39,7 +39,7 @@ export function convertTimezoneToDatetime(tzValue) {
 }
 
 
-export function convertTime(string) {
+export function convertTime({string}: { string: any }) {
     var date = new Date(string),
         mnth = ("0" + (date.getMonth() + 1)).slice(-2),
         day = ("0" + date.getDate()).slice(-2),

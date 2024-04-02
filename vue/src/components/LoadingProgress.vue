@@ -74,6 +74,9 @@ export default {
     animation: rotation .6s linear infinite;
 }
 
+.p-datatable .p-datatable-loading-overlay{
+    z-index: 1000000;
+}
 
 @keyframes rotation {
     0% {

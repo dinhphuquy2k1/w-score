@@ -2,7 +2,7 @@
     <div class="form-list flex-grow-1 d-flex">
         <div class="d-flex flex-column flex-grow-1">
             <div class="d-flex flex-row title-box">
-                <div class="list-title flex-grow-1 text-start">Danh sách kì thi</div>
+                <div class="list-title flex-grow-1 text-start">Quản lý tài khoản</div>
             </div>
             <div class="d-flex flex-row toolbar-box justify-content-between">
                 <div class="left-toolbar d-flex flex-row">
@@ -13,10 +13,9 @@
                 </div>
                 <div class="right-toolbar d-flex flex-row">
                     <Button
-
-                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
-                        <div class="icon-only icon-simple_cart"></div>
-                        <div class="fw-semibold">Thêm sản phẩm</div>
+                        class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                        <div class="icon24 icon-add-white"></div>
+                        <div class="fw-semibold">Thêm tài khoản</div>
                     </Button>
                 </div>
             </div>
@@ -268,202 +267,253 @@
 </template>
 
 <script>
-import vClickOutside from 'click-outside-vue3'
-import InputText from 'primevue/inputtext';
-import ExamPopup from '@/views/user/components/ExamPopup.vue';
-import ExamSetup from '@/views/user/components/ExamSetup.vue';
-import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
-import Column from 'primevue/column';
-import InputNumber from 'primevue/inputnumber';
-import Dropdown from 'primevue/dropdown';
-import * as XLSX from 'xlsx';
-import Skeleton from 'primevue/skeleton';
-import {generateCode} from '@/common/functions'
-import Resumable from 'resumablejs';
-import TheLoadingProgress from '@/components/LoadingProgress.vue'
+import { generateCode } from '@/common/functions';
+import Toast from 'primevue/toast';
+import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
-import {deleteExamBank, getExamBank, updateExamBank} from '/api/exam-bank';
-
+import Dialog from 'primevue/dialog';
+import DataTable from 'primevue/datatable';
+import TheLoadingProgress from '@/components/LoadingProgress.vue';
+import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
+import Skeleton from 'primevue/skeleton';
+import InputText from 'primevue/inputtext';
+import Calendar from 'primevue/calendar';
+import { getUsers, saveUser, updateUser, deleteUser } from '/api/user';
 export default {
-    directives: {
-        clickOutside: vClickOutside.directive
-    },
     components: {
-        ExamPopup,
-        ExamSetup,
         DataTable,
         Column,
-        Button,
-        Dropdown,
-        InputText,
         Dialog,
-        InputNumber,
+        Textarea,
+        Button,
+        Calendar,
+        InputText,
+        Dropdown,
+        Toast,
         TheLoadingProgress,
         Skeleton,
     },
     data() {
         return {
-            selectedData: {
-                ExamBankId: null,
-                ExamBankCode: null,
-                ExamBankName: null,
-                SheetIndexReference: null,
-                DataReference: null,
-                RowReference: null,
-                ResourceFile: null,
-                ResourcePath: null,
-            },
+            dialogVisible: false,
+            columns: [
+                { field: 'username', header: 'Họ và tên' },
+                { field: 'usercode', header: 'Mã user' },
+                { field: 'email', header: 'email' },
+                { field: 'level', header: 'Loại tài khoản' },
+                { field: 'note', header: 'Ghi chú' },
+            ],
 
-            objSelectedData: {},
-            objFileSelected: null,
+            exam: {},
+            levelOptions: [
+                {
+                    description: 'Chấm thi',
+                    value: 1,
+                },
+                {
+                    description: 'Tạo đề',
+                    value: 2,
+                },
+                {
+                    description: 'Tạo đề và chấm thi',
+                    value: 3,
+                },
+            ],
 
-            popupLoading: false,
-
-            warningVisible: false,
-
-            defaultData: {
-                ExamBankId: null,
-                ExamBankCode: null,
-                ExamBankName: null,
-                SheetIndexReference: null,
-                DataReference: null,
-                RowReference: null,
-                ResourceFile: null,
-                ResourcePath: null,
-            },
-
-            invalidData: {
-                ExamBankCode: null,
-                ExamBankName: null,
-                SheetIndexReference: null,
-                RowReference: null,
-                FileData: null
-            },
-
-
-            sheetOptions: [],
-            selectedSheet: {},
-            File: {
-                FileName: null,
-                FileSize: null,
-                Success: true,
-                SheetCount: 1,
-            },
-
-            defaultFile: {
-                FileName: null,
-                FileSize: null,
-                Success: true,
-                SheetCount: 1,
-            },
-
-            defaultResumable: null,
-
-            FileName: null,
-            modeModal: this.FormMode.Insert,
-            modeGenerate: true,
-            examBankData: [],
-
-            selectedFile: null,
-            resumable: null,
-            isShowModal: false,
-            isShowActions: false,
-            isLoading: false,
+            isLoadingComponent: false,
             isPopupDelete: false,
-            url: '/selectedData',
-            top: 0,
-            left: 0,
-            isconfigureExam: false,
+
+            isLoading: true,
+            isDisable: false,
+            selectedUsers: {
+                username: null,
+                usercode: null,
+                email: null,
+                note: null,
+                level: null,
+            },
+
+
+
+            modeModal: this.FormMode.Insert,
+            users: [],
+            modeGenerate: true, //cho phép sinh mã theo tên
+
+            invalidData: [],
+
         }
     },
+
     methods: {
+
         /**
-         * Ẩn / hiện model thêm mới
-         */
-        showModal(modeModal) {
-            this.modeModal = modeModal;
-            this.isShowModal = !this.isShowModal;
+        * Xử lý hàm sinh mã theo tên
+        */
+        handlerGenerateCode() {
+            if (this.modeGenerate)
+                this.selectedUsers.usercode = generateCode(this.selectedUsers.username);
         },
 
-        async doSave() {
+        /**
+       * Hiển thị toast message
+       * @param {*} message
+       */
+        showToast(message, severity = 'success') {
+            this.$toast.add({ severity: severity, summary: 'Thông báo', detail: message, life: 3000 });
+        },
+
+        doSave() {
             try {
-                if (this.validateExamBank()) {
-                    this.popupLoading = true;
-                    var data = {...this.selectedData};
-                    delete data['DataReference'];
-                    delete data['created_at'];
-                    delete data['updated_at'];
-                    this.resumable.opts.query.FileInfo = this.File.FileSize;
-                    this.resumable.opts.query.param = JSON.stringify(data);
-                    var me = this;
-                    switch (this.modeModal) {
-                        case this.FormMode.Insert:
-                            this.resumable.opts.target = 'exambank';
-                            this.resumable.addFile(this.selectedFile);
-                            break;
-                        case this.FormMode.Update:
-                            if (JSON.stringify(this.selectedData) != JSON.stringify(this.objSelectedData) || JSON.stringify(this.File) != JSON.stringify(this.objFileSelected)) {
-                                //update file tư liệu
-                                if (this.selectedFile) {
-                                    this.resumable.opts.target = 'api/exambank/updateExambank';
-                                    this.resumable.addFile(this.selectedFile);
+                this.isLoadingComponent = true;
+                this.isDisable = true;
+                if (this.validateData()) {
+                    if (this.modeModal === this.FormMode.Insert) {
+                        saveUser(this.selectedUsers).then(res => {
+                            this.loadUsers();
+                            this.showToast("Thêm tài khoản thành công");
+                            this.dialogVisible = false;
+                            this.modeModal = this.FormMode.Insert;
+                            this.selectedUsers = {
+                                username: null,
+                                usercode: null,
+                                email: null,
+                                note: null,
+                                level: null,
+                            };
+                        }).catch(error => {
+                            this.isDisable = false;
+                            if (error.response.status == 422) {
+                                for (var itemError in error.response.data.errors) {
+                                    console.log(error.response.data.errors);
+                                    this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                 }
-                                //update tên, mã, dòng, sheet
-                                else {
-                                    await updateExamBank(data).then(res => {
-                                        this.showToast("Cập nhật đề thi thành công");
-                                        this.loadExamBank();
-                                    }).catch(error => {
-                                        if (error.response.status == 422) {
-                                            for (var itemError in error.response.data.errors) {
-                                                this.invalidData[itemError] = error.response.data.errors[itemError][0];
-                                            }
-                                        } else {
-                                            this.showToast("Có lỗi xảy ra, vui lòng liên hệ nhà phát triển", 'error');
-                                        }
-                                    }).finally(() => this.showModal(), this.popupLoading = false);
-                                }
-                            } else {
-                                this.popupLoading = false;
-                                this.showModal();
                             }
-                            break;
-                        default:
-                            break;
+                        })
+                    }
+                    else if (this.modeModal === this.FormMode.Update) {
+                        updateUser(this.selectedUsers).then(res => {
+                            this.loadUsers();
+                            this.showToast("Thêm tài khoản thành công");
+                            this.dialogVisible = false;
+                            this.modeModal = this.FormMode.Insert;
+                            this.selectedUsers = {
+                                username: null,
+                                usercode: null,
+                                email: null,
+                                note: null,
+                                level: null,
+                            };
+                        }).catch(error => {
+                            console.log(error);
+                        });
                     }
                 }
+                this.isDisable = false;
+
+                setTimeout(() => {
+                    this.isLoadingComponent = false;
+                }, 750);
             } catch (error) {
+                this.isDisable = false;
                 console.log(error);
+                this.showToast("Đã xảy ra lỗi", 'error');
             }
         },
 
         /**
-         * Click nút xóa
+        * Lấy thông tin bản ghi
+        * @param {*} data
+        */
+        onRowSelect(data) {
+            this.modeModal = this.FormMode.Update;
+            this.selectedUsers = { ...data };
+            this.dialogVisible = true;
+        },
+
+        /**
+        * Xóa phòng thi
+        * @param {*} data
+        */
+        deleteRowSelect(data) {
+            this.isPopupDelete = true;
+            this.selectedUsers = data;
+        },
+
+        /**
+         * Click nút xóa phòng thi
          */
-        onRowDelete() {
-            //đề thi đang được sử dụng
-            if (this.selectedData.is_exist) {
-                this.warningVisible = true;
+        handlerDelete() {
+            deleteUser(this.selectedUsers).then(res => {
+                this.isPopupDelete = false;
+                this.showToast('Xóa thành công');
+                this.loadUsers();
+            }).catch(error => {
+                console.log(error);
+            })
+        },
+
+        /**
+         * Validate dữ liệu
+         */
+        validateData() {
+            var invalid = true;
+            this.invalidData = [];
+            if (this.selectedUsers.username == null || String(this.selectedUsers.username).trim() == '') {
+                this.invalidData['username'] = 'Tên tài khoản không được để trống';
+                invalid = false;
             }
-            //không sử dụng
-            else {
-                this.isPopupDelete = true;
+
+            if (this.selectedUsers.usercode == null || String(this.selectedUsers.usercode).trim() == '') {
+                this.invalidData['usercode'] = 'Mã tài khoản không được để trống';
+                invalid = false;
+            }
+
+            if (this.selectedUsers.email != null && !this.validateemail()) {
+                this.invalidData['email'] = 'email không đúng định dạng';
+                invalid = false;
+            }
+
+            if (this.selectedUsers.email == null) {
+                this.invalidData['email'] = 'email không được để trống';
+                invalid = false;
+            }
+
+            if (this.selectedUsers.level == null) {
+                this.invalidData['level'] = 'Loại tài khoản không được để trống';
+                invalid = false;
+            }
+            return invalid;
+        },
+
+        /**
+         * Validate email
+         */
+        validateemail() {
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.selectedUsers.email) && this.selectedUsers.email != null && String(this.selectedUsers.email).trim() != '') {
+                return true;
+            }
+            return false;
+        },
+
+        /**
+       * Validate mã phòng thi
+       * Ko cho phép nhập các kí tự đặc biệt
+       * @param {*} event
+       */
+        handlerInputDepartmentCode(event) {
+            let pattern = /[\W_]/g;
+            let res = event.key.match(pattern);
+            if (res) {
+                event.preventDefault();
             }
         },
 
         /**
-         * Xử lý hàm sinh mã theo tên
-         */
-        handlerGenerateCode() {
-            if (this.modeGenerate) this.selectedData.ExamBankCode = generateCode(this.selectedData.ExamBankName);
-        },
-
-        /**
-         * Validate mã phòng thi
-         * Ko cho phép nhập các kí tự đặc biệt
-         * @param {*} event
-         */
+        * Validate mã phòng thi
+        * Ko cho phép nhập các kí tự đặc biệt
+        * @param {*} event
+        */
         handlerInputCode(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
@@ -473,264 +523,35 @@ export default {
         },
 
         /**
-         * Ẩn hiện action row
-         * @param {*} index
-         * @param {*} data
-         */
-        showActions(index, data) {
-            this.isShowActions = !this.isShowActions;
-            this.selectedData = data;
-            var position = this.$refs[`busstop${index}`].getBoundingClientRect();
-            this.top = position.y + position.height;
-            this.left = position.x - position.width / 2;
+        * Không cho nhập khoảng trắng
+        * @param {*} event
+        */
+        validateSpace(event) {
+            if (event.keyCode === 32) {
+                event.preventDefault();
+            }
         },
 
         /**
-         * Load dữ liệu ngân hàng đề thi
+         * Lấy danh sách user
          */
-        async loadExamBank() {
+        async loadUsers() {
             this.isLoading = true;
-            await getExamBank().then(res => {
-                this.examBankData = res;
+            await getUsers().then(res => {
+                this.users = res;
             }).catch(error => {
-
-            });
-            setTimeout(() => {
-                this.isLoading = false;
-            }, 750);
-        },
-
-        /**
-         * Click nút xóa phòng thi
-         */
-        handlerDelete() {
-            deleteExamBank(this.selectedData.ExamBankId).then(res => {
-                this.isPopupDelete = false;
-                this.showToast('Xóa thành công');
-                this.loadExamBank();
-            }).catch(error => {
-
                 console.log(error);
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoading = false
+                }, 500);
             })
         },
-
-        /**
-         * Ẩn form
-         */
-        afterHide() {
-            this.selectedData = {...this.defaultData};
-            this.selectedFile = null;
-            this.File = {...this.defaultFile};
-            this.sheetOptions = [];
-            this.invalidData = [];
-            this.selectedSheet = {};
-            this.exambank = {};
-        },
-
-        /**
-         *  Validate dữ liệu
-         *  @return bool
-         */
-        validateExamBank() {
-            var invalid = true;
-            this.invalidData = [];
-            if (this.selectedData.ExamBankCode == null || this.selectedData.ExamBankCode == '') {
-                invalid = false;
-                this.invalidData.ExamBankCode = 'Mã đề thi không được để trống';
-            } else {
-                this.invalidData.ExamBankCode = null;
-            }
-            if (this.selectedData.ExamBankName == null || this.selectedData.ExamBankName == '') {
-                invalid = false;
-                this.invalidData.ExamBankName = 'Tên đề thi không được để trống';
-            } else {
-                this.invalidData.ExamBankName = null;
-            }
-            if (this.selectedData.RowReference == null || this.selectedData.RowReference == '') {
-                invalid = false;
-                this.invalidData.RowReference = 'Dòng tiêu đề không được để trống';
-            } else {
-                this.invalidData.RowReference = null;
-            }
-            if (this.selectedData.SheetIndexReference == null) {
-                invalid = false;
-                this.invalidData.SheetIndexReference = 'Sheet tư liệu không được để trống';
-            } else {
-                this.invalidData.SheetIndexReference = null;
-            }
-            if (!this.File.Success) {
-                invalid = false;
-            }
-            return invalid;
-        },
-
-        /**
-         * Hiển thị toast message
-         * @param {*} message
-         */
-        showToast(message, severity = 'success') {
-            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
-        },
-
-        /**
-         * Sự kiện thay đổi file
-         * @param {*} ref ref input
-         *
-         */
-        onFileChange(ref) {
-            if (this.$refs[ref].files[0].type === "application/vnd.ms-excel" || this.$refs[ref].files[0].type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                this.selectedFile = this.$refs[ref].files[0];
-                this.sheetOptions = [];
-                var _size = this.selectedFile.size;
-                var fSExt = new Array('Bytes', 'KB', 'MB', 'GB'),
-                    i = 0;
-                while (_size > 900) {
-                    _size /= 1024;
-                    i++;
-                }
-                this.File.FileSize = (Math.round(_size * 100) / 100) + ' ' + fSExt[i];
-                this.File.FileName = this.selectedFile.name;
-                //kiểm tra dung lượng file
-                if (this.$refs[ref].files[0].size > 30 * 1024 * 1024) {
-                    this.File.Success = false;
-                    this.sheetOptions = [];
-                    this.selectedData.RowReference = null;
-                } else {
-                    this.File.Success = true;
-                    //đọc file upload lấy ra danh sách tên các sheet
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        /* Parse data */
-                        const bstr = e.target.result;
-                        const workbook = XLSX.read(bstr, {type: 'binary'});
-                        //gán sheet mặc định là sheet đầu tiên
-                        this.nameSheet = workbook.SheetNames[0];
-                        //duyệt các sheet
-                        for (let index = 0; index < workbook.SheetNames.length; index++) {
-                            this.sheetOptions.push({
-                                sheetIndex: index,
-                                sheetName: workbook.SheetNames[index]
-                            });
-                        }
-                        this.File.SheetCount = workbook.SheetNames.length;
-                        this.selectedSheet = this.sheetOptions[0];
-                    }
-                    reader.readAsBinaryString(this.selectedFile);
-                }
-            } else {
-                this.contentDialog = ' File tư liệu chỉ hỗ trợ định dạng *.xlsx';
-                this.dialogVisible = true;
-            }
-        },
-
-        /**
-         * Thêm file
-         * @param {*} file
-         */
-        onFileAdded(file) {
-            this.resumable.upload();
-        },
-
-
-        /**
-         * Tiến trình tải
-         * @param {*} file
-         */
-        onFileProgress(file) {
-
-        },
-
-        /**
-         * Upload thành công
-         * @param {*} file
-         * @param {*} response
-         */
-        onFileSuccess(file, response) {
-            this.resumable.removeFile(file);
-            this.popupLoading = false;
-            this.showModal();
-            var message = this.modeModal == this.FormMode.Insert ? "Thêm đề thi thành công" : "Cập nhật đề thi thành công";
-            this.showToast(message);
-            this.loadExamBank();
-        },
-
-        /**
-         * Cập nhật đề thi
-         */
-        onRowUpdate() {
-            var dataReference = JSON.parse(this.selectedData.DataReference);
-            var sheetIndexReference = JSON.parse(this.selectedData.SheetIndexReference);
-            this.selectedData.SheetIndexReference = sheetIndexReference[1];
-            this.sheetOptions = sheetIndexReference[0];
-            this.File.FileSize = this.selectedData.FileInfo;
-            this.File.FileName = this.selectedData.ResourceFile;
-
-            //object để kiểm tra xem bản ghi có thay đối hay ko
-            this.objSelectedData = {...this.selectedData};
-            this.objFileSelected = {...this.File};
-
-            this.showModal(this.FormMode.Update);
-        },
-
-        /**
-         * Upload thất bại
-         * @param {*} file
-         * @param {*} message
-         */
-        onFileError(file, message) {
-            try {
-                this.popupLoading = false;
-                this.resumable.removeFile(file);
-                message = JSON.parse(message);
-                if (message.errorCode == 422) {
-                    for (var error in message.errors) {
-                        this.invalidData[error] = message.errors[error][0];
-                    }
-                } else {
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
-
-        /**
-         * Khởi tạo Resumable upload file
-         */
-        createResumable() {
-            this.resumable = new Resumable({
-                target: 'exambank',
-                method: 'POST',
-                query: {
-                    // _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Thêm CSRF token để tránh lỗi 419
-                },
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Disposition': 'form-data; name="title"',
-                },
-                testChunks: false,
-                throttleProgressCallbacks: 1,
-                simultaneousUploads: 4,
-            });
-            this.resumable.on('fileAdded', this.onFileAdded);
-            this.resumable.on('fileProgress', this.onFileProgress);
-            this.resumable.on('fileSuccess', this.onFileSuccess);
-            this.resumable.on('fileError', this.onFileError);
-        },
-
-
-        /**
-         *
-         */
-        onRowSelect(data) {
-            this.selectedData = {...data};
-        }
-    },
-    async created() {
-        this.loadExamBank();
     },
 
-    mounted() {
-        this.createResumable();
+    created() {
+        this.loadUsers();
     },
+
 }
 </script>

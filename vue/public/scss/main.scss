@@ -63,6 +63,7 @@ body {
     min-height: 36px;
     height: 40px;
     min-width: 80px;
+    line-height: unset;
     border: none;
     box-shadow: none;
     position: relative;
@@ -84,6 +85,9 @@ body {
     &.primary {
         color: #fff;
         background: #127FFF;
+        &:not(:disabled).primary:hover {
+            background: #1a73e8;
+        }
     }
 
     &.orange {

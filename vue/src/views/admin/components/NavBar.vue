@@ -54,9 +54,14 @@ export default {
                     route: '/exam-list'
                 },
                 {
-                    label: 'Danh sách kì thi',
+                    label: 'Danh sách phòng thi',
                     icon: 'icon icon-report',
-                    route: '/exam-list'
+                    route: '/departments'
+                },
+                {
+                    label: 'Danh sách kì thi',
+                    icon: 'icon icon-movement',
+                    route: '/exam-manager'
                 },
                 {
                     label: 'Thực hiện chấm thi',
@@ -66,7 +71,7 @@ export default {
                 {
                     label: 'Quản lý tài khoản',
                     icon: 'icon icon-profile',
-                    route: '/calculate'
+                    route: '/users'
                 },
             ]
         }
@@ -78,7 +83,7 @@ export default {
 <style lang="scss">
 .ma-navbar {
     overflow: hidden;
-    width: 220px;
+    width: 240px;
     padding: 1px;
     transition: width .2s;
     box-shadow: inset 0 1.5px 2px 0 rgba(0, 0, 0, .1);
@@ -171,6 +176,10 @@ export default {
                     background-image: url('@public/assets/icons/ic_profile_default.d730fb8f.svg');
                 }
 
+                .icon-movement {
+                    background-image: url('@public/assets/icons/ic_movement_default.102c9e3d.svg');
+                }
+
                 &:hover {
                     background: #eff7ff;
                     color: #ff6d00;
@@ -194,6 +203,10 @@ export default {
 
                     .icon-profile {
                         background-image: url('@public/assets/icons/ic_profile.628cd9e5.svg');
+                    }
+
+                    .icon-movement {
+                        background-image: url('@public/assets/icons/ic_movement.629f9e51.svg');
                     }
                 }
 
@@ -226,6 +239,10 @@ export default {
 
                     .icon-profile {
                         background-image: url('@public/assets/icons/ic_profile.628cd9e5.svg');
+                    }
+
+                    .icon-movement {
+                        background-image: url('@public/assets/icons/ic_movement.629f9e51.svg');
                     }
                 }
 
