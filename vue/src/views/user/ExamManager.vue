@@ -13,7 +13,7 @@
                 </div>
                 <div class="right-toolbar d-flex flex-row">
                     <Button
-                        @click="examShiftDialogVisible = !examShiftDialogVisible"
+                        @click="examShiftDialogVisible = !examShiftDialogVisible, modeModal = FormMode.INSERT"
                         class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm kì thi</div>

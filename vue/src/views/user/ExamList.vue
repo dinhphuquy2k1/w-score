@@ -47,7 +47,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="exam_bank_name" style="width: 30vw;" header="Tên đề thi">
+                    <Column field="name" style="width: 30vw;" header="Tên đề thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -55,7 +55,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="exam_bank_code" dataKey="id" header="Mã đề thi">
+                    <Column field="code" dataKey="id" header="Mã đề thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>

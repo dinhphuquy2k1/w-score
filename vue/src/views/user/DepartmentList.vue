@@ -7,12 +7,12 @@
             <div class="d-flex flex-row toolbar-box justify-content-between">
                 <div class="left-toolbar d-flex flex-row">
                     <div class="m-search_form flex-row d-flex align-items-center d-flex">
-                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
+                        <InputText type="search" v-model="search" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
                         <div class="icon24 icon search-right search"></div>
                     </div>
                 </div>
                 <div class="right-toolbar d-flex flex-row">
-                    <Button @click="isShowModal = !isShowModal, modeGenerate = true"
+                    <Button @click="isShowModal = !isShowModal, modeGenerate = true, modePopup=FORM_MODE.INSERT"
                             class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm phòng thi</div>
@@ -162,10 +162,10 @@
                 <div class="flex1"></div>
                 <Button label="Đóng" class="ms-button btn detail-button secondary"
                         @click="isShowModal = false"/>
-                    <Button @click="doSave" @keyup.enter="doSave"
-                            class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
-                        <div class="fw-semibold">Lưu</div>
-                    </Button>
+                <Button @click="doSave" @keyup.enter="doSave" :disabled="isDisabled"
+                        class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                    <div class="fw-semibold">Lưu</div>
+                </Button>
             </div>
 
         </template>
@@ -180,7 +180,6 @@
             <Button label="Đóng" class="ms-button btn detail-button secondary" @click="warningVisible = false"/>
         </template>
     </Dialog>
-    <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
 </template>
 
 <script>
@@ -191,15 +190,19 @@ import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import {generateCode} from '@/common/functions'
-import {RESPONSE_STATUS} from "@/common/enums";
+import {FORM_MODE, RESPONSE_STATUS} from "@/common/enums";
 import {saveData, getDataDepartment, updateDepartment, deleteDepartment} from '/api/department';
-import ExamSetup from "@/views/user/components/ExamSetup.vue";
 import TheLoadingProgress from "@/components/LoadingProgress.vue";
 
 export default {
     name: "DepartmentList",
+    computed: {
+        FORM_MODE() {
+            return FORM_MODE
+        }
+    },
     components: {
-        TheLoadingProgress, ExamSetup,
+        TheLoadingProgress,
         Dialog,
         Button,
         InputText,
@@ -210,6 +213,7 @@ export default {
 
     data() {
         return {
+            search: null,
             modePopup: this.FormMode.INSERT,
             department: {
                 DepartmentId: null,
@@ -226,6 +230,7 @@ export default {
             isLoading: false,
 
             isPopupDelete: false,
+            isDisabled: false,
 
             invalidData: [],   //mảng chứa thông tin lỗi
             modeGenerate: true, //cho phép sinh mã theo tên
@@ -259,12 +264,13 @@ export default {
         doSave(event) {
             event.preventDefault();
             this.invalidData = [];
+            this.isDisabled = true;
             if (this.validateData()) {
                 switch (this.modePopup) {
                     case this.FormMode.INSERT:
                         saveData(this.department).then(res => {
                             this.department = {};
-                            this.showToast('Thêm thành công');
+                            this.$store.dispatch('handleSuccess', 'Thêm mới thành công');
                             this.isShowModal = false;
                             this.loadData();
                         }).catch(error => {
@@ -274,6 +280,8 @@ export default {
                                     this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                 }
                             }
+                        }).finally(() => {
+                            this.isDisabled = false;
                         })
                         break;
                     case this.FormMode.UPDATE:
@@ -284,19 +292,24 @@ export default {
                                 this.showToast('Cập nhật thành công');
                                 this.loadData();
                             }).catch(error => {
-                                if (error.response.status == 422) {
+                                if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
                                     for (var itemError in error.response.data.errors) {
                                         this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                     }
                                 }
                                 return;
-                            });
-                        } else this.isShowModal = false;
+                            }).finally(() => {
+                                this.isDisabled = false;
+                            })
+                        } else {
+                            this.isShowModal = false;
+                            this.isDisabled = false;
+                        }
                         break;
                     default:
                         break;
                 }
-            }
+            } else this.isDisabled = false;
             this.modeGenerate = true;
         },
 
@@ -384,15 +397,8 @@ export default {
                 .finally(() => {
                     setTimeout(() => {
                         this.isLoading = false;
-                    }, 750);
+                    }, 300);
                 });
-
-            // console.log(this.data);
-            // console.log(Array.from({ length: 10 }, () => ({ ...this.department })));
-            // this.data = [
-            //     { department_code: 1, department_name: 1 }
-            // ]
-            // debugger
         }
     },
 

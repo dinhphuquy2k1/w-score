@@ -173,13 +173,15 @@
                                     <div class="flex1"><span class="error-text">{{
                                             invalidExamManager['ExamShift']
                                         }}</span></div>
-                                    <Button @click="showExamShiftDialogVisible, modeModal = FormMode.INSERT"
+                                    <Button @click="showExamShiftDialogVisible(), modeModalExamShift = FormMode.INSERT"
                                             class="primary custom-btn text-link  d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-1">
                                         <div class="icon24 icon-add-blue"></div>
                                         <div class="fw-semibold">Thêm ca thi</div>
                                     </Button>
                                 </div>
-                                <DataTable :value="listExamShift" class="flex1" rowHover table-class="grid-group"
+                                <DataTable class="flex1" rowHover table-class="grid-group"
+                                           :class="{ 'loading': isLoading }" :loading="isLoading"
+                                           :value="isLoading ? Array.from({ length: 5 }, () => ({ ...objectLoading })) : listExamShift"
                                            @rowDblclick="onRowSelectExamShift($event.data), modeExamShiftModal = FormMode.UPDATE, showExamShiftDialogVisible()">
                                     <template #empty>
                                         <div>
@@ -222,15 +224,6 @@
                                             </div>
                                         </template>
 
-                                    </Column>
-                                    <Column field="end_date" dataKey="id" header="Phòng thi"
-                                            style="min-width: 300px;">
-                                        <template #body="{ data, field }">
-                                            <div v-if="!isLoadingExamShift"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
-                                        </template>
                                     </Column>
                                     <Column alignFrozen="right" style="width: 90px;" frozen header="Thao tác">
                                         <template #body="slotProps">
@@ -389,7 +382,7 @@
                     <div class="ms-input ms-editor w-100">
                         <MultiSelect v-model="selectedExamShift.exam_bank_id" :options="examBankSetting"
                                      checkboxIcon="test"
-                                     placeholder="Chọn đề thi" optionLabel="exam_bank_name" optionValue="id"
+                                     placeholder="Chọn đề thi" optionLabel="name" optionValue="id"
                                      :class="{ 'error': invalidExamShift['exam_bank_id'] }"/>
                         <div class="error-text" v-if="invalidExamShift['exam_bank_id']">
                             {{ invalidExamShift['exam_bank_id'] }}
@@ -420,7 +413,7 @@
         </div>
         <template #footer>
             <Button label="Đóng" class="ms-btn btn detail-button secondary" @click="examShiftDialogVisible = false"/>
-            <Button @click="saveExamShift" @keyup.enter="saveExamShift"
+            <Button @click="saveExamShift" @keyup.enter="saveExamShift" :disabled="isDisabledExamShift"
                     class="ms-btn primary blue d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                 <div class="fw-semibold">Lưu</div>
             </Button>
@@ -517,6 +510,9 @@ export default {
                 note: null,
                 listExamShift: [],
             },
+            objectLoading: {},
+            isDisabledExamShift: false,
+            isLoading: false,
             isCollapsed: false,
 
             isPopupDelete: false,
@@ -607,13 +603,17 @@ export default {
          * Lưu ca thi
          */
         async saveExamShift() {
+            this.isDisabledExamShift = true;
             if (await this.validateExamShift()) {
                 this.isLoadingPopupExamShift = true;
                 //trạng thái của form kì thi
                 switch (this.modeModal) {
                     //thêm mới kì thi
                     case this.FormMode.INSERT:
+                        this.isLoadingPopupExamShift = false;
                         this.listExamShift.push({...this.selectedExamShift});
+                        this.showExamShiftDialogVisible();
+                        this.isDisabledExamShift = false;
                         break;
                     //cập nhật kì thi
                     case this.FormMode.UPDATE:
@@ -629,12 +629,12 @@ export default {
                                 }).catch(error => {
                                     console.log(error);
                                 }).finally(() => {
+                                    this.isDisabledExamShift = false;
                                     this.isLoadingPopupExamShift = false;
                                     this.loadExamShift();
                                     this.examShiftDialogVisible = false;
                                     if (success) {
-                                        console.log(this.selectedExamShift);
-                                        this.$emit("showToast", "Thêm ca thi thành công");
+                                        this.$store.dispatch('handleSuccess', 'Thêm mới thành công');
                                     }
                                     this.examshift = {...this.defaultExamShift};
                                     this.selectedExamShift = {...this.defaultExamShift};
@@ -644,16 +644,17 @@ export default {
                             //cập nhật ca thi
                             case this.FormMode.UPDATE:
                                 var success = false;
-                                if (JSON.stringify(this.selectedExamShift) != JSON.stringify(this.examshift)) {
+                                if (JSON.stringify(this.selectedExamShift) !== JSON.stringify(this.examshift)) {
                                     // this.warningVisible = true;
                                     //thay đổi đề thi hoặc phòng thi
-                                    if (JSON.stringify(this.selectedExamShift.departments) != JSON.stringify(this.examshift.departments) || JSON.stringify(this.selectedExamShift.exam_bank_id) != JSON.stringify(this.examshift.exam_bank_id)) {
+                                    if (JSON.stringify(this.selectedExamShift.departments) !== JSON.stringify(this.examshift.departments) || JSON.stringify(this.selectedExamShift.exam_bank_id) !== JSON.stringify(this.examshift.exam_bank_id)) {
                                         this.warningVisible = true;
                                     } else {
-                                        this.UPDATEExamShift();
+                                        this.updateExamShift();
                                     }
                                 } else {
-                                    alert(2);
+                                    this.isDisabledExamShift = false;
+                                    this.isLoadingPopupExamShift = false;
                                 }
                                 break;
                             default:
@@ -663,7 +664,9 @@ export default {
                     default:
                         break;
                 }
-
+            } else {
+                this.isLoadingPopupExamShift = false;
+                this.isDisabledExamShift = false;
             }
         },
 
@@ -729,6 +732,10 @@ export default {
          * Ẩn/hiện form thêm ca thi
          */
         showExamShiftDialogVisible() {
+            // if (!this.validateExamManager()) {
+            //     this.$store.dispatch('handleError', 'Chưa chọn thông tin kì thi');
+            //     return;
+            // }
             this.examShiftDialogVisible = !this.examShiftDialogVisible;
             this.invalidExamShift = [];
         },
@@ -948,6 +955,7 @@ export default {
                 this.invalidExamManager['end_date'] = 'Thời gian thi tối thiểu phải lớn hơn 2h';
                 invalid = false;
             }
+            if (!invalid) return invalid;
 
             if (this.listExamShift.length === 0) {
                 this.invalidExamManager['ExamShift'] = 'Ca thi không được để trống';
@@ -1037,13 +1045,17 @@ export default {
          */
         handlerPropData() {
             if (this.modeModal === this.FormMode.UPDATE) {
+                this.isLoading = true;
                 this.selectedDataProp = {...this.selectedData};
                 getExamShifts(this.selectedDataProp).then(res => {
-                    console.log(res)
+                    this.listExamShift = res.data['exam_shifts'];
                 }).catch(error => {
                     console.log(error)
-                })
-                // this.exam = {...this.selectedDataProp};
+                }).finally(() => {
+                    setTimeout(() => {
+                    })
+                    this.isLoading = false;
+                }, 300);
                 // this.exam.start_date = new Date(this.selectedDataProp.start_date);
                 // this.exam.end_date = new Date(this.selectedDataProp.end_date);
                 //
@@ -1080,7 +1092,7 @@ export default {
                 //hiển thị form cảnh báo thay đổi đề thi, phòng thi
                 //gọi hàm cập nhật ca thi
                 if (this.warningVisible) {
-                    this.UPDATEExamShift();
+                    this.updateExamShift();
                 }
             }
 

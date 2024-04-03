@@ -28,7 +28,7 @@ service.interceptors.response.use(
         return res
     },
     error => {
-        if (error.response.status == RESPONSE_STATUS.HTTP_INTERNAL_SERVER_ERROR) {
+        if (error.response && error.response.status === RESPONSE_STATUS.HTTP_INTERNAL_SERVER_ERROR) {
             store.dispatch('handleServerError');
         }
         return Promise.reject(error)
