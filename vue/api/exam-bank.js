@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function getExamBank() {
     return request({
-        url: 'exambank',
+        url: '/exam-banks',
         method: 'get'
     })
 }
@@ -52,7 +52,7 @@ export function deleteCriteria(data) {
  */
 export function insertExamBank(data) {
     return request({
-        url: 'exambank',
+        url: '/exam-banks',
         method: 'post',
         data: data
     })
@@ -64,7 +64,7 @@ export function insertExamBank(data) {
  */
 export function updateExamBank(data) {
     return request({
-        url: 'exambank/1',
+        url: `/exam-banks/${data.id}`,
         method: 'PUT',
         data: data
     })

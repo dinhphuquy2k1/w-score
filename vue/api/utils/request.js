@@ -29,7 +29,7 @@ service.interceptors.response.use(
     },
     error => {
         if (error.response.status == RESPONSE_STATUS.HTTP_INTERNAL_SERVER_ERROR) {
-            store.dispatch('handleInternalServerError');
+            store.dispatch('handleServerError');
         }
         return Promise.reject(error)
     }

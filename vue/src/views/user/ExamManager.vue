@@ -1,6 +1,6 @@
 <template>
     <div class="form-list flex-grow-1 d-flex">
-        <div class="d-flex flex-column flex-grow-1">
+        <div class="d-flex flex-column flex-grow-1" v-if="!examShiftDialogVisible">
             <div class="d-flex flex-row title-box">
                 <div class="list-title flex-grow-1 text-start">Danh sách kì thi</div>
             </div>
@@ -13,6 +13,7 @@
                 </div>
                 <div class="right-toolbar d-flex flex-row">
                     <Button
+                        @click="examShiftDialogVisible = !examShiftDialogVisible"
                         class="ms-btn primary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                         <div class="icon24 icon-add-white"></div>
                         <div class="fw-semibold">Thêm kì thi</div>
@@ -105,6 +106,8 @@
                 </DataTable>
             </div>
         </div>
+        <ExamManagerPopup v-if="examShiftDialogVisible" @showExamManager="showExamManager"
+                          @loadExamManager="loadExamManager" @showToast="showToast" :modeModal="modeModal" :selectedData="selectedData" />
     </div>
 </template>
 
@@ -137,11 +140,11 @@ export default {
     data() {
         return {
             dialogVisible: true,
-            examShiftDialogVisible: false,
+            examShiftDialogVisible: true,
 
             columns: [
-                { field: 'ExamShiftCode', header: 'Mã ca thi' },
-                { field: 'ExamShiftName', header: 'Tên ca thi' },
+                { field: 'exam_shift_code', header: 'Mã ca thi' },
+                { field: 'exam_shift_name', header: 'Tên ca thi' },
                 { field: 'DateTimeStart', header: 'Ngày bắt đầu' },
                 { field: 'DateTimeEnd', header: 'Ngày kết thúc' },
                 { field: 'Department', header: 'Phòng thi' },
@@ -155,8 +158,8 @@ export default {
 
             examshift: {
                 ExamShiftId: null,
-                ExamShiftCode: null,
-                ExamShiftName: null,
+                exam_shift_code: null,
+                exam_shift_name: null,
                 DateTimeStart: null,
                 DateTimeEnd: null,
                 Department: null
@@ -165,7 +168,7 @@ export default {
             modeModal: this.FormMode.Insert,
 
             //tên các ca thi
-            examShiftNames: null,
+            exam_shift_names: null,
 
             isLoading: false,
             selectedData: {},
@@ -179,8 +182,8 @@ export default {
                 ExamId: null,
                 ExamCode: null,
                 ExamName: null,
-                ExamStartDate: null,
-                ExamEndDate: null,
+                start_date: null,
+                end_date: null,
                 Note: null,
             },
 
@@ -204,9 +207,9 @@ export default {
         * Xử lý hàm sinh mã theo tên
         */
         handlerGenerateCode(name) {
-            if (name == 'exam' && this.modeGenerate) this.exam.ExamCode = generateCode(this.exam.ExamName);
-            if (name == 'examShift' && this.modeGenerateExamShift) {
-                this.examshift.ExamShiftCode = generateCode(this.examshift.ExamShiftName);
+            if (name === 'exam' && this.modeGenerate) this.exam.ExamCode = generateCode(this.exam.ExamName);
+            if (name === 'examShift' && this.modeGenerateExamShift) {
+                this.examshift.exam_shift_code = generateCode(this.examshift.exam_shift_name);
             }
         },
 
@@ -293,9 +296,9 @@ export default {
                 await getExamManager().then(res => {
                     if (res[0]) {
                         var data = JSON.parse(res[0].ExamShift);
-                        const examShiftNames = data.reduce((acc, curr) => {
-                            if (!acc.includes(curr.ExamShiftName) && !acc.includes(curr.ExamShiftCode)) {
-                                acc.push(curr.ExamShiftName);
+                        const exam_shift_names = data.reduce((acc, curr) => {
+                            if (!acc.includes(curr.exam_shift_name) && !acc.includes(curr.exam_shift_code)) {
+                                acc.push(curr.exam_shift_name);
                             }
                             return acc;
                         }, []).join(', ');
@@ -304,7 +307,7 @@ export default {
                         }, 500);
                     }
                     this.dataExamManager = res;
-                    // console.log(examShiftNames);
+                    // console.log(exam_shift_names);
                 }).catch(error => {
                     this.showToast("Có lỗi xảy ra, vui lòng liên hệ nhà phát triển", 'error');
                     console.log(error);
@@ -323,21 +326,21 @@ export default {
          */
         btnAddExamShift() {
             this.examShift.push({
-                ExamShiftCode: null,
-                ExamShiftName: null,
-                DateTimeStart: null,
-                DateTimeEnd: null,
-                Department: null
+                exam_shift_code: null,
+                exam_shift_name: null,
+                start_date: null,
+                end_date: null,
+                department: null
             });
         },
 
         /**
          * Validate ngày kết thúc kì thi
          */
-        handlerExamEndDate() {
+        handlerend_date() {
             this.invalidData = [];
-            if (this.exam.ExamEndDate.getTime() - this.exam.ExamStartDate.getTime() < 2 * 60 * 60 * 1000) {
-                this.invalidData['ExamEndDate'] = 'Thời gian tối tiểu là 2h';
+            if (this.exam.end_date.getTime() - this.exam.start_date.getTime() < 2 * 60 * 60 * 1000) {
+                this.invalidData['end_date'] = 'Thời gian tối tiểu là 2h';
             }
         },
 

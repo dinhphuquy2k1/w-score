@@ -124,3 +124,38 @@
 .p-datatable:not(.loading) .p-datatable-tbody > tr > td:last-child {
     border-right: none !important;
 }
+
+.p-datatable:not(.loading).p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover td {
+    background: #fbe9e7 !important;
+    color: #495057;
+    cursor: pointer;
+}
+
+.p-datatable .p-datatable-tbody > tr:focus {
+    outline: none !important;
+    outline-offset: -0.15rem;
+    background: #e0ebff !important;
+}
+
+.p-datatable:not(.loading) .p-datatable-tbody > tr:focus td {
+    background: #e0ebff !important;
+}
+
+.row-actions .item {
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    margin-left: 4px;
+
+    .v-popover {
+        border: none;
+    }
+}

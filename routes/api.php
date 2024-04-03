@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiWordController;
 use App\Http\Controllers\ApiDepartmentController;
 use App\Http\Controllers\ApiUserController;
+use App\Http\Controllers\ApiExamController;
+use App\Http\Controllers\ApiExamBankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +35,8 @@ Route::put('/departments/{id}', [ApiDepartmentController::class, 'update']);
 Route::get('/users', [ApiUserController::class, 'get']);
 Route::post('/users', [ApiUserController::class, 'save']);
 Route::put('/users/{id}', [ApiUserController::class, 'update']);
+Route::get('/exams', [ApiExamController::class, 'get']);
+Route::post('/exams', [ApiExamController::class, 'save']);
+Route::get('/exam-banks', [ApiExamBankController::class, 'get']);
+Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
+Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
