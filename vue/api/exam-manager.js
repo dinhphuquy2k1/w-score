@@ -48,7 +48,7 @@ export function getExamManager() {
 
 export function checkExamShiftCodeExits(data) {
     return request({
-        url: 'exam-manager/checkExamShiftCodeExits',
+        url: '/exam-shifts/checkCodeExits',
         method: 'POST',
         data: data,
     })
@@ -73,10 +73,11 @@ export function updateExamShift(data) {
  * @param {*} data
  * @returns
  */
-export function getExamShift(id) {
+export function getExamShifts(data) {
     return request({
-        url: `exam-manager/get-examshift/${id}`,
-        method: 'GET',
+        url: '/exams/getExamShifts',
+        method: 'POST',
+        data: data,
     })
 }
 

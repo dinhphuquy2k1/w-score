@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiDepartmentController;
 use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\ApiExamController;
 use App\Http\Controllers\ApiExamBankController;
+use App\Http\Controllers\ApiExamShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,9 @@ Route::post('/users', [ApiUserController::class, 'save']);
 Route::put('/users/{id}', [ApiUserController::class, 'update']);
 Route::get('/exams', [ApiExamController::class, 'get']);
 Route::post('/exams', [ApiExamController::class, 'save']);
+Route::post('/exams/getExamShifts', [ApiExamController::class, 'getExamShifts']);
 Route::get('/exam-banks', [ApiExamBankController::class, 'get']);
 Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
 Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
+Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']);
+Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);

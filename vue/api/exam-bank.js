@@ -17,7 +17,7 @@ export function getExamBank() {
  */
 export function getExamBankSetting() {
     return request({
-        url: 'api/exambank/getExamBankSetting',
+        url: '/exam-banks/settings',
         method: 'get'
     })
 }

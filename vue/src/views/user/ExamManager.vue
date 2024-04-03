@@ -23,7 +23,7 @@
             <div class="box list-content flex-grow-1 flex-row">
                 <DataTable paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="flex1 flex-column"
                            :class="{ 'loading': isLoading }" :loading="isLoading"
-                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : data"
+                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...objectLoading })) : dataExamManager"
                            currentPageReportTemplate="{first} to {last} of {totalRecords}"
                            paginatorTemplate="FirstPageLink PrevPageLink flex1 CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
                            @rowDblclick="onRowSelect($event.data)" tableStyle="min-width: 100%" rowHover>
@@ -46,7 +46,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentCode" style="width: 30vw;" header="Mã phòng thi">
+                    <Column field="exam_name" style="width: 30vw;" header="Tên kì thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -54,7 +54,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="DepartmentName" dataKey="id" header="Tên phòng thi">
+                    <Column field="exam_code" dataKey="id" header="Mã kì thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -140,7 +140,7 @@ export default {
     data() {
         return {
             dialogVisible: true,
-            examShiftDialogVisible: true,
+            examShiftDialogVisible: false,
 
             columns: [
                 { field: 'exam_shift_code', header: 'Mã ca thi' },
@@ -152,6 +152,7 @@ export default {
 
             //ca thi
             listExamShift: [],
+            objectLoading: {},
 
             isPopupDelete: false,
             isLoadingDelete: false,
@@ -270,6 +271,8 @@ export default {
          * @param {*} data
          */
         onRowSelect(data) {
+            this.modeModal = this.FormMode.UPDATE;
+            this.examShiftDialogVisible = !this.examShiftDialogVisible;
             this.selectedData = { ...data };
         },
 
@@ -306,7 +309,7 @@ export default {
                             this.isLoading = false
                         }, 500);
                     }
-                    this.dataExamManager = res;
+                    this.dataExamManager = res.data;
                     // console.log(exam_shift_names);
                 }).catch(error => {
                     this.showToast("Có lỗi xảy ra, vui lòng liên hệ nhà phát triển", 'error');

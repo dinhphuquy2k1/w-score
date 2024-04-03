@@ -48,4 +48,13 @@ class ApiExamBankController extends Controller
             ]);
         ExamBank::find($request->id)->update($attribute);
     }
+
+    /**
+     * Lấy danh sách đề thi đã setting
+     * @return void
+     */
+    public function getSettings()
+    {
+        return $this->sendResponseSuccess(ExamBank::all()->toArray());
+    }
 }

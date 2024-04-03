@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Department extends Model
 {
     use HasFactory;
+
+    public function examShifts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(ExamShift::class, 'exam_shift_details', 'department_id', 'exam_shift_id');
+    }
 }

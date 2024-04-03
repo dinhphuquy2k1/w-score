@@ -12,6 +12,11 @@ class ApiExamController extends Controller
         return $this->sendResponseSuccess(Exam::all()->toArray());
     }
 
+    public function getExamShifts(Request $request)
+    {
+        return $this->sendResponseSuccess(Exam::with('examShifts')->where('id', $request->id)->get()->toArray());
+    }
+
     /**
      * @param Request $request
      * @return void
@@ -19,8 +24,6 @@ class ApiExamController extends Controller
     public function save(Request $request)
     {
 
-
-        Exam::insert($attribute);
     }
     public function update()
     {

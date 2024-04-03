@@ -21,7 +21,7 @@ class CreateExamShiftsTable extends Migration
             $table->datetime('end_date');
             $table->unsignedBigInteger('exam_id');
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
-            $table->string('Note')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }

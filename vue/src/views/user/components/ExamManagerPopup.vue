@@ -173,7 +173,7 @@
                                     <div class="flex1"><span class="error-text">{{
                                             invalidExamManager['ExamShift']
                                         }}</span></div>
-                                    <Button @click="examShiftDialogVisible = true; invalidExamShift = []"
+                                    <Button @click="showExamShiftDialogVisible, modeModal = FormMode.INSERT"
                                             class="primary custom-btn text-link  d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-1">
                                         <div class="icon24 icon-add-blue"></div>
                                         <div class="fw-semibold">Thêm ca thi</div>
@@ -311,7 +311,8 @@
                     </div>
                     <div class="ms-input ms-editor w-100">
                         <InputText v-model="selectedExamShift.exam_shift_code" placeholder="Nhập mã ca thi"
-                                   :class="{ 'error': invalidExamShift['exam_shift_code'] }" @keypress="handlerInputCode"
+                                   :class="{ 'error': invalidExamShift['exam_shift_code'] }"
+                                   @keypress="handlerInputCode"
                                    @input="modeGenerateExamShift = selectedExamShift.exam_shift_code ? false : true;"/>
                         <div class="error-text" v-if="invalidExamShift['exam_shift_code']">
                             {{ invalidExamShift['exam_shift_code'] }}
@@ -336,7 +337,7 @@
                                   locale="vi" dateFormat="dd/mm/yy" class="w-full" id="calendar-24h"
                                   showTime hourFormat="24" showIcon
                                   placeholder="Chọn ngày bắt đầu"/>
-                        <div class="error-text" v-if="invalidExamManager['start_date']">
+                        <div class="error-text" v-if="invalidExamShift['start_date']">
                             {{ invalidExamShift['start_date'] }}
                         </div>
                     </div>
@@ -354,7 +355,7 @@
                                   locale="vi" dateFormat="dd/mm/yy" class="w-full" id="calendar-24h"
                                   showTime hourFormat="24" showIcon
                                   placeholder="Chọn ngày kết thúc"/>
-                        <div class="error-text" v-if="invalidExamManager['end_date']">
+                        <div class="error-text" v-if="invalidExamShift['end_date']">
                             {{ invalidExamShift['end_date'] }}
                         </div>
                     </div>
@@ -365,12 +366,12 @@
                         <span class="required">*</span>
                     </div>
                     <div class="ms-input ms-editor w-100">
-                        <MultiSelect v-model="selectedExamShift.Department"
-                                     :class="{ 'error': invalidExamShift['Department'] }" :options="department"
+                        <MultiSelect v-model="selectedExamShift.departments"
+                                     :class="{ 'error': invalidExamShift['departments'] }" :options="departments"
                                      placeholder="Chọn phòng thi" optionLabel="department_name"
                                      optionValue="id"/>
-                        <div class="error-text" v-if="invalidExamShift['Department']">
-                            {{ invalidExamShift['Department'] }}
+                        <div class="error-text" v-if="invalidExamShift['departments']">
+                            {{ invalidExamShift['departments'] }}
                         </div>
                     </div>
                     <div class="flex1">
@@ -388,7 +389,7 @@
                     <div class="ms-input ms-editor w-100">
                         <MultiSelect v-model="selectedExamShift.exam_bank_id" :options="examBankSetting"
                                      checkboxIcon="test"
-                                     placeholder="Chọn đề thi" optionLabel="ExamBankName" optionValue="exam_bank_id"
+                                     placeholder="Chọn đề thi" optionLabel="exam_bank_name" optionValue="id"
                                      :class="{ 'error': invalidExamShift['exam_bank_id'] }"/>
                         <div class="error-text" v-if="invalidExamShift['exam_bank_id']">
                             {{ invalidExamShift['exam_bank_id'] }}
@@ -467,16 +468,16 @@ import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
 import Calendar from 'primevue/calendar';
-import {mapState, mapActions} from 'vuex'
+import {getExamBankSetting} from "/api/exam-bank";
 import {generateCode, convertTimezoneToDatetime, convertTime} from '@/common/functions';
 import {saveData, getDataDepartment} from '/api/department';
 import {
     saveExamManager,
-    checkexam_shift_codeExits,
+    checkExamShiftCodeExits,
     updateExamShift,
     updateExamManager,
     insertExamShift,
-    getExamShift,
+    getExamShifts,
     deleteExamShift
 } from '/api/exam-manager';
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
@@ -528,7 +529,7 @@ export default {
                 exam_shift_name: null,
                 start_date: null,
                 end_date: null,
-                Department: null,
+                departments: null,
                 exam_bank_id: null,
                 note: null
             },
@@ -542,7 +543,7 @@ export default {
                 exam_shift_name: null,
                 start_date: null,
                 end_date: null,
-                Department: null,
+                departments: null,
                 exam_bank_id: null,
                 note: null
             },
@@ -551,11 +552,12 @@ export default {
             examshiftdetail: {
                 ExamShiftDetailId: null,
                 exam_shift_id: null,
-                DepartmentId: null,
+                departmentsId: null,
                 exam_bank_id: null,
             },
 
             selectedDataProp: {},
+            examBankSetting: [],
 
             selectedExamShift: {
                 exam_shift_id: null,
@@ -563,14 +565,14 @@ export default {
                 exam_shift_name: null,
                 start_date: null,
                 end_date: null,
-                Department: null,
+                departments: null,
                 exam_bank_id: null,
                 note: null
             },
 
             selectedListExamShift: null,
 
-            department: [],
+            departments: [],
 
             listExamShift: [],
 
@@ -588,13 +590,12 @@ export default {
     },
 
     methods: {
-        ...mapActions('exambank', ['getExamBankSetting']),
         /**
          * Validate mã phòng thi
          * Ko cho phép nhập các kí tự đặc biệt
          * @param {*} event
          */
-        handlerInputDepartmentCode(event) {
+        handlerInputdepartmentsCode(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
             if (res) {
@@ -646,7 +647,7 @@ export default {
                                 if (JSON.stringify(this.selectedExamShift) != JSON.stringify(this.examshift)) {
                                     // this.warningVisible = true;
                                     //thay đổi đề thi hoặc phòng thi
-                                    if (JSON.stringify(this.selectedExamShift.Department) != JSON.stringify(this.examshift.Department) || JSON.stringify(this.selectedExamShift.exam_bank_id) != JSON.stringify(this.examshift.exam_bank_id)) {
+                                    if (JSON.stringify(this.selectedExamShift.departments) != JSON.stringify(this.examshift.departments) || JSON.stringify(this.selectedExamShift.exam_bank_id) != JSON.stringify(this.examshift.exam_bank_id)) {
                                         this.warningVisible = true;
                                     } else {
                                         this.UPDATEExamShift();
@@ -708,9 +709,8 @@ export default {
             this.listExamShift = [];
             await getExamShift(this.selectedData.id).then(res => {
                 if (res[0]) {
-                    console.log(JSON.parse(res[0].objDE));
                     // danh sách phòng theo từng ca thi(lấy duy nhất vì 1 phòng sử dụng nhiều đề nên bị duplicate)
-                    this.selectedExamShift.Department = this.getUniqueItems(JSON.parse(res[0].objDE), 'DepartmentId').map(_item => _item.DepartmentId);
+                    this.selectedExamShift.departments = this.getUniqueItems(JSON.parse(res[0].objDE), 'departmentsId').map(_item => _item.departmentsId);
 
                     //danh sách ca thi
                     this.selectedExamShift.exam_bank_id = this.getUniqueItems(JSON.parse(res[0].objDE), 'exam_bank_id').map(_item => _item.exam_bank_id);
@@ -730,6 +730,7 @@ export default {
          */
         showExamShiftDialogVisible() {
             this.examShiftDialogVisible = !this.examShiftDialogVisible;
+            this.invalidExamShift = [];
         },
 
         /**
@@ -754,7 +755,7 @@ export default {
             //sử dụng khi cập nhật kì thi
             if (this.modeModal === this.FormMode.UPDATE) {
                 // danh sách phòng theo từng ca thi(lấy duy nhất vì 1 phòng sử dụng nhiều đề nên bị duplicate)
-                this.selectedExamShift.Department = this.getUniqueItems(this.selectedListExamShift.filter(_item => this.selectedExamShift.exam_shift_id == _item.exam_shift_id), 'DepartmentId').map(_item => _item.DepartmentId);
+                this.selectedExamShift.departments = this.getUniqueItems(this.selectedListExamShift.filter(_item => this.selectedExamShift.exam_shift_id == _item.exam_shift_id), 'departmentsId').map(_item => _item.departmentsId);
 
                 //danh sách ca thi
                 this.selectedExamShift.exam_bank_id = this.getUniqueItems(this.selectedListExamShift.filter(_item => this.selectedExamShift.exam_shift_id == _item.exam_shift_id), 'exam_bank_id').map(_item => _item.exam_bank_id);
@@ -765,9 +766,9 @@ export default {
         /**
          * Lấy danh sách phòng thi
          */
-        async loadDepartment() {
+        async loadDepartments() {
             await getDataDepartment().then(res => {
-                this.department = res.data;
+                this.departments = res.data;
             }).catch(error => {
                 console.log(error);
             })
@@ -948,7 +949,7 @@ export default {
                 invalid = false;
             }
 
-            if (this.listExamShift.length == 0) {
+            if (this.listExamShift.length === 0) {
                 this.invalidExamManager['ExamShift'] = 'Ca thi không được để trống';
                 invalid = false;
             }
@@ -967,12 +968,13 @@ export default {
         async validateExamShift() {
             this.invalidExamShift = [];
             var invalid = true;
-            if (this.selectedExamShift.exam_shift_code == null || String(this.selectedExamShift.exam_shift_code).trim() == '') {
+            this.isLoadingPopupExamShift = true;
+            if (this.selectedExamShift.exam_shift_code == null || String(this.selectedExamShift.exam_shift_code).trim() === '') {
                 this.invalidExamShift['exam_shift_code'] = 'Mã ca thi không được để trống';
                 invalid = false;
             }
 
-            if (this.selectedExamShift.exam_shift_name == null || String(this.selectedExamShift.exam_shift_name).trim() == '') {
+            if (this.selectedExamShift.exam_shift_name == null || String(this.selectedExamShift.exam_shift_name).trim() === '') {
                 this.invalidExamShift['exam_shift_name'] = 'Tên ca thi không được để trống';
                 invalid = false;
             }
@@ -991,8 +993,8 @@ export default {
                 invalid = false;
             }
 
-            if (this.selectedExamShift.Department == null) {
-                this.invalidExamShift['Department'] = 'Phòng thi không được để trống';
+            if (this.selectedExamShift.departments == null) {
+                this.invalidExamShift['departments'] = 'Phòng thi không được để trống';
                 invalid = false;
             }
 
@@ -1000,27 +1002,32 @@ export default {
                 this.invalidExamShift['exam_bank_id'] = 'Đề thi không được để trống';
                 invalid = false;
             }
+            if (!invalid) return;
 
             var exam_shift_code = this.selectedExamShift.exam_shift_code;
             var valObj = this.listExamShift.filter(function (item) {
-                if (item.exam_shift_code == exam_shift_code) return item;
+                if (item.exam_shift_code === exam_shift_code) return item;
             });
             if (valObj.length && this.modeExamShiftModal !== this.FormMode.UPDATE) {
                 this.invalidExamShift['exam_shift_code'] = 'Mã ca thi đã tồn tại';
                 invalid = false;
-            } else if (this.selectedExamShift.exam_shift_code != null || String(this.selectedExamShift.exam_shift_code).trim() == '') {
+            } else if (this.selectedExamShift.exam_shift_code != null || String(this.selectedExamShift.exam_shift_code).trim() === '') {
                 //gọi api kiểm tra mã
-                await checkexam_shift_codeExits({
+                await checkExamShiftCodeExits({
                     data: this.selectedExamShift,
                     mode: this.modeExamShiftModal
                 }).then(res => {
-                    if (res.result) {
+                    if (res.data.result) {
                         this.invalidExamShift['exam_shift_code'] = 'Mã ca thi đã tồn tại';
                         invalid = false;
                     }
                 }).catch(error => {
-                    console.log(error);
-                });
+                    this.$store.dispatch('handleError');
+                }).finally(() => {
+                    setTimeout(() => {
+                        this.isLoadingPopupExamShift = false;
+                    }, 750);
+                })
             }
             return invalid;
         },
@@ -1031,17 +1038,31 @@ export default {
         handlerPropData() {
             if (this.modeModal === this.FormMode.UPDATE) {
                 this.selectedDataProp = {...this.selectedData};
-
-                // //kì thi
-                this.exam = {...this.selectedDataProp};
-                this.exam.start_date = new Date(this.selectedDataProp.start_date);
-                this.exam.end_date = new Date(this.selectedDataProp.end_date);
-
-                this.selectedDataProp = {...this.exam};
-                this.selectedListExamShift = JSON.parse(this.exam.ExamShift);
-                //ca thi
-                this.listExamShift = this.getUniqueItems(this.selectedListExamShift, 'exam_shift_code');
+                getExamShifts(this.selectedDataProp).then(res => {
+                    console.log(res)
+                }).catch(error => {
+                    console.log(error)
+                })
+                // this.exam = {...this.selectedDataProp};
+                // this.exam.start_date = new Date(this.selectedDataProp.start_date);
+                // this.exam.end_date = new Date(this.selectedDataProp.end_date);
+                //
+                // this.selectedDataProp = {...this.exam};
+                // this.selectedListExamShift = JSON.parse(this.exam.ExamShift);
+                // //ca thi
+                // this.listExamShift = this.getUniqueItems(this.selectedListExamShift, 'exam_shift_code');
             }
+        },
+
+        /**
+         * Lấy danh sách đề thi đã thiết lập
+         */
+        getExamBankSetting() {
+            getExamBankSetting().then(res => {
+                this.examBankSetting = res.data;
+            }).catch(error => {
+                console.log(error)
+            });
         },
 
         /**
@@ -1077,9 +1098,9 @@ export default {
 
     created() {
         // //lấy danh sách phòng thi
-        this.loadDepartment();
-        // //lấy danh sách đề thi
-        // this.getExamBankSetting();
+        this.loadDepartments();
+        // //lấy danh sách đề thi đã thiết lập
+        this.getExamBankSetting();
         // //thông tin cập nhật nếu ở trạng thái sửa
         this.handlerPropData();
         document.addEventListener('keydown', this.handleKeyDown);
