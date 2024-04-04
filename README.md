@@ -28,3 +28,4 @@
 
    BE: http://localhost:9000/
    FE: http://localhost:9091/
+   PHP MyAdmin: http://localhost:9001/
