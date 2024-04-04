@@ -7,7 +7,7 @@
             <div class="d-flex flex-row toolbar-box justify-content-between">
                 <div class="left-toolbar d-flex flex-row">
                     <div class="m-search_form flex-row d-flex align-items-center d-flex">
-                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
+                        <InputText type="search" v-model="search" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
                         <div class="icon24 icon search-right search"></div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@ export default {
                 {field: 'DateTimeEnd', header: 'Ngày kết thúc'},
                 {field: 'Department', header: 'Phòng thi'},
             ],
-
+            search: null,
             //ca thi
             listExamShift: [],
             objectLoading: {},

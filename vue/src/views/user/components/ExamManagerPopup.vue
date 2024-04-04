@@ -28,9 +28,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -40,9 +37,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -52,9 +46,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -265,6 +256,7 @@
                                     <div class="">Đóng</div>
                                 </Button>
                                 <Button @click="saveExamManager" @keyup.enter="saveExamManager"
+                                        :disabled="isDisabledExamManager"
                                         class="ms-btn primary blue d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                                     <div class="">Lưu</div>
                                 </Button>
@@ -513,6 +505,7 @@ export default {
                 note: null,
                 listExamShift: [],
             },
+            isDisabledExamManager: false,
             objectLoading: {},
             isDisabledExamShift: false,
             isLoading: false,
@@ -848,6 +841,7 @@ export default {
          * Click nút lưu kì thi
          */
         async saveExamManager() {
+            this.isDisabledExamManager = true;
             if (this.validateExamManager()) {
                 try {
                     switch (this.modeModal) {
@@ -867,7 +861,9 @@ export default {
                                             this.invalidExamManager[itemError] = error.response.data.errors[itemError][0];
                                         }
                                     }
-                                });
+                                }).finally(() => {
+                                this.isDisabledExamManager = false;
+                            })
                             break;
                         case this.FormMode.UPDATE:
                             //kiểm tra dữ liệu có thay đổi hay không
@@ -898,15 +894,23 @@ export default {
                                     this.$store.dispatch('handleSuccess', this.Message.HTTP_UPDATE_OK);
                                 }).catch(error => {
                                     console.log(error);
+                                }).finally(() => {
+                                    this.isDisabledExamManager = false;
                                 });
+                            } else {
+                                this.isDisabledExamManager = false;
                             }
                             break;
                         default:
+                            this.isDisabledExamManager = false;
                             break;
                     }
                 } catch (error) {
+                    this.isDisabledExamManager = false;
                     console.log(error);
                 }
+            } else {
+                this.isDisabledExamManager = false;
             }
         },
 
