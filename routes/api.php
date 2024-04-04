@@ -21,7 +21,7 @@ use App\Http\Controllers\ApiExamShiftController;
 */
 
 header('Access-Control-Allow-Origin: http://localhost:9091');
-header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
+header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT,DELETE');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization, Content-Disposition');
 header('Access-Control-Allow-Credentials: true');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -39,6 +39,7 @@ Route::put('/users/{id}', [ApiUserController::class, 'update']);
 Route::get('/exams', [ApiExamController::class, 'get']);
 Route::post('/exams', [ApiExamController::class, 'save']);
 Route::put('/exams', [ApiExamController::class, 'update']);
+Route::delete('/exams/{id}', [ApiExamController::class, 'delete']);
 Route::post('/exams/getExamShifts', [ApiExamController::class, 'getExamShifts']);
 Route::get('/exam-banks', [ApiExamBankController::class, 'get']);
 Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
@@ -47,3 +48,4 @@ Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']
 Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);
 Route::post('/exam-shifts', [ApiExamShiftController::class, 'save']);
 Route::put('/exam-shifts', [ApiExamShiftController::class, 'update']);
+Route::delete('/exam-shifts', [ApiExamShiftController::class, 'delete']);

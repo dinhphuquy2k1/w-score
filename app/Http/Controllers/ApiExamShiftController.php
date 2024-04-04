@@ -57,6 +57,25 @@ class ApiExamShiftController extends Controller
     }
 
     /**
+     * Xóa ca thi
+     * @param Request $request
+     * @return void
+     */
+    public function delete(Request $request)
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $examShiftDetail = ExamShiftDetail::whereIn('exam_shift_id', [$request->id]);
+                DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+                DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+                ExamShift::find($request->id)->delete();
+            });
+        } catch (\Exception $e) {
+            \Log::debug($e->getMessage());
+        }
+    }
+
+    /**
      * Xử lý thêm mới/cập nhật ca thi
      */
     function handlerExamShift(Request $request, $mode)
@@ -114,9 +133,9 @@ class ApiExamShiftController extends Controller
                 if ($mode == FormMode::UPDATE) {
                     //có sự thay đổi đề thi hoặc phòng thi
                     if ($request->Flag) {
-                        $examShiftDetail = ExamShiftDetail::whereIn('exam_shift_id', [$request->ExamShiftId]);
-                        $examResult = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('exam_shift_detail_id')->toArray());
-                        $examResultDetail = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('exam_shift_detail_id')->toArray());
+                        $examShiftDetail = ExamShiftDetail::whereIn('exam_shift_id', [$request->exam_shift_id]);
+                        $examResult = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+                        $examResultDetail = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
                         //xóa kết quả chi tiết của bài thi
                         $examResultDetail->delete();
                         //xóa kết quả chi của bài thi

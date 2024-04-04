@@ -22,7 +22,7 @@ class ApiExamController extends Controller
      */
     public function getExamShifts(Request $request)
     {
-        return $this->sendResponseSuccess(Exam::with('examShifts.departments', 'examShifts.examBanks')->where('id', $request->id)->first()->toArray());
+        return $this->sendResponseSuccess(Exam::with('examShifts.departments', 'examShifts.examBanks', 'examShifts.examShiftDetails')->where('id', $request->id)->first()->toArray());
     }
 
     /**
@@ -140,8 +140,33 @@ class ApiExamController extends Controller
         Exam::find($request->id)->update($attribute);
     }
 
-    public function delete()
+    /**
+     * Xóa kì thi
+     * @param int $id
+     * @return void
+     */
+    public function delete($id)
     {
-
+        try {
+            $examShift = DB::table('exam_shifts')->whereIn('exam_id', [$id]);
+            $examShiftDetail = DB::table('exam_shift_details')->whereIn('exam_shift_id', $examShift->pluck('id')->toArray());
+            $examResult = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+            $examResultDetail = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+            DB::beginTransaction();
+            //xóa kết quả chi tiết của bài thi
+            $examResultDetail->delete();
+            //xóa kết quả chi của bài thi
+            $examResult->delete();
+            //xóa các ca thi chi tiết trong kì thi
+            $examShiftDetail->delete();
+            //xóa ca thi
+            $examShift->delete();
+            //xóa kì thi
+            Exam::find($id)->delete();
+            //xóa thư mục lưu kết quả của kì thi
+            DB::commit();
+        } catch (\Exception $e) {
+            \Log::debug($e->getMessage());
+        }
     }
 }

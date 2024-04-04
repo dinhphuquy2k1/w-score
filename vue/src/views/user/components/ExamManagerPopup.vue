@@ -651,6 +651,7 @@ export default {
                                     //thay đổi đề thi hoặc phòng thi
                                     if (JSON.stringify(this.selectedExamShift.departments) !== JSON.stringify(this.examshift.departments) || JSON.stringify(this.selectedExamShift.exam_bank_id) !== JSON.stringify(this.examshift.exam_bank_id)) {
                                         this.warningVisible = true;
+                                        this.isDisabledExamShift = false;
                                     } else {
                                         this.updateExamShift();
                                     }
@@ -818,21 +819,17 @@ export default {
             this.isLoadingDelete = true;
             switch (this.modeModal) {
                 case this.FormMode.INSERT:
-                    // this.listExamShift.slice(index,)
                     break;
                 case this.FormMode.UPDATE:
-                    var success = false;
-                    deleteExamShift(this.selectedExamShift.exam_shift_id).then(res => {
-                        console.log(res);
-                        success = true;
+                    deleteExamShift(this.selectedExamShift).then(res => {
+                        this.$store.dispatch('handleSuccess', MESSAGE.HTTP_DELETE_OK);
+                        this.loadExamShift();
                     }).catch(error => {
 
                     }).finally(() => {
-                        this.loadExamShift();
                         this.examShiftDialogVisible = false;
                         this.isPopupDelete = false;
                         this.isLoadingDelete = false;
-                        this.$emit("showToast", "Xóa ca thi thành công");
                     });
                     break;
                 default:
