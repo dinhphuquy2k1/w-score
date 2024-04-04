@@ -46,6 +46,7 @@ Route::post('/exams/getExamShifts', [ApiExamController::class, 'getExamShifts'])
 Route::get('/exam-banks', [ApiExamBankController::class, 'get']);
 Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
 Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
+Route::delete('/exam-banks/{id}', [ApiExamBankController::class, 'delete']);
 Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']);
 Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);
 Route::post('/exam-shifts', [ApiExamShiftController::class, 'save']);

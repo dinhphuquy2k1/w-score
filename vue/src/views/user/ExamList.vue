@@ -108,14 +108,14 @@
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw', height: '20vh' }"
-            header="Xóa đề thi">
-        <div class="w-full flex flex-column">
+    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa kì thi">
+        <TheLoadingProgress v-if="isLoadingDelete"/>
+        <div class="w-full flex flex-column" style="line-height: 1.5;">
             <span> Bạn có chắc chắn muốn xóa đề thi <b>{{ selectedData.exam_bank_code }}</b> không?</span>
         </div>
         <template #footer>
             <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa đề thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button label="Xóa phòng thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
         </template>
     </Dialog>
 
@@ -203,7 +203,7 @@ import Resumable from 'resumablejs';
 import TheLoadingProgress from '@/components/LoadingProgress.vue'
 import Button from 'primevue/button';
 import {deleteExamBank, getExamBank, insertExamBank, updateExamBank} from '/api/exam-bank';
-import {RESPONSE_STATUS} from "@/common/enums";
+import {MESSAGE, RESPONSE_STATUS} from "@/common/enums";
 
 export default {
     directives: {
@@ -234,6 +234,7 @@ export default {
             objSelectedData: {},
             objFileSelected: null,
 
+            isLoadingDelete: false,
             popupLoading: false,
 
             warningVisible: false,
@@ -394,13 +395,17 @@ export default {
          * Click nút xóa phòng thi
          */
         handlerDelete() {
+            this.isLoadingDelete = true;
             deleteExamBank(this.selectedData.id).then(res => {
                 this.isPopupDelete = false;
-                this.showToast('Xóa thành công');
+                this.$store.dispatch('handleSuccess', MESSAGE.HTTP_DELETE_OK);
                 this.loadExamBank();
             }).catch(error => {
 
-                console.log(error);
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoadingDelete = false;
+                }, 300);
             })
         },
 
@@ -443,6 +448,11 @@ export default {
             this.objSelectedData = {...this.selectedData};
 
             this.showModal(this.FormMode.UPDATE);
+        },
+
+        deleteRowSelect(data) {
+            this.selectedData = {...data};
+            this.isPopupDelete = true;
         },
 
         /**

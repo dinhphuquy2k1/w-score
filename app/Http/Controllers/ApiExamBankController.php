@@ -51,10 +51,14 @@ class ApiExamBankController extends Controller
 
     /**
      * Lấy danh sách đề thi đã setting
-     * @return void
      */
     public function getSettings()
     {
         return $this->sendResponseSuccess(ExamBank::all()->toArray());
+    }
+
+    public function delete($id)
+    {
+        ExamBank::where('id', $id)->delete();
     }
 }

@@ -76,7 +76,7 @@ export function updateExamBank(data) {
  */
 export function deleteExamBank(id) {
     return request({
-        url: `exambank/${id}`,
+        url: `exam-banks/${id}`,
         method: 'delete',
     })
 }

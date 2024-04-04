@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '../../src/store'
 import {RESPONSE_STATUS} from "../../src/common/enums";
+
 const service = axios.create({
     baseURL: "http://localhost:9000/api/", // uri = baseURL + apiFunction truyền tới
     timeout: 10000,
@@ -28,8 +29,9 @@ service.interceptors.response.use(
         return res
     },
     error => {
-        if (error.response && error.response.status === RESPONSE_STATUS.HTTP_INTERNAL_SERVER_ERROR) {
-            store.dispatch('handleServerError');
+        if (error.response) {
+            if (error.response.status !== RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY)
+                store.dispatch('handleServerError');
         }
         return Promise.reject(error)
     }
