@@ -9,8 +9,22 @@ class ExamShift extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'exam_shift_code',
+        'exam_shift_name',
+        'exam_id',
+        'start_date',
+        'end_date',
+        'note',
+    ];
+
     public function departments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Department::class, 'exam_shift_details', 'exam_shift_id', 'department_id');
+    }
+
+    public function examBanks(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(ExamBank::class, 'exam_shift_details', 'exam_shift_id', 'exam_bank_id');
     }
 }

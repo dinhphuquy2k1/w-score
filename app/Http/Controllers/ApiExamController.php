@@ -22,7 +22,7 @@ class ApiExamController extends Controller
      */
     public function getExamShifts(Request $request)
     {
-        return $this->sendResponseSuccess(Exam::with('examShifts')->where('id', $request->id)->first()->toArray());
+        return $this->sendResponseSuccess(Exam::with('examShifts.departments', 'examShifts.examBanks')->where('id', $request->id)->first()->toArray());
     }
 
     /**
@@ -114,17 +114,30 @@ class ApiExamController extends Controller
     }
 
     /**
-     * @param $date
-     * @return string
+     * @param Request $request
+     * @return void
      */
-    function convertDateTime($date): string
+    public function update(Request $request)
     {
-        return Carbon::parse($date)->format('Y-m-d h:i:s');
-    }
+        //validate dữ liệu
+        $attribute = $request->validate([
+            'exam_code' => "required|unique:exams,exam_code,{$request->id}",
+            'exam_name' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'note' => '',
+        ],
+            [
+                'exam_code.required' => 'Mã kì thi không được để trống',
+                'exam_code.unique' => 'Mã kì thi đã tồn tại',
+                'exam_name.required' => 'Tên kì thi không được để trống',
+                'start_date.required' => 'Ngày bắt đầu không được để trống',
+                'end_date.required' => 'Ngày kết thúc không được để trống',
+            ]);
 
-    public function update()
-    {
-
+        $attribute['start_date'] = $this->convertDateTime($attribute['start_date']);
+        $attribute['end_date'] = $this->convertDateTime($attribute['end_date']);
+        Exam::find($request->id)->update($attribute);
     }
 
     public function delete()

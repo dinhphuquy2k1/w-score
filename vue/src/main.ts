@@ -3,7 +3,7 @@ import App from './App.vue'
 import PrimeVue from 'primevue/config';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
-import {FORM_MODE, KEY_CODE} from '@/common/enums';
+import {FORM_MODE, KEY_CODE, MESSAGE} from '@/common/enums';
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
@@ -12,6 +12,7 @@ const app = createApp(App);
 app.directive('tooltip', Tooltip);
 app.config.globalProperties.FormMode = FORM_MODE;
 app.config.globalProperties.KeyCode = KEY_CODE;
+app.config.globalProperties.Message = MESSAGE;
 export function handleServerError() {
     app.config.globalProperties.$toast.add({ severity: 'error', summary: 'Thông báo', detail: 'Có lỗi xảy ra, vui lòng liên hệ nhà phát triển.', life: 3000 });
 }
