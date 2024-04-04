@@ -106,14 +106,14 @@
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw', height: '20vh' }"
-            header="Xóa đề thi">
-        <div class="w-full flex flex-column">
-            <span> Bạn có chắc chắn muốn xóa đề thi <b>{{ selectedData.ExamBankCode }}</b> không?</span>
+    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa kì thi">
+        <TheLoadingProgress v-if="isLoadingDelete"/>
+        <div class="w-full flex flex-column" style="line-height: 1.5;">
+            <span> Bạn có chắc chắn muốn xóa phòng thi <b>{{ department.department_code }}</b> không?</span>
         </div>
         <template #footer>
             <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa đề thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button label="Xóa phòng thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
         </template>
     </Dialog>
 
@@ -317,7 +317,7 @@ export default {
          * Click nút xóa phòng thi
          */
         handlerDelete() {
-            deleteDepartment(this.department.DepartmentId).then(res => {
+            deleteDepartment(this.department.id).then(res => {
                 this.isPopupDelete = false;
                 this.showToast('Xóa thành công');
                 this.loadData();

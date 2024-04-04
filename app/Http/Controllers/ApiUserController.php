@@ -64,8 +64,8 @@ class ApiUserController extends Controller
         User::find($request->id)->update($attribute);
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
-
+        User::where('id', $id)->delete();
     }
 }

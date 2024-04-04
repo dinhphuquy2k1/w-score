@@ -64,11 +64,10 @@ export function updateUser(data) {
  * Lấy thông tin kì thi, ca thi, phòng thi
  * @returns
  */
-export function deleteUser(data) {
+export function deleteUser(id) {
     return request({
-        url: 'api/user/1',
+        url: `users/${id}`,
         method: 'DELETE',
-        data: data,
     })
 }
 

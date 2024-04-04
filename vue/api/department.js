@@ -30,7 +30,7 @@ export function updateDepartment(data) {
  */
 export function deleteDepartment(id) {
     return request({
-        url: `department/${id}`,
+        url: `departments/${id}`,
         method: 'DELETE',
     })
 }

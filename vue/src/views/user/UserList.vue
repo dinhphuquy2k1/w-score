@@ -45,7 +45,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="user_code" style="width: 15vw;" header="Mã tài khoản">
+                    <Column field="name" style="width: 15vw;" header="Họ và tên">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -53,7 +53,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="name" dataKey="id" header="Họ và tên" style="width: 20vw;">
+                    <Column field="user_code" dataKey="id" header="Mã tài khoản" style="width: 20vw;">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -98,11 +98,11 @@
     <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw', height: '20vh' }"
             header="Xóa đề thi">
         <div class="w-full flex flex-column">
-            <span> Bạn có chắc chắn muốn xóa đề thi <b>{{ selectedData.ExamBankCode }}</b> không?</span>
+            <span> Bạn có chắc chắn muốn xóa tài khoản <b>{{ selectedUsers.name }}</b> không?</span>
         </div>
         <template #footer>
             <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa đề thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button label="Xóa tài khoản" class="ms-button btn w-100 danger" @click="handlerDelete"/>
         </template>
     </Dialog>
 
@@ -222,7 +222,7 @@ import Dropdown from 'primevue/dropdown';
 import Skeleton from 'primevue/skeleton';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
-import {RESPONSE_STATUS} from "@/common/enums";
+import {MESSAGE, RESPONSE_STATUS} from "@/common/enums";
 import {getUsers, saveUser, updateUser, deleteUser} from '/api/user';
 
 export default {
@@ -299,14 +299,6 @@ export default {
                 this.selectedUsers.user_code = generateCode(this.selectedUsers.name);
         },
 
-        /**
-         * Hiển thị toast message
-         * @param {*} message
-         */
-        showToast(message, severity = 'success') {
-            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
-        },
-
         doSave() {
             try {
                 this.isDisable = true;
@@ -315,7 +307,7 @@ export default {
                     if (this.modeModal === this.FormMode.INSERT) {
                         saveUser(this.selectedUsers).then(res => {
                             this.loadUsers();
-                            this.showToast("Thêm tài khoản thành công");
+                            this.$store.dispatch('handleSuccess', MESSAGE.HTTP_INSERT_OK);
                             this.isShowModal = false;
                             this.modeModal = this.FormMode.INSERT;
                             this.selectedUsers = {
@@ -326,21 +318,23 @@ export default {
                                 level: null,
                             };
                         }).catch(error => {
-                            this.isDisable = false;
                             if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
                                 for (var itemError in error.response.data.errors) {
                                     console.log(error.response.data.errors);
                                     this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                 }
                             }
-                        }).finally(() =>
+                        }).finally(() => {
+                            this.isDisable = false;
                             setTimeout(() => {
                                 this.isLoadingComponent = false;
-                            }, 750));
+                            }, 300);
+                        });
+
                     } else if (this.modeModal === this.FormMode.UPDATE) {
                         updateUser(this.selectedUsers).then(res => {
                             this.loadUsers();
-                            this.showToast("Cập nhật tài khoản thành công");
+                            this.$store.dispatch('handleSuccess', MESSAGE.HTTP_UPDATE_OK);
                             this.isShowModal = false;
                             this.modeModal = this.FormMode.INSERT;
                             this.selectedUsers = {
@@ -362,7 +356,6 @@ export default {
             } catch (error) {
                 this.isDisable = false;
                 this.isLoadingComponent = false;
-                this.showToast("Đã xảy ra lỗi", 'error');
             }
         },
 
@@ -399,9 +392,9 @@ export default {
          * Click nút xóa phòng thi
          */
         handlerDelete() {
-            deleteUser(this.selectedUsers).then(res => {
+            deleteUser(this.selectedUsers.id).then(res => {
                 this.isPopupDelete = false;
-                this.showToast('Xóa thành công');
+                this.$store.dispatch('handleSuccess', MESSAGE.HTTP_DELETE_OK);
                 this.loadUsers();
             }).catch(error => {
                 console.log(error);
