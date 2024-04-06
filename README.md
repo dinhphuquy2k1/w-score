@@ -24,7 +24,20 @@
     docker-compose up -d
     ```
 
+    ``` sh
+    cd vue
+    ```
+   
+    ``` sh
+    npm i
+    ```
+
+    ``` sh
+    npm run serve
+    ```
+
 5. Open web page locally
 
    BE: http://localhost:9000/
    FE: http://localhost:9091/
+   PHP MyAdmin: http://localhost:9001/

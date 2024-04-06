@@ -3,7 +3,9 @@
         <div class="d-flex flex-column flex-grow-1">
             <div class="d-flex flex-row title-box align-items-center">
                 <div class="icon24 back cursor-pointer me-2" @click="closeExamManagerPopup"></div>
-                <div class="list-title flex-grow-1 text-start">Thêm kì thi</div>
+                <div class="list-title flex-grow-1 text-start">{{ modeModal === FormMode.INSERT ? 'Thêm' : 'Sửa' }} kì
+                    thi
+                </div>
                 <div class="right-toolbar d-flex flex-row">
                 </div>
             </div>
@@ -26,9 +28,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -38,9 +37,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -50,9 +46,6 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
-                                              class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
                             </div>
@@ -263,6 +256,7 @@
                                     <div class="">Đóng</div>
                                 </Button>
                                 <Button @click="saveExamManager" @keyup.enter="saveExamManager"
+                                        :disabled="isDisabledExamManager"
                                         class="ms-btn primary blue d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                                     <div class="">Lưu</div>
                                 </Button>
@@ -382,7 +376,7 @@
                     <div class="ms-input ms-editor w-100">
                         <MultiSelect v-model="selectedExamShift.exam_bank_id" :options="examBankSetting"
                                      checkboxIcon="test"
-                                     placeholder="Chọn đề thi" optionLabel="name" optionValue="id"
+                                     placeholder="Chọn đề thi" optionLabel="exam_bank_name" optionValue="id"
                                      :class="{ 'error': invalidExamShift['exam_bank_id'] }"/>
                         <div class="error-text" v-if="invalidExamShift['exam_bank_id']">
                             {{ invalidExamShift['exam_bank_id'] }}
@@ -474,6 +468,7 @@ import {
     deleteExamShift
 } from '/api/exam-manager';
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
+import {MESSAGE, RESPONSE_STATUS} from "@/common/enums";
 
 export default {
     emits: ["showExamManager", "showToast", "loadExamManager"],
@@ -510,6 +505,7 @@ export default {
                 note: null,
                 listExamShift: [],
             },
+            isDisabledExamManager: false,
             objectLoading: {},
             isDisabledExamShift: false,
             isLoading: false,
@@ -620,39 +616,40 @@ export default {
                         switch (this.modeExamShiftModal) {
                             //thêm mới ca thi với kì thi đã có
                             case this.FormMode.INSERT:
-                                var success = false;
                                 insertExamShift({
                                     ...this.selectedExamShift,
                                     id: this.selectedDataProp.id
                                 }).then(res => {
-                                    success = true;
-                                }).catch(error => {
-                                    console.log(error);
-                                }).finally(() => {
-                                    this.isDisabledExamShift = false;
-                                    this.isLoadingPopupExamShift = false;
-                                    this.loadExamShift();
-                                    this.examShiftDialogVisible = false;
-                                    if (success) {
-                                        this.$store.dispatch('handleSuccess', 'Thêm mới thành công');
-                                    }
+                                    this.$store.dispatch('handleSuccess', 'Thêm mới thành công');
                                     this.examshift = {...this.defaultExamShift};
                                     this.selectedExamShift = {...this.defaultExamShift};
                                     this.examShiftDialogVisible = false;
+                                    this.loadExamShift();
+                                }).catch(error => {
+                                    if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                                        for (var itemError in error.response.data.errors) {
+                                            console.log(error.response.data.errors);
+                                            this.invalidExamShift[itemError] = error.response.data.errors[itemError][0];
+                                        }
+                                    }
+                                }).finally(() => {
+                                    this.isDisabledExamShift = false;
+                                    this.isLoadingPopupExamShift = false;
                                 })
                                 break;
                             //cập nhật ca thi
                             case this.FormMode.UPDATE:
-                                var success = false;
                                 if (JSON.stringify(this.selectedExamShift) !== JSON.stringify(this.examshift)) {
                                     // this.warningVisible = true;
                                     //thay đổi đề thi hoặc phòng thi
                                     if (JSON.stringify(this.selectedExamShift.departments) !== JSON.stringify(this.examshift.departments) || JSON.stringify(this.selectedExamShift.exam_bank_id) !== JSON.stringify(this.examshift.exam_bank_id)) {
                                         this.warningVisible = true;
+                                        this.isDisabledExamShift = false;
                                     } else {
                                         this.updateExamShift();
                                     }
                                 } else {
+                                    this.showExamShiftDialogVisible();
                                     this.isDisabledExamShift = false;
                                     this.isLoadingPopupExamShift = false;
                                 }
@@ -685,22 +682,24 @@ export default {
          * @param {*} flag true: xóa chi tiết ca thi, false: không xóa
          */
         async updateExamShift(flag = false) {
-            var success = false;
             await updateExamShift({...this.selectedExamShift, id: this.selectedDataProp.id, Flag: flag})
                 .then(res => {
-                    success = true;
-                }).catch(error => {
-
-                }).finally(() => {
-                    this.isLoadingPopupExamShift = false;
-                    if (success) {
-                        this.$emit("showToast", "Sửa ca thi thành công");
-                    }
+                    this.$store.dispatch('handleSuccess', MESSAGE.HTTP_UPDATE_OK);
                     this.examshift = {...this.defaultExamShift};
                     this.selectedExamShift = {...this.defaultExamShift};
                     this.examShiftDialogVisible = false;
-                    this.warningVisible = false;
                     this.loadExamShift();
+                }).catch(error => {
+                    if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                        for (var itemError in error.response.data.errors) {
+                            console.log(error.response.data.errors);
+                            this.invalidExamShift[itemError] = error.response.data.errors[itemError][0];
+                        }
+                    }
+                }).finally(() => {
+                    this.isLoadingPopupExamShift = false;
+                    this.warningVisible = false;
+                    this.isDisabledExamShift = false;
                 })
         },
 
@@ -708,23 +707,16 @@ export default {
          * Lấy danh sách ca thi
          */
         async loadExamShift() {
-            this.isLoadingExamShift = true;
+            this.isLoading = true;
             this.listExamShift = [];
-            await getExamShift(this.selectedData.id).then(res => {
-                if (res[0]) {
-                    // danh sách phòng theo từng ca thi(lấy duy nhất vì 1 phòng sử dụng nhiều đề nên bị duplicate)
-                    this.selectedExamShift.departments = this.getUniqueItems(JSON.parse(res[0].objDE), 'departmentsId').map(_item => _item.departmentsId);
-
-                    //danh sách ca thi
-                    this.selectedExamShift.exam_bank_id = this.getUniqueItems(JSON.parse(res[0].objDE), 'exam_bank_id').map(_item => _item.exam_bank_id);
-                }
-                this.listExamShift = res;
+            await getExamShifts(this.selectedData).then(res => {
+                this.listExamShift = res.data['exam_shifts'];
             }).catch(error => {
                 console.log(error);
             }).finally(() => {
                 setTimeout(() => {
-                    this.isLoadingExamShift = false;
-                }, 750);
+                    this.isLoading = false;
+                }, 300);
             })
         },
 
@@ -762,10 +754,10 @@ export default {
             //sử dụng khi cập nhật kì thi
             if (this.modeModal === this.FormMode.UPDATE) {
                 // danh sách phòng theo từng ca thi(lấy duy nhất vì 1 phòng sử dụng nhiều đề nên bị duplicate)
-                this.selectedExamShift.departments = this.getUniqueItems(this.selectedListExamShift.filter(_item => this.selectedExamShift.exam_shift_id == _item.exam_shift_id), 'departmentsId').map(_item => _item.departmentsId);
-
+                this.selectedExamShift.departments = [...new Set(this.selectedExamShift.departments.map(item => item.id))];
+                this.selectedExamShift.exam_shift_id = data.id;
                 //danh sách ca thi
-                this.selectedExamShift.exam_bank_id = this.getUniqueItems(this.selectedListExamShift.filter(_item => this.selectedExamShift.exam_shift_id == _item.exam_shift_id), 'exam_bank_id').map(_item => _item.exam_bank_id);
+                this.selectedExamShift.exam_bank_id = [...new Set(this.selectedExamShift.exam_banks.map(item => item.id))];
             }
             this.examshift = {...this.selectedExamShift};
         },
@@ -779,20 +771,6 @@ export default {
             }).catch(error => {
                 console.log(error);
             })
-        },
-
-        /**
-         * Lấy ra các phần tử không trùng lặp trong mảng
-         * @param {*} data Mảng
-         * @param {*} propName Phần tử cần lấy
-         */
-        getUniqueItems(data, propName) {
-            return data.reduce((acc, curr) => {
-                if (!acc.some(item => item[propName] === curr[propName])) {
-                    acc.push(curr);
-                }
-                return acc;
-            }, []);
         },
 
         /**
@@ -834,21 +812,17 @@ export default {
             this.isLoadingDelete = true;
             switch (this.modeModal) {
                 case this.FormMode.INSERT:
-                    // this.listExamShift.slice(index,)
                     break;
                 case this.FormMode.UPDATE:
-                    var success = false;
-                    deleteExamShift(this.selectedExamShift.exam_shift_id).then(res => {
-                        console.log(res);
-                        success = true;
+                    deleteExamShift(this.selectedExamShift).then(res => {
+                        this.$store.dispatch('handleSuccess', MESSAGE.HTTP_DELETE_OK);
+                        this.loadExamShift();
                     }).catch(error => {
 
                     }).finally(() => {
-                        this.loadExamShift();
                         this.examShiftDialogVisible = false;
                         this.isPopupDelete = false;
                         this.isLoadingDelete = false;
-                        this.$emit("showToast", "Xóa ca thi thành công");
                     });
                     break;
                 default:
@@ -861,26 +835,35 @@ export default {
          */
         closeExamManagerPopup() {
             this.$emit('showExamManager');
-            this.$emit("loadExamManager");
         },
 
         /**
          * Click nút lưu kì thi
          */
         async saveExamManager() {
+            this.isDisabledExamManager = true;
             if (this.validateExamManager()) {
                 try {
                     switch (this.modeModal) {
                         case this.FormMode.INSERT:
                             this.exam.listExamShift = [];
                             this.exam.listExamShift = this.listExamShift;
-                            this.$emit("showToast", 'Thêm thành công');
                             saveExamManager(this.exam).then(res => {
                                 this.$emit("showExamManager");
                                 this.$emit("loadExamManager");
-                            }).catch(error => {
-                                console.log(error);
-                            });
+                            }).then(res => {
+                                this.$store.dispatch('handleSuccess', this.Message.HTTP_INSERT_OK);
+                            })
+                                .catch(error => {
+                                    if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                                        for (var itemError in error.response.data.errors) {
+                                            console.log(error.response.data.errors);
+                                            this.invalidExamManager[itemError] = error.response.data.errors[itemError][0];
+                                        }
+                                    }
+                                }).finally(() => {
+                                this.isDisabledExamManager = false;
+                            })
                             break;
                         case this.FormMode.UPDATE:
                             //kiểm tra dữ liệu có thay đổi hay không
@@ -906,21 +889,28 @@ export default {
                                     end_date: this.exam.end_date,
                                     note: this.exam.note,
                                 }).then(res => {
+                                    this.$emit("showExamManager");
+                                    this.$emit("loadExamManager");
+                                    this.$store.dispatch('handleSuccess', this.Message.HTTP_UPDATE_OK);
                                 }).catch(error => {
                                     console.log(error);
+                                }).finally(() => {
+                                    this.isDisabledExamManager = false;
                                 });
+                            } else {
+                                this.isDisabledExamManager = false;
                             }
-                            this.$emit("showToast", 'Cập nhật thành công');
-                            this.$emit("showExamManager");
-                            this.$emit("loadExamManager");
-
                             break;
                         default:
+                            this.isDisabledExamManager = false;
                             break;
                     }
                 } catch (error) {
+                    this.isDisabledExamManager = false;
                     console.log(error);
                 }
+            } else {
+                this.isDisabledExamManager = false;
             }
         },
 
@@ -1056,9 +1046,9 @@ export default {
                     })
                     this.isLoading = false;
                 }, 300);
-                // this.exam.start_date = new Date(this.selectedDataProp.start_date);
-                // this.exam.end_date = new Date(this.selectedDataProp.end_date);
-                //
+                this.exam = {...this.selectedDataProp};
+                this.exam.start_date = new Date(this.selectedDataProp.start_date);
+                this.exam.end_date = new Date(this.selectedDataProp.end_date);
                 // this.selectedDataProp = {...this.exam};
                 // this.selectedListExamShift = JSON.parse(this.exam.ExamShift);
                 // //ca thi

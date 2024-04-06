@@ -30,5 +30,12 @@ export const FILE_TYPE = {
 export const RESPONSE_STATUS = {
     HTTP_OK: 200,
     HTTP_UNPROCESSABLE_ENTITY: 422,
+    HTTP_METHOD_NOT_ALLOWED: 405,
     HTTP_INTERNAL_SERVER_ERROR: 500,
+};
+
+export const MESSAGE = {
+    HTTP_INSERT_OK: 'Thêm mới thành công',
+    HTTP_UPDATE_OK: 'Cập nhật thành công',
+    HTTP_DELETE_OK: 'Xóa thành công',
 };

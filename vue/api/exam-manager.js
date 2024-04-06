@@ -86,10 +86,11 @@ export function getExamShifts(data) {
  * @param {*} data
  * @returns
  */
-export function deleteExamShift(id) {
+export function deleteExamShift(data) {
     return request({
-        url: `api/exam-manager/delete-examshift/${id}`,
-        method: 'GET',
+        url: '/exam-shifts',
+        method: 'DELETE',
+        data: data,
     })
 }
 
@@ -100,7 +101,7 @@ export function deleteExamShift(id) {
  */
 export function insertExamShift(data) {
     return request({
-        url: 'api/exam-manager/insert-examshift',
+        url: '/exam-shifts',
         method: 'POST',
         data: data,
     })

@@ -7,7 +7,7 @@
             <div class="d-flex flex-row toolbar-box justify-content-between">
                 <div class="left-toolbar d-flex flex-row">
                     <div class="m-search_form flex-row d-flex align-items-center d-flex">
-                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
+                        <InputText type="search" v-model="search" class="ms-input_search w-100" placeholder="Tìm kiếm"/>
                         <div class="icon24 icon search-right search"></div>
                     </div>
                 </div>
@@ -107,12 +107,26 @@
             </div>
         </div>
         <ExamManagerPopup v-if="examShiftDialogVisible" @showExamManager="showExamManager"
-                          @loadExamManager="loadExamManager" @showToast="showToast" :modeModal="modeModal" :selectedData="selectedData" />
+                          @loadExamManager="loadExamManager" @showToast="showToast" :modeModal="modeModal"
+                          :selectedData="selectedData"/>
     </div>
+
+    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa kì thi">
+        <TheLoadingProgress v-if="isLoadingDelete"/>
+        <div class="w-full flex flex-column" style="line-height: 1.5;">
+                <span> Kì thi có rất nhiều dữ liệu liên quan, bạn có chắc chắn muốn xóa kì thi <b>{{
+                        selectedData.ExamName
+                    }} không?</b></span>
+        </div>
+        <template #footer>
+            <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
+            <Button label="Xóa kì thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+        </template>
+    </Dialog>
 </template>
 
 <script>
-import { generateCode, convertTimezoneToDatetime } from '@/common/functions';
+import {generateCode, convertTimezoneToDatetime} from '@/common/functions';
 import ExamManagerPopup from './components/ExamManagerPopup.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -123,7 +137,9 @@ import Skeleton from 'primevue/skeleton';
 import InputText from 'primevue/inputtext';
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
 import Calendar from 'primevue/calendar';
-import { getExamManager, deleteExamManager, insertExamShift } from '/api/exam-manager';
+import {getExamManager, deleteExamManager, insertExamShift} from '/api/exam-manager';
+import {MESSAGE} from "@/common/enums";
+
 export default {
     components: {
         DataTable,
@@ -143,13 +159,13 @@ export default {
             examShiftDialogVisible: false,
 
             columns: [
-                { field: 'exam_shift_code', header: 'Mã ca thi' },
-                { field: 'exam_shift_name', header: 'Tên ca thi' },
-                { field: 'DateTimeStart', header: 'Ngày bắt đầu' },
-                { field: 'DateTimeEnd', header: 'Ngày kết thúc' },
-                { field: 'Department', header: 'Phòng thi' },
+                {field: 'exam_shift_code', header: 'Mã ca thi'},
+                {field: 'exam_shift_name', header: 'Tên ca thi'},
+                {field: 'DateTimeStart', header: 'Ngày bắt đầu'},
+                {field: 'DateTimeEnd', header: 'Ngày kết thúc'},
+                {field: 'Department', header: 'Phòng thi'},
             ],
-
+            search: null,
             //ca thi
             listExamShift: [],
             objectLoading: {},
@@ -205,8 +221,8 @@ export default {
         },
 
         /**
-        * Xử lý hàm sinh mã theo tên
-        */
+         * Xử lý hàm sinh mã theo tên
+         */
         handlerGenerateCode(name) {
             if (name === 'exam' && this.modeGenerate) this.exam.ExamCode = generateCode(this.exam.ExamName);
             if (name === 'examShift' && this.modeGenerateExamShift) {
@@ -219,7 +235,7 @@ export default {
          * @param {*} data
          */
         deleteRowSelect(data) {
-            this.selectedData = { ...data };
+            this.selectedData = {...data};
             this.isPopupDelete = true;
 
             console.log(data);
@@ -230,34 +246,32 @@ export default {
          */
         async handlerDelete() {
             this.isLoadingDelete = true;
-            var success = false;
-            await deleteExamManager(this.selectedData.ExamId).then(res => {
-                success = true;
+            await deleteExamManager(this.selectedData.id).then(res => {
+                this.$store.dispatch('handleSuccess', MESSAGE.HTTP_INSERT_OK);
+                this.loadExamManager();
             }).catch(error => {
                 console.log(error);
             }).finally(() => {
                 setTimeout(() => {
                     this.isLoadingDelete = false;
                     this.isPopupDelete = false;
-                    this.loadExamManager();
-                    if (success) this.showToast("Xóa thành công");
                 }, 750);
             })
         },
 
         /**
-       * Hiển thị toast message
-       * @param {*} message
-       */
+         * Hiển thị toast message
+         * @param {*} message
+         */
         showToast(message, severity = 'success') {
-            this.$toast.add({ severity: severity, summary: 'Thông báo', detail: message, life: 3000 });
+            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
         },
 
         /**
-        * Validate mã phòng thi
-        * Ko cho phép nhập các kí tự đặc biệt
-        * @param {*} event
-        */
+         * Validate mã phòng thi
+         * Ko cho phép nhập các kí tự đặc biệt
+         * @param {*} event
+         */
         handlerInputDepartmentCode(event) {
             let pattern = /[\W_]/g;
             let res = event.key.match(pattern);
@@ -273,14 +287,14 @@ export default {
         onRowSelect(data) {
             this.modeModal = this.FormMode.UPDATE;
             this.examShiftDialogVisible = !this.examShiftDialogVisible;
-            this.selectedData = { ...data };
+            this.selectedData = {...data};
         },
 
         /**
-       * Lấy ra các phần tử không trùng lặp trong mảng
-       * @param {*} data Mảng
-       * @param {*} propName Phần tử cần lấy
-       */
+         * Lấy ra các phần tử không trùng lặp trong mảng
+         * @param {*} data Mảng
+         * @param {*} propName Phần tử cần lấy
+         */
         getUniqueItems(data, propName) {
             return data.reduce((acc, curr) => {
                 if (!acc.some(item => item[propName] === curr[propName])) {
@@ -291,8 +305,8 @@ export default {
         },
 
         /**
-        * Lấy danh sách kì thi
-        */
+         * Lấy danh sách kì thi
+         */
         async loadExamManager() {
             try {
                 this.isLoading = true;

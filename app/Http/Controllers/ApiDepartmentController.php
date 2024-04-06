@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Department;
+
 class ApiDepartmentController extends Controller
 {
     public function save(Request $request)
@@ -39,5 +40,14 @@ class ApiDepartmentController extends Controller
     public function get()
     {
         return $this->sendResponseSuccess(Department::all()->toArray());
+    }
+
+    /**
+     * Xóa phòng thi
+     * @return void
+     */
+    public function delete($id)
+    {
+        Department::where('id', $id)->delete();
     }
 }

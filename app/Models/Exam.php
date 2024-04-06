@@ -14,6 +14,19 @@ class Exam extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'exam_code',
+        'exam_name',
+        'start_date',
+        'end_date',
+        'note',
+    ];
+
+    /**
      * @return HasManyAlias
      */
     public function examShifts(): HasManyAlias
