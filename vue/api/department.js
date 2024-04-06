@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function saveData(data) {
     return request({
-        url: 'departments',
+        url: 'api/departments',
         method: 'POST',
         data: data
     })
@@ -18,7 +18,7 @@ export function saveData(data) {
  */
 export function updateDepartment(data) {
     return request({
-        url: `departments/${data.id}`,
+        url: `api/departments/${data.id}`,
         method: 'PUT',
         data: data
     })
@@ -30,7 +30,7 @@ export function updateDepartment(data) {
  */
 export function deleteDepartment(id) {
     return request({
-        url: `department/${id}`,
+        url: `api/departments/${id}`,
         method: 'DELETE',
     })
 }
@@ -41,7 +41,7 @@ export function deleteDepartment(id) {
  */
 export function getDataDepartment() {
     return request({
-        url: 'departments',
+        url: 'api/departments',
         method: 'get'
     })
 }

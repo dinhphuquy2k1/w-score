@@ -20,13 +20,15 @@ use App\Http\Controllers\ApiExamShiftController;
 |
 */
 
-header('Access-Control-Allow-Origin: http://localhost:9091');
-header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
-header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization, Content-Disposition');
-header('Access-Control-Allow-Credentials: true');
+//header('Access-Control-Allow-Origin: http://localhost:9091');
+//header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
+//header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization, Content-Disposition, X-Token');
+//header('Access-Control-Allow-Credentials: true');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+//Route::post('/login', [ApiUserController::class, 'login']);
 
 Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
 Route::post('/word/calculate', [ApiWordController::class, 'calculate']);

@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function get() {
     return request({
-        url: 'users',
+        url: 'api/users',
         method: 'GET',
     })
 }
@@ -17,7 +17,7 @@ export function get() {
  */
 export function calculate(data) {
     return request({
-        url: 'word/calculate',
+        url: 'api/word/calculate',
         method: 'POST',
         data: data
     })

@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function getExamBank() {
     return request({
-        url: '/exam-banks',
+        url: 'api/exam-banks',
         method: 'get'
     })
 }
@@ -17,7 +17,7 @@ export function getExamBank() {
  */
 export function getExamBankSetting() {
     return request({
-        url: '/exam-banks/settings',
+        url: 'api/exam-banks/settings',
         method: 'get'
     })
 }
@@ -52,7 +52,7 @@ export function deleteCriteria(data) {
  */
 export function insertExamBank(data) {
     return request({
-        url: '/exam-banks',
+        url: 'api/exam-banks',
         method: 'post',
         data: data
     })
@@ -64,7 +64,7 @@ export function insertExamBank(data) {
  */
 export function updateExamBank(data) {
     return request({
-        url: `/exam-banks/${data.id}`,
+        url: `api/exam-banks/${data.id}`,
         method: 'PUT',
         data: data
     })
@@ -76,7 +76,7 @@ export function updateExamBank(data) {
  */
 export function deleteExamBank(id) {
     return request({
-        url: `exambank/${id}`,
+        url: `api/exam-banks/${id}`,
         method: 'delete',
     })
 }

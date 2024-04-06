@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Response;
 
 class ApiUserController extends Controller
 {
@@ -67,5 +68,29 @@ class ApiUserController extends Controller
     public function delete(Request $request)
     {
 
+    }
+
+    public function login(Request $request)
+    {
+        $attributes = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ],
+            [
+                'email.required' => 'Email không được để trống',
+                'email.email' => 'Email không đúng định dạng',
+                'password.required' => 'Mật khẩu không được để trống',
+            ]);
+        $user = User::where('email', $request->email)->first();
+        if (!$user || !\Hash::check($request->password, $user->password)) {
+            return $this->sendResponse(Response::HTTP_UNPROCESSABLE_ENTITY, ['errors' => 'Tài khoản hoặc mật khẩu không đúng!']);
+        }
+
+        if (\Auth::attempt($attributes)) {
+            $accessToken = $user->createToken('authToken')->plainTextToken;
+            return $this->sendResponseSuccess(['token' => $accessToken]);
+        }
+
+        return $this->sendResponseError();
     }
 }

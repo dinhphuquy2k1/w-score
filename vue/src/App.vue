@@ -5,9 +5,15 @@
 
 <script>
 import Toast from "primevue/toast";
+import {getCsrfCookie, login} from "../api/user";
 export default {
     components:{
         Toast
+    },
+    created() {
+        getCsrfCookie().then(res => {
+
+        });
     }
 }
 </script>

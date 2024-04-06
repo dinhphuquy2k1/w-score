@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function login(data) {
     return request({
-        url: 'api/user/login',
+        url: 'api/login',
         method: 'POST',
         data: data
     })
@@ -18,10 +18,22 @@ export function login(data) {
  */
 export function logout() {
     return request({
-        url: 'api/user/logout',
+        url: 'api/logout',
         method: 'POST',
     })
 }
+
+/**
+ * Lấy csrf cookie
+ * @returns
+ */
+export function getCsrfCookie() {
+    return request({
+        url: 'http://localhost:9000/sanctum/csrf-cookie',
+        method: 'GET',
+    })
+}
+
 
 
 /**
@@ -30,7 +42,7 @@ export function logout() {
  */
 export function getUsers() {
     return request({
-        url: '/users',
+        url: 'api/users',
         method: 'GET',
     })
 }

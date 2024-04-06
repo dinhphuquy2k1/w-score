@@ -19,13 +19,14 @@
                         <div class="form-group validate-input">
                             <label class="top-label d-flex subtitle" style="width:100%;">
                                 <span style="font-weight: lighter">Đăng nhập để làm việc với<b
-                                        style="margin-left: 5px">Office
+                                    style="margin-left: 5px">Office
                                         Garder</b>
                                 </span>
                             </label>
                             <div>
-                                <InputText v-model.trim="user.email" class="form-control input" placeholder="Địa chỉ email"
-                                    @keypress="validateSpace" />
+                                <InputText v-model.trim="user.email" class="form-control input"
+                                           placeholder="Địa chỉ email"
+                                           @keypress="validateSpace"/>
                             </div>
                             <div class="error-text d-flex flex-start" v-if="invalid['email']">
                                 <span class="mi-icon24"></span>
@@ -36,21 +37,22 @@
                             <div class="flex-column">
                                 <label style="width:100%; padding-right: 0; position: relative">
                                     <InputText v-model="user.password" :type="isShowPassword ? 'text' : 'password'"
-                                        class="form-control input" placeholder="Mật khẩu" />
+                                               class="form-control input" placeholder="Mật khẩu"/>
                                     <div id="togglepassword" class="eye" @click="isShowPassword = !isShowPassword"
-                                        :class="{ 'eye-slash': isShowPassword }"></div>
+                                         :class="{ 'eye-slash': isShowPassword }"></div>
                                 </label>
                                 <div class=" flex-row align-items-center" v-if="invalid['password']">
                                     <div style="padding-top: 2px;" class="icon-error-text"></div>
-                                    <div style="padding-left: 2px; margin-top: 0;" class="error-text">{{ invalid['password']
-                                    }}
+                                    <div style="padding-left: 2px; margin-top: 0;" class="error-text">{{
+                                            invalid['password']
+                                        }}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <Button type="submit" label="Đăng nhập"
-                            class="d-flex align-items-center btn btn-primary btn-login text" @click="doLogin"
-                            @keyup.enter="doLogin" />
+                                class="d-flex align-items-center btn btn-primary btn-login text" @click="doLogin"
+                                @keyup.enter="doLogin"/>
                     </div>
                 </form>
                 <div class="footer-login flex-center">
@@ -62,16 +64,17 @@
             <div class="copy-right-text">Copyright © 2023 - 2024 K70 CNTT</div>
         </div>
     </div>
-    <TheLoading v-if="isLoading" />
-    <Toast />
+    <TheLoading v-if="isLoading"/>
 </template>
 
 <script>
-import { login } from '/api/user'
+import {login} from '/api/user'
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import TheLoading from '../components/LoadingProgress.vue';
-import { mapState, mapActions } from 'vuex'
+import {mapState, mapActions} from 'vuex'
+import {RESPONSE_STATUS} from "@/common/enums";
+
 export default {
     components: {
         Button,
@@ -112,12 +115,17 @@ export default {
             if (Object.keys(this.invalid).length > 0) return;
 
             this.isLoading = true;
-            login(this.user).then(res => {
-                Auth.login(res.access_token, res.user); //set local storage
-                this.$router.push({ path: '/dashboard' });
+            login(this.user).then(async res => {
+                try {
+                    await this.$store.dispatch('setToken', res.data.token);
+                    this.$router.push({path: '/departments'});
+                } catch (error) {
+                    console.log(error)
+                }
+                // Auth.login(res.access_token, res.user); //set local storage
             }).catch(error => {
-                if (error.response.status == 401) {
-                    this.invalid['error'] = error.response.data.error;
+                if (error.response && error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                    this.invalid['error'] = error.response.data.data.errors;
                 }
             }).finally(() => {
                 setTimeout(() => {
@@ -125,15 +133,6 @@ export default {
                 }, 750);
             })
         },
-
-        /**
-         * Hiển thị toast message
-         * @param {*} message
-         */
-        showToast(message, severity = 'success') {
-            this.$toast.add({ severity: severity, summary: 'Thông báo', detail: message, life: 3000 });
-        },
-
 
         /**
          * Validate email

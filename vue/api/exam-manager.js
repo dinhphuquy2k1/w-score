@@ -6,7 +6,7 @@ import request from '../api/utils/request'
  */
 export function saveExamManager(data) {
     return request({
-        url: '/exams',
+        url: 'api/exams',
         method: 'POST',
         data: data,
     })
@@ -18,7 +18,7 @@ export function saveExamManager(data) {
  */
 export function updateExamManager(data) {
     return request({
-        url: '/exams/update',
+        url: 'api/exams/update',
         method: 'POST',
         data: data,
     })
@@ -30,7 +30,7 @@ export function updateExamManager(data) {
  */
 export function deleteExamManager(id) {
     return request({
-        url: `exam-manager/${id}`,
+        url: `api/exam-manager/${id}`,
         method: 'DELETE',
     })
 }
@@ -41,14 +41,14 @@ export function deleteExamManager(id) {
  */
 export function getExamManager() {
     return request({
-        url: 'exams',
+        url: 'api/exams',
         method: 'GET',
     })
 }
 
 export function checkExamShiftCodeExits(data) {
     return request({
-        url: '/exam-shifts/checkCodeExits',
+        url: 'api/exam-shifts/checkCodeExits',
         method: 'POST',
         data: data,
     })
@@ -62,7 +62,7 @@ export function checkExamShiftCodeExits(data) {
  */
 export function updateExamShift(data) {
     return request({
-        url: 'exam-manager/update-examshift',
+        url: 'api/exam-manager/update-examshift',
         method: 'POST',
         data: data,
     })
@@ -75,7 +75,7 @@ export function updateExamShift(data) {
  */
 export function getExamShifts(data) {
     return request({
-        url: '/exams/getExamShifts',
+        url: 'api/exams/getExamShifts',
         method: 'POST',
         data: data,
     })

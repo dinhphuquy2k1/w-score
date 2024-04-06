@@ -2,8 +2,9 @@ import axios from 'axios'
 import store from '../../src/store'
 import {RESPONSE_STATUS} from "../../src/common/enums";
 const service = axios.create({
-    baseURL: "http://localhost:9000/api/", // uri = baseURL + apiFunction truyền tới
+    baseURL: "http://localhost:9000/", // uri = baseURL + apiFunction truyền tới
     timeout: 10000,
+    withCredentials: true,
     headers: { // Request Headers
         'content-type': 'application/json',
         'Accept': 'application/json'
@@ -12,8 +13,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
-        if (store.getters.token) {
-            config.headers['X-Token'] = getToken()
+        console.log(store.getters.getToken)
+        if (store.getters.getToken) {
+            config.headers['X-Token'] = store.getters.getToken
         }
         return config
     },
