@@ -88,7 +88,10 @@ class ApiUserController extends Controller
 
         if (\Auth::attempt($attributes)) {
             $accessToken = $user->createToken('authToken')->plainTextToken;
-            return $this->sendResponseSuccess(['token' => $accessToken]);
+            return $this->sendResponseSuccess([
+                'token' => $accessToken,
+                'user' => auth()->user(),
+            ]);
         }
 
         return $this->sendResponseError();

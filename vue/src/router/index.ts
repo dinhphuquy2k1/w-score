@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Auth from "../../api/utils/auth";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -16,12 +16,20 @@ const routes: Array<RouteRecordRaw> = [
                     content: () => import('@/views/admin/components/GradeMaster.vue'),
                     navbar: () => import('@/views/admin/components/NavBar.vue'),
                 },
+                meta: {
+                    title: 'Tổng quan',
+                    auth: true,
+                }
             },
             {
                 path: '/login',
                 components: {
                     content: () => import('@/components/Login.vue'),
                 },
+                meta: {
+                    title: 'Đăng nhập',
+                    auth: false,
+                }
             },
             {
                 path: '/exam-list',
@@ -90,36 +98,55 @@ const routes: Array<RouteRecordRaw> = [
             },
         ],
     },
-    {
-        path: '/admin',
-        name: 'admin',
-        components: {
-            home: () => import('@/views/admin/HomeView.vue'),
-        },
-        children: [
-            {
-                path: '',
-                components: {
-                    header: () => import('@/views/admin/components/Header.vue'),
-                    content: () => import('@/views/admin/components/GradeMaster.vue'),
-                    navbar: () => import('@/views/admin/components/NavBar.vue'),
-                },
-            },
-            {
-                path: 'setting',
-                components: {
-                    header: () => import('@/views/admin/components/Header.vue'),
-                    content: () => import('@/views/admin/components/ProductList.vue'),
-                    navbar: () => import('@/views/admin/components/NavBar.vue'),
-                },
-            },
-        ],
-    },
+    // {
+    //     path: '/admin',
+    //     name: 'admin',
+    //     components: {
+    //         home: () => import('@/views/admin/HomeView.vue'),
+    //     },
+    //     children: [
+    //         {
+    //             path: '',
+    //             components: {
+    //                 header: () => import('@/views/admin/components/Header.vue'),
+    //                 content: () => import('@/views/admin/components/GradeMaster.vue'),
+    //                 navbar: () => import('@/views/admin/components/NavBar.vue'),
+    //             },
+    //         },
+    //         {
+    //             path: 'setting',
+    //             components: {
+    //                 header: () => import('@/views/admin/components/Header.vue'),
+    //                 content: () => import('@/views/admin/components/ProductList.vue'),
+    //                 navbar: () => import('@/views/admin/components/NavBar.vue'),
+    //             },
+    //         },
+    //     ],
+    // },
 ]
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
 })
+
+router.beforeEach((to, from, next) => {
+    // trang bắt đăng nhập
+    if (to.matched.some(record => record.meta.auth)) {
+        if (Auth.check()) {
+            next();
+            return;
+        } else {
+            router.push('/login');
+        }
+    } else {
+        if (Auth.check()) {
+            next('/departments');
+            return;
+        } else {
+            next();
+        }
+    }
+});
 
 export default router

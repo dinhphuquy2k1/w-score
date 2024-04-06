@@ -1,6 +1,8 @@
 import axios from 'axios'
 import store from '../../src/store'
-import {RESPONSE_STATUS} from "../../src/common/enums";
+import router from '@/router'
+import Auth from "./auth";
+import {RESPONSE_STATUS} from "@/common/enums";
 
 const service = axios.create({
     baseURL: "http://localhost:9000/", // uri = baseURL + apiFunction truyền tới
@@ -14,9 +16,8 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
-        console.log(store.getters.getToken)
-        if (store.getters.getToken) {
-            config.headers['X-Token'] = store.getters.getToken
+        if (Auth.check()) {
+            config.headers['Authorization'] = 'Bearer ' + Auth.getToken()
         }
         return config
     },
@@ -32,7 +33,10 @@ service.interceptors.response.use(
     },
     error => {
         if (error.response) {
-            if (error.response.status !== RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY)
+            // lỗi đăng nhập thực hiện redirect về trang đăng nhập
+            if (error.request.status === RESPONSE_STATUS.HTTP_UNAUTHORIZED) {
+                router.push('/login')
+            } else if (error.response.status !== RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY)
                 store.dispatch('handleServerError');
         }
         return Promise.reject(error)

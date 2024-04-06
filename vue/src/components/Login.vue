@@ -73,6 +73,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import TheLoading from '../components/LoadingProgress.vue';
 import {mapState, mapActions} from 'vuex'
+import Auth from "../../api/utils/auth";
 import {RESPONSE_STATUS} from "@/common/enums";
 
 export default {
@@ -117,13 +118,14 @@ export default {
             this.isLoading = true;
             login(this.user).then(async res => {
                 try {
-                    await this.$store.dispatch('setToken', res.data.token);
+                    Auth.login(res.data.token, res.data.user);
                     this.$router.push({path: '/departments'});
                 } catch (error) {
                     console.log(error)
                 }
                 // Auth.login(res.access_token, res.user); //set local storage
             }).catch(error => {
+                console.log(error)
                 if (error.response && error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
                     this.invalid['error'] = error.response.data.data.errors;
                 }

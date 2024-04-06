@@ -11,9 +11,6 @@ export default {
         Toast
     },
     created() {
-        getCsrfCookie().then(res => {
-
-        });
     }
 }
 </script>
