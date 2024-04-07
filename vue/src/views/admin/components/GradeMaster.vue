@@ -421,6 +421,7 @@ import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE} from "@/common/enums";
 
 import {get, calculate} from '/api/grade-master';
+import Auth from "../../../../api/utils/auth";
 
 export default {
     components: {
@@ -963,6 +964,7 @@ export default {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Disposition': 'form-data; name="title"',
+                    'Authorization': 'Bearer ' + Auth.getToken()
                 },
                 testChunks: false,
                 throttleProgressCallbacks: 1,

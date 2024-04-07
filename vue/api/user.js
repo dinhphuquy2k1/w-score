@@ -53,7 +53,7 @@ export function getUsers() {
  */
 export function saveUser(data) {
     return request({
-        url: 'users',
+        url: 'api/users',
         method: 'POST',
         data: data,
     })
@@ -65,7 +65,7 @@ export function saveUser(data) {
  */
 export function updateUser(data) {
     return request({
-        url: `users/${data.id}`,
+        url: `api/users/${data.id}`,
         method: 'PUT',
         data: data,
     })
@@ -78,7 +78,7 @@ export function updateUser(data) {
  */
 export function deleteUser(id) {
     return request({
-        url: `users/${id}`,
+        url: `api/users/${id}`,
         method: 'DELETE',
     })
 }

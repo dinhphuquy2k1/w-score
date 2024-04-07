@@ -157,6 +157,64 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group flex-row">
+                <div class="flex1 mr-10">
+                    <div class="form-group-label d-flex label-form">
+                        File tư liệu
+                        <span class="required">*</span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="content-step d-flex flex-column">
+                            <div class="upload-container flex1 flex-center" v-if="!file.fileName"
+                                 @click="$refs.fileInput.click()">
+                                <div class="no-file d-flex">
+                                    <input type="file" id="fileInput" ref="fileInput"
+                                           @change="onFileChange('fileInput')"
+                                           accept=".docx"
+                                           hidden>
+                                </div>
+                            </div>
+                            <div class="import-attachment-container flex1" v-else>
+                                <div class="file-info d-flex">
+                                    <div class="d-flex">
+                                        <div class="file-icon text-left"></div>
+                                        <div class="file-name flex text-left">{{ file.fileName }}</div>
+                                    </div>
+                                    <div class="file-size text-left"> {{ file.fileSize }}</div>
+                                    <div class="file-accepted text-left d-flex">
+                                        <div class="icon-success" v-if="file.success"></div>
+                                        <div v-if="file.success">Hợp lệ</div>
+                                        <div class="icon-unsuccess" v-if="!file.success"></div>
+                                        <div v-if="!file.success">Không hợp lệ</div>
+                                    </div>
+                                    <input type="file" ref="fileInput1" hidden
+                                           @change="onFileChange('fileInput1')"
+                                           accept=".docx">
+                                    <div class="change-file blue-text pointer text-left text-link"
+                                         @click="$refs.fileInput1.click()"> Đổi tệp khác
+                                    </div>
+                                </div>
+                                <div class="file-caution" v-if="file.success">
+                                    <div class="file-caution-img"></div>
+                                    <div class="file-caution-center mt-20">
+                                        <!--                                        Lưu ý <span style="color: red;">*</span>: Bạn vui lòng chọn sheet tư-->
+                                        <!--                                        liệu và dòng tiêu đề-->
+                                        <!--                                        <br>của sheet đó.-->
+                                    </div>
+                                </div>
+                                <div class="file-error" v-if="!file.success">
+                                    <div class="file-error-title red-text"> Lý do không hợp lệ:</div>
+                                    <div class="file-error-title red-text">- Dung lượng quá lớn</div>
+                                </div>
+                            </div>
+                            <div class="error-text" v-if="invalidData['fileData']">
+                                {{ invalidData['fileData'] }}
+                            </div>
+                        </div>
+                        <div class="ms-input ms-editor w-100"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <template #footer>
             <div class="d-flex flex-row">
@@ -192,6 +250,7 @@ import InputText from 'primevue/inputtext';
 import ExamPopup from '@/views/user/components/ExamPopup.vue';
 import ExamSetup from '@/views/user/components/ExamSetup.vue';
 import DataTable from 'primevue/datatable';
+import Auth from "../../../api/utils/auth";
 import Dialog from 'primevue/dialog';
 import Column from 'primevue/column';
 import InputNumber from 'primevue/inputnumber';
@@ -229,6 +288,7 @@ export default {
                 id: null,
                 exam_bank_code: null,
                 exam_bank_name: null,
+                file: null,
             },
 
             objSelectedData: {},
@@ -238,19 +298,26 @@ export default {
             popupLoading: false,
 
             warningVisible: false,
+            file: {
+                fileName: null,
+                fileSize: null,
+                success: true,
+            },
 
             defaultData: {
                 id: null,
                 exam_bank_code: null,
                 exam_bank_name: null,
             },
+            resumable: null,
+
 
             invalidData: {
                 exam_bank_code: null,
                 exam_bank_name: null,
                 SheetIndexReference: null,
                 RowReference: null,
-                FileData: null
+                fileData: null
             },
             modeModal: this.FormMode.INSERT,
             modeGenerate: true,
@@ -276,27 +343,32 @@ export default {
         async doSave() {
             try {
                 if (this.validateExamBank()) {
+                    var data = {...this.selectedData};
+                    this.resumable.opts.query.FileInfo = this.file.fileSize;
+                    this.resumable.opts.query.param = JSON.stringify(data);
                     this.popupLoading = true;
                     switch (this.modeModal) {
                         case this.FormMode.INSERT:
-                            insertExamBank(this.selectedData).then(res => {
-                                this.loadExamBank()
-                                this.showModal();
-                                this.$store.dispatch('handleSuccess', 'Thêm đề thi thành công');
-                            }).catch(error => {
-                                if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
-                                    for (var itemError in error.response.data.errors) {
-                                        console.log(error.response.data.errors);
-                                        this.invalidData[itemError] = error.response.data.errors[itemError][0];
-                                    }
-                                }
-                            }).finally(() => {
-                                this.popupLoading = false;
-                            })
+                            this.resumable.opts.target = 'http://localhost:9000/api/exam-banks';
+                            this.resumable.addFile(this.selectedFile);
+                            // insertExamBank(this.selectedData).then(res => {
+                            //     this.loadExamBank()
+                            //     this.showModal();
+                            //     this.$store.dispatch('handleSuccess', 'Thêm đề thi thành công');
+                            // }).catch(error => {
+                            //     if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                            //         for (var itemError in error.response.data.errors) {
+                            //             console.log(error.response.data.errors);
+                            //             this.invalidData[itemError] = error.response.data.errors[itemError][0];
+                            //         }
+                            //     }
+                            // }).finally(() => {
+                            //     this.popupLoading = false;
+                            // })
                             break;
                         case this.FormMode.UPDATE:
                             if (JSON.stringify(this.selectedData) !== JSON.stringify(this.objSelectedData)) {
-                                updateExamBank(this.selectedData).then(res=>{
+                                updateExamBank(this.selectedData).then(res => {
                                     this.showModal();
                                     this.$store.dispatch('handleSuccess', 'Cập nhật đề thi thành công');
                                     this.loadExamBank();
@@ -420,7 +492,7 @@ export default {
 
         /**
          *  Validate dữ liệu
-         *  @return bool
+         *  @return boolean
          */
         validateExamBank() {
             let invalid = true;
@@ -437,7 +509,119 @@ export default {
             } else {
                 this.invalidData.exam_bank_name = null;
             }
+            if (!this.selectedFile) {
+                invalid = false;
+                this.invalidData.fileData = 'Vui lòng tải lên file tư liệu';
+            } else {
+                this.invalidData.fileData = null;
+            }
             return invalid;
+        },
+
+        /**
+         * Sự kiện thay đổi file
+         * @param {*} ref ref input
+         *
+         */
+        onFileChange(ref) {
+            if (this.$refs[ref].files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                this.selectedFile = this.$refs[ref].files[0];
+                let _size = this.selectedFile.size;
+                let fSExt = ['Bytes', 'KB', 'MB', 'GB'],
+                    i = 0;
+                while (_size > 900) {
+                    _size /= 1024;
+                    i++;
+                }
+                this.file.fileSize = (Math.round(_size * 100) / 100) + ' ' + fSExt[i];
+                this.file.fileName = this.selectedFile.name;
+                //kiểm tra dung lượng file
+                if (this.$refs[ref].files[0].size > 30 * 1024 * 1024) {
+                    this.file.success = false;
+                } else {
+                    this.file.success = true;
+                }
+            } else {
+                this.contentDialog = ' File tư liệu chỉ hỗ trợ định dạng *.docx';
+                this.dialogVisible = true;
+            }
+        },
+
+        /**
+         * Thêm file
+         * @param {*} file
+         */
+        onFileAdded(file) {
+            this.resumable.upload();
+        },
+
+
+        /**
+         * Tiến trình tải
+         * @param {*} file
+         */
+        onFileProgress(file) {
+        },
+
+        /**
+         * Upload thành công
+         * @param {*} file
+         * @param {*} response
+         */
+        onFileSuccess(file, response) {
+            this.resumable.removeFile(file);
+            this.popupLoading = false;
+            this.showModal();
+            let message = this.modeModal == this.FormMode.INSERT ? "Thêm đề thi thành công" : "Cập nhật đề thi thành công";
+            this.$store.dispatch('handleSuccess', message);
+            this.loadExamBank();
+        },
+
+        /**
+         * Upload thất bại
+         * @param {*} file
+         * @param {*} message
+         */
+        onFileError(file, message) {
+            console.log(message)
+            try {
+                this.popupLoading = false;
+                this.resumable.removeFile(file);
+                message = JSON.parse(message);
+                if (message.errorCode == 422) {
+                    for (var error in message.errors) {
+                        this.invalidData[error] = message.errors[error][0];
+                    }
+                } else {
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        /**
+         * Khởi tạo Resumable upload file
+         */
+        createResumable() {
+            this.resumable = new Resumable({
+                target: 'http://localhost:9000/api/exam-banks',
+                method: 'POST',
+                query: {
+
+                },
+                withCredentials: true,
+                headers: {
+                    'Authorization': 'Bearer ' + Auth.getToken(),
+                    // 'Access-Control-Allow-Credentials': true,
+                },
+                testChunks: false,
+                throttleProgressCallbacks: 1,
+                simultaneousUploads: 4,
+            });
+            this.resumable.on('fileAdded', this.onFileAdded);
+            this.resumable.on('fileProgress', this.onFileProgress);
+            this.resumable.on('fileSuccess', this.onFileSuccess);
+            this.resumable.on('fileError', this.onFileError);
         },
 
         /**
@@ -467,5 +651,72 @@ export default {
     async created() {
         await this.loadExamBank();
     },
+
+    mounted() {
+        this.createResumable();
+    },
 }
 </script>
+
+<style lang="scss">
+.content-step {
+    height: 250px;
+
+    .upload-container {
+        border: 1px dashed #ddd;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        .no-file {
+            background: url('@public/assets/icons/add_attachment_docs.svg') no-repeat;
+            width: 334px;
+            height: 110px;
+        }
+    }
+
+    .import-attachment-container {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        height: 260px;
+        margin-bottom: 16px;
+        color: #333;
+        cursor: pointer;
+
+        .file-info {
+            width: 100%;
+            height: 48px;
+            align-items: center;
+            padding: 0 16px;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+
+            &.file-info .icon-success {
+                width: 16px;
+                height: 16px;
+                background: transparent url('@public/assets/icons/ic_check_green.d1ac113b.svg') no-repeat;
+                margin-right: 8px;
+            }
+        }
+
+        .file-caution {
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100% - 48px);
+        }
+
+        .file-caution-img {
+            width: 100%;
+            height: calc(100% - 74px);
+            padding-top: 20px;
+            background: url('@public/assets/icons/img_import.7804e3d3.svg') no-repeat 50%;
+        }
+    }
+}
+</style>

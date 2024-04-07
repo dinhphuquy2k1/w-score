@@ -53,8 +53,11 @@ export function deleteCriteria(data) {
 export function insertExamBank(data) {
     return request({
         url: 'api/exam-banks',
-        method: 'post',
-        data: data
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
     })
 }
 

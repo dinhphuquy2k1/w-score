@@ -32,13 +32,16 @@ service.interceptors.response.use(
         return res
     },
     error => {
+        console.log(error)
         if (error.response) {
             // lỗi đăng nhập thực hiện redirect về trang đăng nhập
             if (error.request.status === RESPONSE_STATUS.HTTP_UNAUTHORIZED) {
+                Auth.logout();
                 router.push('/login')
-            } else if (error.response.status !== RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY)
+            } else if (error.request.status !== RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY)
                 store.dispatch('handleServerError');
         }
+        else store.dispatch('handleServerError');
         return Promise.reject(error)
     }
 )
