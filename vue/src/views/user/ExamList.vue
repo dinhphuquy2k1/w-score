@@ -351,20 +351,6 @@ export default {
                         case this.FormMode.INSERT:
                             this.resumable.opts.target = 'http://localhost:9000/api/exam-banks';
                             this.resumable.addFile(this.selectedFile);
-                            // insertExamBank(this.selectedData).then(res => {
-                            //     this.loadExamBank()
-                            //     this.showModal();
-                            //     this.$store.dispatch('handleSuccess', 'Thêm đề thi thành công');
-                            // }).catch(error => {
-                            //     if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
-                            //         for (var itemError in error.response.data.errors) {
-                            //             console.log(error.response.data.errors);
-                            //             this.invalidData[itemError] = error.response.data.errors[itemError][0];
-                            //         }
-                            //     }
-                            // }).finally(() => {
-                            //     this.popupLoading = false;
-                            // })
                             break;
                         case this.FormMode.UPDATE:
                             if (JSON.stringify(this.selectedData) !== JSON.stringify(this.objSelectedData)) {
@@ -379,7 +365,6 @@ export default {
                                             this.invalidData[itemError] = error.response.data.errors[itemError][0];
                                         }
                                     }
-                                    console.log(error)
                                 }).finally(() => {
                                     this.popupLoading = false;
                                 })
@@ -569,10 +554,11 @@ export default {
          * @param {*} response
          */
         onFileSuccess(file, response) {
+            this.selectedFile = null;
             this.resumable.removeFile(file);
             this.popupLoading = false;
             this.showModal();
-            let message = this.modeModal == this.FormMode.INSERT ? "Thêm đề thi thành công" : "Cập nhật đề thi thành công";
+            let message = this.modeModal === this.FormMode.INSERT ? "Thêm đề thi thành công" : "Cập nhật đề thi thành công";
             this.$store.dispatch('handleSuccess', message);
             this.loadExamBank();
         },
@@ -582,15 +568,14 @@ export default {
          * @param {*} file
          * @param {*} message
          */
-        onFileError(file, message) {
-            console.log(message)
+        onFileError(file, response) {
             try {
                 this.popupLoading = false;
                 this.resumable.removeFile(file);
-                message = JSON.parse(message);
-                if (message.errorCode == 422) {
-                    for (var error in message.errors) {
-                        this.invalidData[error] = message.errors[error][0];
+                response = JSON.parse(response);
+                if (response.data && response.data.errorCode === 422) {
+                    for (let error in response.data.errors) {
+                        this.invalidData[error] = response.data.errors[error][0];
                     }
                 } else {
                 }

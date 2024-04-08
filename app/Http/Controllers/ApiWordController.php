@@ -800,8 +800,7 @@ class ApiWordController extends Controller
         return str_replace(' ', '', $str);
     }
 
-    private
-    function getTextContent($paragraph, $ns_w)
+    private function getTextContent($paragraph, $ns_w)
     {
         $text = '';
 
@@ -853,8 +852,7 @@ class ApiWordController extends Controller
      * @param $stylesXml
      * @return array
      */
-    private
-    function extractStyles($stylesXml): array
+    private function extractStyles($stylesXml): array
     {
         $styles = [];
         // Load XML content

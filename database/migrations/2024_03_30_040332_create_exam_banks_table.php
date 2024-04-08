@@ -17,6 +17,7 @@ class CreateExamBanksTable extends Migration
             $table->id();
             $table->string('exam_bank_code')->unique();
             $table->string('exam_bank_name');
+            $table->longText('exam_bank_content');
             $table->timestamps();
         });
     }
