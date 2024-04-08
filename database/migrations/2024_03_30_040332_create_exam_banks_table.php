@@ -18,6 +18,8 @@ class CreateExamBanksTable extends Migration
             $table->string('exam_bank_code')->unique();
             $table->string('exam_bank_name');
             $table->longText('exam_bank_content');
+            $table->string('file_name');
+            $table->string('file_size');
             $table->timestamps();
         });
     }

@@ -45,12 +45,14 @@ class ApiExamBankController extends Controller
                     [
                         'exam_bank_code' => 'required|unique:exam_banks,exam_bank_code',
                         'exam_bank_name' => 'required',
+                        'file_size' => '',
+                        'file_name' => '',
                     ],
                     [
                         'exam_bank_code.required' => 'Mã đề thi không được để trống',
                         'exam_bank_code.unique' => 'Mã đề thi đã tồn tại',
                         'exam_bank_name.required' => 'Tên đề thi không được để trống',
-                    ]
+                    ],
                 );
 
 
@@ -92,7 +94,7 @@ class ApiExamBankController extends Controller
                         $attributes['exam_bank_content'] = implode('ーー', array_column($ret, 'text'));
                         ExamBank::insert($attributes);
                     } catch (\Exception $e) {
-                        return $this->sendResponseError(['errors' => ['message' => 'Xảy ra lỗi'], 'errorCode' => Response::HTTP_UNPROCESSABLE_ENTITY]);
+                        return $this->sendResponseError(['errors' => ['message' => $e->getMessage()], 'errorCode' => Response::HTTP_UNPROCESSABLE_ENTITY]);
                     }
                 }
                 return $this->sendResponseSuccess();

@@ -67,7 +67,7 @@ export function insertExamBank(data) {
  */
 export function updateExamBank(data) {
     return request({
-        url: `/exam-banks/${data.id}`,
+        url: `api/exam-banks/${data.id}`,
         method: 'PUT',
         data: data
     })

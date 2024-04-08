@@ -288,7 +288,8 @@ export default {
                 id: null,
                 exam_bank_code: null,
                 exam_bank_name: null,
-                file: null,
+                file_size: null,
+                file_name: null,
             },
 
             objSelectedData: {},
@@ -343,8 +344,7 @@ export default {
         async doSave() {
             try {
                 if (this.validateExamBank()) {
-                    var data = {...this.selectedData};
-                    this.resumable.opts.query.FileInfo = this.file.fileSize;
+                    let data = {...this.selectedData};
                     this.resumable.opts.query.param = JSON.stringify(data);
                     this.popupLoading = true;
                     switch (this.modeModal) {
@@ -353,21 +353,29 @@ export default {
                             this.resumable.addFile(this.selectedFile);
                             break;
                         case this.FormMode.UPDATE:
-                            if (JSON.stringify(this.selectedData) !== JSON.stringify(this.objSelectedData)) {
-                                updateExamBank(this.selectedData).then(res => {
-                                    this.showModal();
-                                    this.$store.dispatch('handleSuccess', 'Cập nhật đề thi thành công');
-                                    this.loadExamBank();
-                                }).catch(error => {
-                                    if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
-                                        for (var itemError in error.response.data.errors) {
-                                            console.log(error.response.data.errors);
-                                            this.invalidData[itemError] = error.response.data.errors[itemError][0];
+                            if (JSON.stringify(this.selectedData) !== JSON.stringify(this.objSelectedData) || JSON.stringify(this.file) !== JSON.stringify(this.objFileSelected)) {
+                                //update file tư liệu
+                                if (this.selectedFile) {
+                                    this.resumable.opts.target = 'http://localhost:9000/api/exam-banks';
+                                    this.resumable.addFile(this.selectedFile);
+                                } else {
+                                    this.popupLoading = true;
+                                    await updateExamBank(data).then(res => {
+                                        this.$store.dispatch('handleSuccess', MESSAGE.HTTP_UPDATE_OK)
+                                        this.loadExamBank();
+                                        this.showModal();
+                                    }).catch(error => {
+                                        if (error.response.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                                            for (let itemError in error.response.data.errors) {
+                                                this.invalidData[itemError] = error.response.data.errors[itemError][0];
+                                            }
+                                        } else {
+                                            this.$store.dispatch('handleServerError')
                                         }
-                                    }
-                                }).finally(() => {
-                                    this.popupLoading = false;
-                                })
+                                    }).finally(() => {
+                                        this.popupLoading = false
+                                    });
+                                }
                             } else {
                                 this.popupLoading = false;
                                 this.showModal();
@@ -471,6 +479,11 @@ export default {
          */
         afterHide() {
             this.selectedData = {...this.defaultData};
+            this.file = {
+                fileName: null,
+                fileSize: null,
+                success: true,
+            };
             this.invalidData = [];
             this.exambank = {};
         },
@@ -494,7 +507,7 @@ export default {
             } else {
                 this.invalidData.exam_bank_name = null;
             }
-            if (!this.selectedFile) {
+            if (!this.file.fileName) {
                 invalid = false;
                 this.invalidData.fileData = 'Vui lòng tải lên file tư liệu';
             } else {
@@ -518,6 +531,9 @@ export default {
                     _size /= 1024;
                     i++;
                 }
+                this.selectedData.file_size = (Math.round(_size * 100) / 100) + ' ' + fSExt[i];
+                this.selectedData.file_name = this.selectedFile.name;
+
                 this.file.fileSize = (Math.round(_size * 100) / 100) + ' ' + fSExt[i];
                 this.file.fileName = this.selectedFile.name;
                 //kiểm tra dung lượng file
@@ -591,9 +607,7 @@ export default {
             this.resumable = new Resumable({
                 target: 'http://localhost:9000/api/exam-banks',
                 method: 'POST',
-                query: {
-
-                },
+                query: {},
                 withCredentials: true,
                 headers: {
                     'Authorization': 'Bearer ' + Auth.getToken(),
@@ -631,6 +645,8 @@ export default {
             this.modeModal = this.FormMode.UPDATE;
             this.objSelectedData = {...data};
             this.selectedData = {...data};
+            this.file.fileSize = this.selectedData.file_size
+            this.file.fileName = this.selectedData.file_name
         }
     },
     async created() {
