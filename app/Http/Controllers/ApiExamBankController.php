@@ -378,10 +378,13 @@ class ApiExamBankController extends Controller
     public function configureExam($id)
     {
         try {
-            $examBank = ExamBank::findOrFail($id);
+            $examBank = ExamBank::where('id', $id)->first();
+            if (empty($examBank)) {
+                return $this->sendResponseError();
+            }
             $paragraphs = explode($this->_SEPARATOR, $examBank->exam_bank_content);
             $result = [
-                'data' => $examBank->first()->toArray(),
+                'data' => $examBank->toArray(),
                 'paragraphs' => $paragraphs,
                 'typeProperty' => collect(PropertyType::getInstances())->map(function ($instance) {
                     return $instance->value;
@@ -424,8 +427,8 @@ class ApiExamBankController extends Controller
             ];
             return $this->sendResponseSuccess($result);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->sendResponseError([]);
+        } catch (\Throwable $th){
+            return $this->sendResponseError();
         }
     }
 
