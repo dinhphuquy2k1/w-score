@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\StyleType;
 use Illuminate\Http\Request;
 use App\Models\ExamBank;
+use App\Models\Criteria;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
@@ -12,10 +13,13 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use PhpOffice\PhpWord\IOFactory as PHPIOFactory;
 use ZipArchive;
+use App\Enums\PropertyType;
+use App\Enums\InfoType;
 
 class ApiExamBankController extends Controller
 {
     private $_PATH_FILE = 'app/exams';
+    private $_SEPARATOR = 'ーー';
 
     public function __construct()
     {
@@ -91,7 +95,7 @@ class ApiExamBankController extends Controller
                         } else {
                             return $this->sendResponseError(['message' => 'Lỗi đọc file']);
                         }
-                        $attributes['exam_bank_content'] = implode('ーー', array_column($ret, 'text'));
+                        $attributes['exam_bank_content'] = implode($this->_SEPARATOR, array_column($ret, 'text'));
                         ExamBank::insert($attributes);
                     } catch (\Exception $e) {
                         return $this->sendResponseError(['errors' => ['message' => $e->getMessage()], 'errorCode' => Response::HTTP_UNPROCESSABLE_ENTITY]);
@@ -365,6 +369,76 @@ class ApiExamBankController extends Controller
     public function getSettings()
     {
         return $this->sendResponseSuccess(ExamBank::all()->toArray());
+    }
+
+    /**
+     * Lấy danh sách các thuộc tính
+     */
+    public function configureExam($id)
+    {
+        try {
+            $examBank = ExamBank::findOrFail($id);
+            $paragraphs = explode($this->_SEPARATOR, $examBank->exam_bank_content);
+            $result = [
+                'data' => $examBank->first()->toArray(),
+                'paragraphs' => $paragraphs,
+                'typeProperty' => collect(PropertyType::getInstances())->map(function ($instance) {
+                    return $instance->value;
+                })->toArray(),
+                'infoTypeEnums' => collect(InfoType::getInstances())->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'infoType' => collect(InfoType::getInstances())->values()->map(function ($instance) {
+                    switch ($instance->value) {
+                        case InfoType::STUDENT_NAME:
+                            $description = 'Họ và tên';
+                            break;
+                        case InfoType::STUDENT_CODE:
+                            $description = 'Mã sinh viên';
+                            break;
+                        case InfoType::STUDENT_CODE_NAME:
+                            $description = 'Họ tên và mã sinh viên';
+                            break;
+                        case InfoType::OTHER:
+                            $description = 'Khác';
+                            break;
+                        default:
+                            $description = '';
+                            break;
+                    }
+                    return [
+                        'value' => $instance->value,
+                        'description' => $description,
+                    ];
+                })->toArray(),
+            ];
+            return $this->sendResponseSuccess($result);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->sendResponseError([]);
+        }
+    }
+
+    /**
+     * Lưu tiêu chí
+     * @return void
+     */
+    public function saveCriteria(Request $request)
+    {
+        $attributes = $request->validate([
+            '*.exam_bank_id' => 'required|numeric', // 'exam_bank_id' là bắt buộc và phải là số
+            '*.content' => 'required', // 'content' là bắt buộc và phải là JSON
+            '*.page' => '',
+            '*.paragraph' => '',
+            '*.property_type' => 'required|integer',
+            '*.property_name' => 'required|string',
+            '*.priority' => 'required|integer',
+            '*.point' => 'required|numeric',
+        ]);
+        Criteria::insert($attributes);
     }
 
     public function delete($id)

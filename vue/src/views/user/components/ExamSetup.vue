@@ -5,79 +5,20 @@
                 <div class="flex-row title-box">
                     <div class="list-title flex1">Thiết lập đề</div>
                     <div class="flex-row mr-12">
-                        <Button class="ms-button d-flex flex-row secondary btn has-tooltip mr-10" aria-label="Youtube"
-                                @click="previewExam">
-                            <div class="left eye"></div>
-                            <span class="pl-0 text">Xem trước</span>
+                        <Button @click="previewExam"
+                                class="ms-btn secondary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                            <div class="">Xem trước</div>
                         </Button>
-                        <Button class="ms-button btn primary has-tooltip" aria-label="Youtube" @click="btnComplete">
-                            <span class="px-3 text">Hoàn thành</span>
+                        <Button @click="btnComplete"
+                                class="ms-btn primary ms-3 d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                            <div class="">Hoàn thành</div>
                         </Button>
                     </div>
                 </div>
                 <div class="box list-content flex1 flex-column">
+                    <TheLoadingProgress v-if="isLoadingSaveCritera"/>
                     <TabView @tab-change="tabViewIndex = $event.index">
                         <TabPanel header="Định dạng">
-                            <div class="form-content flex-row" id="scrollToFormat">
-                                <div class="right-content flex1">
-                                    <div class="text-title flex-row form-group">
-                                        <span class="mr-10">Thông tin sheet</span>
-                                    </div>
-                                    <div class="list-control">
-                                        <div class="flex-row">
-                                            <div class="flex1">
-                                                <div class="form-group slide-detail">
-                                                    <label class="top-label d-flex">
-                                                        Sheet
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <div class="flex1">
-                                                        <Dropdown v-model="Format.SheetIndex" optionLabel="sheetName"
-                                                                  :class="{ 'error': invalidData[`sheetIndex${tabViewIndex}`] }"
-                                                                  optionValue="sheetIndex" :options="optionSheet"
-                                                                  showClear
-                                                                  placeholder="Select a Sheet"/>
-                                                    </div>
-                                                    <div class="error-text"
-                                                         v-if="invalidData[`sheetIndex${this.tabViewIndex}`]">
-                                                        {{ invalidData[`sheetIndex${this.tabViewIndex}`] }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sp"></div>
-                                            <div class="flex1">
-                                                <div class="form-group slide-detail">
-                                                    <label class="top-label d-flex">
-                                                        Range
-                                                        <span class="required">*</span>
-                                                        <div class="icon16 icon-note has-tooltip"
-                                                             v-tooltip.top="{ value: `Vùng dữ liệu hợp lệ A1 hoặc A1:C3. Vùng A1:XFD1 áp dụng cho toàn bộ trang tính`, escape: true, class: 'custom-error' }">
-                                                        </div>
-                                                    </label>
-                                                    <div class="flex1">
-                                                        <InputText v-model="Format.Range" class="heigth36"
-                                                                   :class="{ 'error': invalidData[`range${tabViewIndex}`] }"
-                                                                   placeholder="Enter your range"
-                                                                   @keypress="validateInputRangeNoRef"/>
-                                                    </div>
-                                                    <div class="error-text"
-                                                         v-if="invalidData[`range${this.tabViewIndex}`]">
-                                                        {{ invalidData[`range${this.tabViewIndex}`] }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sp"></div>
-                                            <div class="flex1"></div>
-                                            <div class="col-sp"></div>
-                                            <div class="flex1"></div>
-                                            <div class="col-sp"></div>
-                                            <div class="flex1"></div>
-                                            <div class="col-sp"></div>
-                                            <div class="flex1"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="form-content flex-row">
                                 <div class="right-content flex1">
                                     <Panel header="Font" toggleable>
@@ -109,7 +50,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -153,7 +94,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -197,7 +138,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -242,7 +183,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -287,7 +228,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -328,7 +269,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -377,7 +318,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -422,7 +363,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -466,7 +407,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -511,7 +452,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -553,7 +494,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -639,7 +580,7 @@
                                                     <div class="form-group slide-detail"
                                                          v-if="Format.Property.FormatNumber.content">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
@@ -689,7 +630,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -733,7 +674,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -787,7 +728,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -828,7 +769,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -876,7 +817,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -923,7 +864,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -958,7 +899,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -994,7 +935,7 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Point
+                                                                point
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
@@ -1027,7 +968,7 @@
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <Dropdown v-model="InsertSheet.Content"
+                                                            <Dropdown v-model="InsertSheet.content"
                                                                       :class="{ 'error': invalidData[`content${TypeProperty.InsertSheet}`] }"
                                                                       :options="[{ label: 'Choose a Option', value: 1 }, { label: 'Create a Sheet', value: 2 }]"
                                                                       optionLabel="label" optionValue="value" editable
@@ -1043,13 +984,13 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputText v-model="InsertSheet.Point"
+                                                            <InputText v-model="InsertSheet.point"
                                                                        :class="{ 'error': invalidData[`point${TypeProperty.InsertSheet}`] }"
-                                                                       class="heigth36" placeholder="Enter your Point"/>
+                                                                       class="heigth36" placeholder="Enter your point"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${TypeProperty.InsertSheet}`]">
@@ -1111,13 +1052,13 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Content
+                                                            content
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputText v-model="Text.Content"
+                                                            <InputText v-model="Text.content"
                                                                        :class="{ 'error': invalidData[`content${TypeProperty.Text}`] }"
-                                                                       placeholder="Enter your Content"/>
+                                                                       placeholder="Enter your content"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`content${TypeProperty.Text}`]">
@@ -1129,11 +1070,11 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="Text.Point"
+                                                            <InputNumber v-model="Text.point"
                                                                          :class="{ 'error': invalidData[`point${this.TypeProperty.Text}`] }"
                                                                          :maxFractionDigits="5" :min="0" :max="100"
                                                                          placeholder="Enter your point"/>
@@ -1315,19 +1256,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Title Content
+                                                                    Title content
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
-                                                                        v-model="AdvancedFilter.TitleContent[index]"
-                                                                        :class="{ 'error': invalidData[`TitleContent${index}`] }"
+                                                                        v-model="AdvancedFilter.Titlecontent[index]"
+                                                                        :class="{ 'error': invalidData[`Titlecontent${index}`] }"
                                                                         class="heigth36"
                                                                         placeholder="Enter your range"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData[`TitleContent${index}`]">
-                                                                    {{ invalidData[`TitleContent${index}`] }}
+                                                                     v-if="invalidData[`Titlecontent${index}`]">
+                                                                    {{ invalidData[`Titlecontent${index}`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1356,19 +1297,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Criteria Content
+                                                                    Criteria content
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
-                                                                        v-model="AdvancedFilter.CriteriaContent[index]"
-                                                                        :class="{ 'error': invalidData[`CriteriaContent${index}`] }"
+                                                                        v-model="AdvancedFilter.Criteriacontent[index]"
+                                                                        :class="{ 'error': invalidData[`Criteriacontent${index}`] }"
                                                                         class="heigth36"
                                                                         placeholder="Enter your range"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData[`CriteriaContent${index}`]">
-                                                                    {{ invalidData[`CriteriaContent${index}`] }}
+                                                                     v-if="invalidData[`Criteriacontent${index}`]">
+                                                                    {{ invalidData[`Criteriacontent${index}`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1382,19 +1323,19 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="AdvancedFilter.Point" :min="0"
+                                                            <InputNumber v-model="AdvancedFilter.point" :min="0"
                                                                          :max="100"
                                                                          :max-fraction-digits="5"
-                                                                         :class="{ 'error': invalidData['PointAdvancedFilter'] }"
-                                                                         placeholder="Enter your Content"/>
+                                                                         :class="{ 'error': invalidData['pointAdvancedFilter'] }"
+                                                                         placeholder="Enter your content"/>
                                                         </div>
                                                         <div class="error-text"
-                                                             v-if="invalidData['PointAdvancedFilter']">
-                                                            {{ invalidData['PointAdvancedFilter'] }}
+                                                             v-if="invalidData['pointAdvancedFilter']">
+                                                            {{ invalidData['pointAdvancedFilter'] }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1473,16 +1414,16 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Content
+                                                            content
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputText v-model="Formula.Content"
-                                                                       :class="{ 'error': invalidData['FormulaContent'] }"
-                                                                       placeholder="Enter your Content"/>
+                                                            <InputText v-model="Formula.content"
+                                                                       :class="{ 'error': invalidData['Formulacontent'] }"
+                                                                       placeholder="Enter your content"/>
                                                         </div>
-                                                        <div class="error-text" v-if="invalidData['FormulaContent']">
-                                                            {{ invalidData['FormulaContent'] }}
+                                                        <div class="error-text" v-if="invalidData['Formulacontent']">
+                                                            {{ invalidData['Formulacontent'] }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1490,17 +1431,17 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="Formula.Point" :min="0" :max="100"
+                                                            <InputNumber v-model="Formula.point" :min="0" :max="100"
                                                                          :max-fraction-digits="5"
-                                                                         :class="{ 'error': invalidData['FormulaPoint'] }"
-                                                                         placeholder="Enter your Content"/>
+                                                                         :class="{ 'error': invalidData['Formulapoint'] }"
+                                                                         placeholder="Enter your content"/>
                                                         </div>
-                                                        <div class="error-text" v-if="invalidData['FormulaPoint']">
-                                                            {{ invalidData['FormulaPoint'] }}
+                                                        <div class="error-text" v-if="invalidData['Formulapoint']">
+                                                            {{ invalidData['Formulapoint'] }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1529,16 +1470,16 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <Dropdown v-model="General.SheetIndex"
-                                                                              :class="{ 'error': invalidData['sheetIndexGeneral'] }"
+                                                                    <Dropdown v-model="generals.SheetIndex"
+                                                                              :class="{ 'error': invalidData['sheetIndexgenerals'] }"
                                                                               optionLabel="sheetName"
                                                                               optionValue="sheetIndex"
                                                                               :options="optionSheet" editable
                                                                               placeholder="Select a Sheet"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['sheetIndexGeneral']">
-                                                                    {{ invalidData['sheetIndexGeneral'] }}
+                                                                     v-if="invalidData['sheetIndexgenerals']">
+                                                                    {{ invalidData['sheetIndexgenerals'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1566,16 +1507,16 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
-                                                                        v-model="General.Property.PageOrientation.Content"
-                                                                        :options="configureExamData.PageOrientation"
+                                                                        v-model="generals.properties.pageOrientation.content"
+                                                                        :options="configureExamData.pageOrientation"
                                                                         optionLabel="description" optionValue="value"
-                                                                        :class="{ 'error': invalidData['contentPageOrientation'] }"
+                                                                        :class="{ 'error': invalidData['contentpageOrientation'] }"
                                                                         editable
                                                                         placeholder="Select a Page Orientation"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['contentPageOrientation']">
-                                                                    {{ invalidData['contentPageOrientation'] }}
+                                                                     v-if="invalidData['contentpageOrientation']">
+                                                                    {{ invalidData['contentpageOrientation'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1583,19 +1524,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber :max-fraction-digits="5"
-                                                                                 v-model="General.Property.PageOrientation.Point"
-                                                                                 :class="{ 'error': invalidData['pointPageOrientation'] }"
+                                                                                 v-model="generals.properties.pageOrientation.point"
+                                                                                 :class="{ 'error': invalidData['pointpageOrientation'] }"
                                                                                  placeholder="Enter your point"
                                                                                  class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['pointPageOrientation']">
-                                                                    {{ invalidData['pointPageOrientation'] }}
+                                                                     v-if="invalidData['pointpageOrientation']">
+                                                                    {{ invalidData['pointpageOrientation'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1611,15 +1552,15 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
-                                                                        v-model="General.Property.PageSize.Content"
-                                                                        :options="configureExamData.PageSize"
-                                                                        :class="{ 'error': invalidData['contentPageSize'] }"
+                                                                        v-model="generals.properties.pageSize.content"
+                                                                        :options="configureExamData.pageSize"
+                                                                        :class="{ 'error': invalidData['contentpageSize'] }"
                                                                         optionLabel="description" optionValue="value"
                                                                         editable placeholder="Select a Font Underline"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['contentPageSize']">
-                                                                    {{ invalidData['contentPageSize'] }}
+                                                                     v-if="invalidData['contentpageSize']">
+                                                                    {{ invalidData['contentpageSize'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1627,20 +1568,20 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
-                                                                        v-model="General.Property.PageSize.Point"
+                                                                        v-model="generals.properties.pageSize.point"
                                                                         :max-fraction-digits="5"
-                                                                        :class="{ 'error': invalidData['pointPageSize'] }"
+                                                                        :class="{ 'error': invalidData['pointpageSize'] }"
                                                                         placeholder="Enter your point"
                                                                         class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['pointPageSize']">
-                                                                    {{ invalidData['pointPageSize'] }}
+                                                                     v-if="invalidData['pointpageSize']">
+                                                                    {{ invalidData['pointpageSize'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1664,7 +1605,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1692,7 +1633,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1712,7 +1653,7 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown class="ms-format"
-                                                                              :options="configureExamData.PageOrientation"
+                                                                              :options="configureExamData.pageOrientation"
                                                                               optionLabel="description"
                                                                               optionValue="value"
                                                                               editable placeholder="Select a Margin"/>
@@ -1723,7 +1664,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1753,7 +1694,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1781,7 +1722,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1811,7 +1752,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1841,7 +1782,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1860,8 +1801,6 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <!-- :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
                                                                     <InputText class="ms-format" type="text"
                                                                                placeholder="Enter your Margin Header"/>
                                                                 </div>
@@ -1871,7 +1810,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1890,8 +1829,6 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <!--  :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
                                                                     <InputText class="ms-format" type="text"
                                                                                placeholder="Enter your Margin Footer"/>
                                                                 </div>
@@ -1901,7 +1838,7 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    point
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
@@ -1943,7 +1880,7 @@
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <Dropdown v-model="General.SheetName.Type[index]"
+                                                            <Dropdown v-model="generals.SheetName.Type[index]"
                                                                       :options="configureExamData.SheetName" showClear
                                                                       :class="{ 'error': invalidData[`typeSheetName${index}`] }"
                                                                       optionLabel="description" optionValue="value"
@@ -1958,14 +1895,14 @@
                                                 <div class="col-sp">
                                                 </div>
                                                 <div class="flex1"
-                                                     v-if="General.SheetName.Type[index] && General.SheetName.Type[index] == 3">
+                                                     v-if="generals.SheetName.Type[index] && generals.SheetName.Type[index] == 3">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Content
+                                                            content
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputText v-model="General.SheetName.Content[index]"
+                                                            <InputText v-model="generals.SheetName.content[index]"
                                                                        :class="{ 'error': invalidData[`contentSheetName${index}`] }"
                                                                        placeholder="Enter your Sheet Name"/>
                                                         </div>
@@ -1979,15 +1916,15 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Point
+                                                            point
                                                             <span class="required">*</span>
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="General.SheetName.Point[index]"
+                                                            <InputNumber v-model="generals.SheetName.point[index]"
                                                                          :min="0"
                                                                          :max="100" :max-fraction-digits="5"
                                                                          :class="{ 'error': invalidData[`pointSheetName${index}`] }"
-                                                                         placeholder="Enter your Point"/>
+                                                                         placeholder="Enter your point"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`pointSheetName${index}`]">
@@ -1996,10 +1933,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sp"
-                                                     v-if="!General.SheetName.Type[index] || General.SheetName.Type[index] != 3">
+                                                     v-if="!generals.SheetName.Type[index] || generals.SheetName.Type[index] != 3">
                                                 </div>
                                                 <div class="flex1"
-                                                     v-if="!General.SheetName.Type[index] || General.SheetName.Type[index] != 3">
+                                                     v-if="!generals.SheetName.Type[index] || generals.SheetName.Type[index] != 3">
                                                 </div>
                                                 <div class="col-sp"></div>
                                                 <div class="flex1"></div>
@@ -2008,7 +1945,7 @@
                                             </div>
                                         </div>
                                     </Panel>
-                                    <Panel header="General" toggleable class="mt-10">
+                                    <Panel header="Thông tin chung" toggleable class="mt-10">
                                         <div class="flex-column">
                                             <div class="right-content flex1">
                                                 <div class="list-control">
@@ -2016,91 +1953,201 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    File Name
+                                                                    File name
+                                                                    <span class="required">*</span>
+                                                                </label>
+                                                                <div class="flex1">
+                                                                    <Dropdown
+                                                                        v-model="generals.properties.FILE_NAME.content"
+                                                                        :options="configureExamData.infoType"
+                                                                        optionLabel="description" optionValue="value"
+                                                                        :class="{ 'error': invalidData['c-FILE_NAME'] }"
+                                                                        placeholder="Vui lòng chọn một hạng mục"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-FILE_NAME`]">
+                                                                    {{ invalidData[`c-FILE_NAME`] }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sp"></div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.FILE_NAME.content === configureExamData.infoTypeEnums['OTHER'].value">
+                                                            <div class="form-group slide-detail">
+                                                                <label class="top-label d-flex">
+                                                                    Nội dung
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
-                                                                        v-model="General.Property.FileName.Content"
-                                                                        :class="{ 'error': invalidData[`contentFileName`] }"
-                                                                        placeholder="Enter your File Name"/>
+                                                                        v-model="generals.properties.FILE_NAME.value"
+                                                                        :class="{ 'error': invalidData[`v-FILE_NAME`] }"
+                                                                        class="heigth36" placeholder="Nhập nội dung"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData[`contentFileName`]">
-                                                                    {{ invalidData[`contentFileName`] }}
+                                                                     v-if="invalidData[`v-FILE_NAME`]">
+                                                                    {{ invalidData[`v-FILE_NAME`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sp"></div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.FILE_NAME.content === configureExamData.infoTypeEnums['OTHER'].value"></div>
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
-                                                                        v-model="General.Property.FileName.Point"
-                                                                        :class="{ 'error': invalidData[`pointFileName`] }"
+                                                                        v-model="generals.properties.FILE_NAME.point"
+                                                                        :class="{ 'error': invalidData[`p-FILE_NAME`] }"
                                                                         :maxFractionDigits="5" :min="0"
-                                                                        placeholder="Enter your point"/>
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData[`pointFileName`]">
-                                                                    {{ invalidData[`pointFileName`] }}
+                                                                     v-if="invalidData[`p-FILE_NAME`]">
+                                                                    {{ invalidData[`p-FILE_NAME`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.FILE_NAME.content !== configureExamData.infoTypeEnums['OTHER'].value"></div>
                                                         <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
+                                                        <div class="flex1">
+                                                            <div class="form-group slide-detail">
+                                                                <label class="top-label d-flex">
+                                                                    Author
+                                                                    <span class="required">*</span>
+                                                                </label>
+                                                                <div class="flex1">
+                                                                    <Dropdown
+                                                                        v-model="generals.properties.AUTHOR.content"
+                                                                        :options="configureExamData.infoType"
+                                                                        optionLabel="description" optionValue="value"
+                                                                        :class="{ 'error': invalidData['c-AUTHOR'] }"
+                                                                        placeholder="Vui lòng chọn một hạng mục"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-AUTHOR`]">
+                                                                    {{ invalidData[`c-AUTHOR`] }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content === configureExamData.infoTypeEnums['OTHER'].value"></div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content === configureExamData.infoTypeEnums['OTHER'].value">
+                                                            <div class="form-group slide-detail">
+                                                                <label class="top-label d-flex">
+                                                                    Nội dung
+                                                                    <span class="required">*</span>
+                                                                </label>
+                                                                <div class="flex1">
+                                                                    <InputText
+                                                                        v-model="generals.properties.AUTHOR.value"
+                                                                        :class="{ 'error': invalidData[`v-AUTHOR`] }"
+                                                                        class="heigth36" placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`v-AUTHOR`]">
+                                                                    {{ invalidData[`v-AUTHOR`] }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content !== configureExamData.infoTypeEnums['OTHER'].value"></div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content === configureExamData.infoTypeEnums['OTHER'].value"></div>
+                                                        <div class="flex1">
+                                                            <div class="form-group slide-detail">
+                                                                <label class="top-label d-flex">
+                                                                    Điểm
+                                                                    <span class="required">*</span>
+                                                                </label>
+                                                                <div class="flex1">
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.AUTHOR.point"
+                                                                        :class="{ 'error': invalidData[`p-AUTHOR`] }"
+                                                                        :maxFractionDigits="5" :min="0"
+                                                                        placeholder="Nhập điểm số"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`p-AUTHOR`]">
+                                                                    {{ invalidData[`p-AUTHOR`] }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content !== configureExamData.infoTypeEnums['OTHER'].value"></div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.AUTHOR.content !== configureExamData.infoTypeEnums['OTHER'].value"></div>
                                                         <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
                                                     </div>
                                                     <div class="flex-row">
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Info
+                                                                    Info title
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <Dropdown v-model="General.Property.Info.Content"
-                                                                              :options="configureExamData.SheetName"
-                                                                              :class="{ 'error': invalidData[`contentInfo`] }"
-                                                                              optionLabel="description"
-                                                                              optionValue="value"
-                                                                              placeholder="Select a Font Effect"/>
+                                                                    <Dropdown
+                                                                        v-model="generals.properties.TITLE.content"
+                                                                        :options="configureExamData.infoType"
+                                                                        optionLabel="description" optionValue="value"
+                                                                        :class="{ 'error': invalidData[`c-TITLE`] }"
+                                                                        placeholder="Select a Font Effect"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['contentInfo']">
-                                                                    {{ invalidData['contentInfo'] }}
+                                                                     v-if="invalidData['c-TITLE']">
+                                                                    {{ invalidData['c-TITLE'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sp"></div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.TITLE.content === configureExamData.infoTypeEnums['OTHER'].value"></div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.TITLE.content === configureExamData.infoTypeEnums['OTHER'].value">
+                                                            <div class="form-group slide-detail">
+                                                                <label class="top-label d-flex">
+                                                                    Nội dung
+                                                                    <span class="required">*</span>
+                                                                </label>
+                                                                <div class="flex1">
+                                                                    <InputText
+                                                                        v-model="generals.properties.TITLE.value"
+                                                                        :class="{ 'error': invalidData['v-TITLE'] }"
+                                                                        class="heigth36" placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text" v-if="invalidData['v-TITLE']">
+                                                                    {{ invalidData['v-TITLE'] }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sp"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.TITLE.content !== configureExamData.infoTypeEnums['OTHER'].content"></div>
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    Point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="General.Property.Info.Point"
-                                                                                 :class="{ 'error': invalidData['pointInfo'] }"
-                                                                                 :maxFractionDigits="5"
-                                                                                 placeholder="Enter your point"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.TITLE.point"
+                                                                        :class="{ 'error': invalidData['p-TITLE'] }"
+                                                                        :maxFractionDigits="5"
+                                                                        placeholder="Enter your point"/>
                                                                 </div>
-                                                                <div class="error-text" v-if="invalidData['pointInfo']">
-                                                                    {{ invalidData['pointInfo'] }}
+                                                                <div class="error-text" v-if="invalidData['p-TITLE']">
+                                                                    {{ invalidData['p-TITLE'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
+                                                        <div class="flex1"
+                                                             v-if="configureExamData.infoTypeEnums && generals.properties.TITLE.content !== configureExamData.infoTypeEnums['OTHER'].value"></div>
                                                         <div class="col-sp"></div>
                                                         <div class="flex1"></div>
                                                         <div class="col-sp"></div>
@@ -2118,7 +2165,7 @@
                         </TabPanel>
                         <TabPanel headerClass="totalScore" :disabled="true">
                             <template #header>
-                                <p>Tổng điểm: <b>{{ totalScore }}</b> điểm</p>
+                                <span>Tổng điểm: <b>{{ totalScore }}</b> điểm</span>
                             </template>
                         </TabPanel>
                     </TabView>
@@ -2180,7 +2227,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="Content" dataKey="id" header="Nội dung tiêu chí">
+                    <Column field="content" dataKey="id" header="Nội dung tiêu chí">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -2188,7 +2235,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="Point" dataKey="id" header="Điểm">
+                    <Column field="point" dataKey="id" header="Điểm">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -2256,13 +2303,9 @@ import Column from 'primevue/column';
 import {mapState, mapActions} from 'vuex'
 import {configureExam, saveCriteria, getCriteriaByExamBankId, deleteCriteria} from '/api/exam-bank'
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
+import {RESPONSE_STATUS} from "@/common/enums";
 
 export default {
-    props: {
-        selectedData: {
-            default: null,
-        }
-    },
     components: {
         TabView,
         TabPanel,
@@ -2291,26 +2334,27 @@ export default {
 
             isPopupDelete: false,
             deletedItem: null,
+            selectedData: null,
 
             Formula: {
                 SheetIndex: null,
                 Range: null,
                 FormulaType: null,
-                Content: null,
-                Point: null,
+                content: null,
+                point: null,
                 PropertyName: 'Formula',
             },
 
             Text: {
                 SheetIndex: null,
                 Range: null,
-                Content: null,
-                Point: null,
+                content: null,
+                point: null,
             },
 
             InsertSheet: {
-                Content: null,
-                Point: null,
+                content: null,
+                point: null,
             },
 
             Format: {
@@ -2400,54 +2444,63 @@ export default {
                 SheetName: {
                     SheetIndex: [],
                     Type: [],
-                    Content: [],
-                    Point: [],
+                    content: [],
+                    point: [],
                 },
             },
 
-            General: {
-                SheetIndex: null,
-                Property: {
-                    FileName: {
-                        Content: null,
-                        Point: null,
+            generals: {
+                properties: {
+                    FILE_NAME: {
+                        content: null,
+                        point: null,
                         type: 'Text',
+                        value: null,
                         propertyName: 'File Name',
                     },
 
-                    SheetName: {
-                        Content: null,
-                        Point: null,
-                        type: 'Text',
-                        propertyName: 'File Name',
-                    },
-
-                    Info: {
-                        Content: null,
-                        Point: null,
+                    info: {
+                        content: null,
+                        point: null,
                         type: 'Option',
                         propertyName: 'Info',
                     },
 
-                    PageOrientation: {
-                        Content: null,
-                        Point: null,
+                    pageOrientation: {
+                        content: null,
+                        point: null,
                         type: 'Option',
                         propertyName: 'Page Orientation',
                     },
 
-                    PageSize: {
-                        Content: null,
-                        Point: null,
+                    pageSize: {
+                        content: null,
+                        point: null,
                         type: 'Option',
                         propertyName: 'Page Size',
+                    },
+
+                    AUTHOR: {
+                        content: null,
+                        point: null,
+                        type: 'Text',
+                        value: null,
+                        propertyName: 'Author',
+                    },
+
+                    TITLE: {
+                        content: null,
+                        point: null,
+                        type: 'Text',
+                        value: null,
+                        propertyName: 'Title',
                     },
                 },
                 SheetName: {
                     SheetIndex: [],
                     Type: [],
-                    Content: [],
-                    Point: [],
+                    content: [],
+                    point: [],
                 },
             },
 
@@ -2459,11 +2512,11 @@ export default {
                 SheetIndexRange: null,
                 SheetIndexCriteria: [],
                 TitleRange: [],
-                TitleContent: [],
+                Titlecontent: [],
                 CriteriaRange: [],
-                CriteriaContent: [],
+                Criteriacontent: [],
                 countCriteria: 1,
-                Point: null,
+                point: null,
             },
 
             //popup thông tin đã thiết lập
@@ -2474,15 +2527,17 @@ export default {
                 Range: null,
                 ExamBankId: null,
                 DataReference: null,
-                Content: null,
+                content: null,
                 PropertyName: null,
                 TypeProperty: null,
-                Point: null
+                point: null
             },
 
             //dữ liệu thiết lập đề: enum,sheetIndex
             configureExamData: [],
             listCriteria: [],
+            examBankId: null,
+            isLoadingSaveCritera: false,
 
             invalidData: [],
         }
@@ -2708,9 +2763,9 @@ export default {
         validateCriteriaAdvancedFilterEmpty() {
             var valid = true;
             for (let index = 1; index <= this.AdvancedFilter.countCriteria; index++) {
-                if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.Point != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null || this.AdvancedFilter.SheetIndexCriteria[index] != null || (String(this.AdvancedFilter.TitleRange[index]).trim() !== '' && this.AdvancedFilter.TitleRange[index] != null)
-                    || (String(this.AdvancedFilter.TitleContent[index]).trim() != '' && this.AdvancedFilter.TitleContent[index] != null) || (String(this.AdvancedFilter.CriteriaRange[index]).trim() !== '' && this.AdvancedFilter.CriteriaRange[index] != null)
-                    || (String(this.AdvancedFilter.CriteriaContent[index]).trim() != '' && this.AdvancedFilter.CriteriaContent[index] != null)) {
+                if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.point != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null || this.AdvancedFilter.SheetIndexCriteria[index] != null || (String(this.AdvancedFilter.TitleRange[index]).trim() !== '' && this.AdvancedFilter.TitleRange[index] != null)
+                    || (String(this.AdvancedFilter.Titlecontent[index]).trim() != '' && this.AdvancedFilter.Titlecontent[index] != null) || (String(this.AdvancedFilter.CriteriaRange[index]).trim() !== '' && this.AdvancedFilter.CriteriaRange[index] != null)
+                    || (String(this.AdvancedFilter.Criteriacontent[index]).trim() != '' && this.AdvancedFilter.Criteriacontent[index] != null)) {
                     if (this.AdvancedFilter.SheetIndexCriteria[index] == null) {
                         this.invalidData[`SheetIndexCriteria${index}`] = 'Sheet không được để trống';
                         valid = false;
@@ -2719,16 +2774,16 @@ export default {
                         this.invalidData[`TitleRange${index}`] = 'Tiêu đề không được để trống';
                         valid = false;
                     }
-                    if ((String(this.AdvancedFilter.TitleContent[index]).trim() == '' || this.AdvancedFilter.TitleContent[index] == null)) {
-                        this.invalidData[`TitleContent${index}`] = 'Nội dung không được để trống';
+                    if ((String(this.AdvancedFilter.Titlecontent[index]).trim() == '' || this.AdvancedFilter.Titlecontent[index] == null)) {
+                        this.invalidData[`Titlecontent${index}`] = 'Nội dung không được để trống';
                         valid = false;
                     }
                     if ((String(this.AdvancedFilter.CriteriaRange[index]).trim() == '' || this.AdvancedFilter.CriteriaRange[index] == null)) {
                         this.invalidData[`CriteriaRange${index}`] = 'Tiêu đề không được để trống';
                         valid = false;
                     }
-                    if ((String(this.AdvancedFilter.CriteriaContent[index]).trim() == '' || this.AdvancedFilter.CriteriaContent[index] == null)) {
-                        this.invalidData[`CriteriaContent${index}`] = 'Nội dung không được để trống';
+                    if ((String(this.AdvancedFilter.Criteriacontent[index]).trim() == '' || this.AdvancedFilter.Criteriacontent[index] == null)) {
+                        this.invalidData[`Criteriacontent${index}`] = 'Nội dung không được để trống';
                         valid = false;
                     }
                     if (!this.validateCellNoRef(this.AdvancedFilter.TitleRange[index])) {
@@ -2813,10 +2868,10 @@ export default {
                                 Range: this.Format.Range,
                                 ExamBankId: this.selectedData.ExamBankId,
                                 DataReference: null,
-                                Content: content,
+                                content: content,
                                 PropertyName: this.Format.Property[property].propertyName,
                                 TypeProperty: this.TypeProperty[property],
-                                Point: this.Format.Property[property].point
+                                point: this.Format.Property[property].point
                             });
                             //clear giá trị
                             this.Format.Property[property].content = this.Format.Property[property].point = null;
@@ -2828,23 +2883,23 @@ export default {
                 console.log(this.invalidData);
             } else if (this.tabViewIndex == 1) {
                 //insert text
-                if (this.validateCellNoRef(this.Text.Range) && this.Text.SheetIndex != null && this.Text.Content != null && String(this.Text.Content).trim() != '' && this.Text.Point != null) {
+                if (this.validateCellNoRef(this.Text.Range) && this.Text.SheetIndex != null && this.Text.content != null && String(this.Text.content).trim() != '' && this.Text.point != null) {
                     //add vào danh sách tiêu chí
                     this.listCriteria.push({
                         SheetId: this.Text.SheetIndex,
                         Range: this.Text.Range,
                         ExamBankId: this.selectedData.ExamBankId,
                         DataReference: null,
-                        Content: this.Text.Content,
+                        content: this.Text.content,
                         PropertyName: 'Insert Text',
                         TypeProperty: this.TypeProperty['Text'],
-                        Point: this.Text.Point
+                        point: this.Text.point
                     });
                     //clear giá trị
-                    this.Text.Range = this.Text.SheetIndex = this.Text.Content = null;
+                    this.Text.Range = this.Text.SheetIndex = this.Text.content = null;
                     this.showToast("Thiết lập tiêu chí thành công");
                     this.saveToLocalStorage();
-                } else if (this.Text.Range != null || this.Text.SheetIndex != null || (this.Text.Content != null && String(this.Text.Content).trim() != '') || this.Text.Point != null) {
+                } else if (this.Text.Range != null || this.Text.SheetIndex != null || (this.Text.content != null && String(this.Text.content).trim() != '') || this.Text.point != null) {
                     if (this.Text.SheetIndex == null) {
                         this.invalidData[`sheetIndex${this.TypeProperty.Text}`] = 'Sheet không được để trống';
                     }
@@ -2855,11 +2910,11 @@ export default {
                         this.invalidData[`range${this.TypeProperty.Text}`] = 'Vùng không đúng định dạng';
                     }
 
-                    if (this.Text.Content == null || String(this.Text.Content).trim() == '') {
+                    if (this.Text.content == null || String(this.Text.content).trim() == '') {
                         this.invalidData[`content${this.TypeProperty.Text}`] = 'Nội dung không được để trống';
                     }
 
-                    if (this.Text.Point == null) {
+                    if (this.Text.point == null) {
                         this.invalidData[`point${this.TypeProperty.Text}`] = 'Điểm không được để trống';
                     }
 
@@ -2869,34 +2924,34 @@ export default {
                 }
 
                 //insert sheet
-                if (this.InsertSheet.Content != null && this.InsertSheet.Point != null) {
+                if (this.InsertSheet.content != null && this.InsertSheet.point != null) {
 
-                } else if (this.InsertSheet.Content != null || this.InsertSheet.Point != null) {
-                    if (this.InsertSheet.Content == null) this.invalidData[`content${this.TypeProperty.InsertSheet}`] = 'Nội dung không được để trống';
-                    if (this.InsertSheet.Point == null) this.invalidData[`point${this.TypeProperty.InsertSheet}`] = 'Điểm không được để trống';
+                } else if (this.InsertSheet.content != null || this.InsertSheet.point != null) {
+                    if (this.InsertSheet.content == null) this.invalidData[`content${this.TypeProperty.InsertSheet}`] = 'Nội dung không được để trống';
+                    if (this.InsertSheet.point == null) this.invalidData[`point${this.TypeProperty.InsertSheet}`] = 'Điểm không được để trống';
                 }
 
                 //formula
-                if (this.Formula.SheetIndex != null && (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) && this.Formula.FormulaType != null && this.Formula.Content != null && this.Formula.Content != '' && this.Formula.Point) {
+                if (this.Formula.SheetIndex != null && (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) && this.Formula.FormulaType != null && this.Formula.content != null && this.Formula.content != '' && this.Formula.point) {
                     //add vào danh sách tiêu chí
                     this.listCriteria.push({
                         SheetId: this.Formula.SheetIndex,
                         Range: this.Formula.Range,
                         ExamBankId: this.selectedData.ExamBankId,
                         DataReference: null,
-                        Content: JSON.stringify([
+                        content: JSON.stringify([
                             this.Formula.FormulaType,
-                            this.Formula.Content,
+                            this.Formula.content,
                         ]),
                         PropertyName: 'Formula',
                         TypeProperty: this.TypeProperty['Formula'],
-                        Point: this.Formula.Point
+                        point: this.Formula.point
                     });
                     //clear giá trị
-                    this.Formula.Content = this.Format.FormulaType = this.Formula.SheetIndex = null;
+                    this.Formula.content = this.Format.FormulaType = this.Formula.SheetIndex = null;
                     this.showToast("Thiết lập tiêu chí thành công");
                     this.saveToLocalStorage();
-                } else if (this.Formula.SheetIndex != null || (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) || this.Formula.FormulaType != null || (this.Formula.Content != null && this.Formula.Content != '') || this.Formula.Point) {
+                } else if (this.Formula.SheetIndex != null || (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) || this.Formula.FormulaType != null || (this.Formula.content != null && this.Formula.content != '') || this.Formula.point) {
                     if (this.Formula.SheetIndex == null) {
                         this.invalidData['FormulaSheetIndex'] = 'Sheet không được để trống';
                     }
@@ -2915,12 +2970,12 @@ export default {
                         this.invalidData['FormulaType'] = 'Loại công thức không được để trống';
                     }
 
-                    if (this.Formula.Content == null || String(this.Formula.Content).trim() == '') {
-                        this.invalidData['FormulaContent'] = 'Công thức không được để trống';
+                    if (this.Formula.content == null || String(this.Formula.content).trim() == '') {
+                        this.invalidData['Formulacontent'] = 'Công thức không được để trống';
                     }
 
-                    if (this.Formula.Point == null) {
-                        this.invalidData['FormulaPoint'] = 'Điểm không được để trống';
+                    if (this.Formula.point == null) {
+                        this.invalidData['Formulapoint'] = 'Điểm không được để trống';
                     }
 
                 }
@@ -2928,15 +2983,15 @@ export default {
 
                 var valid = this.validateCriteriaAdvancedFilterEmpty();
                 //insert advanced filter
-                if (this.AdvancedFilter.SheetIndex != null && this.validateCellNoRef(this.AdvancedFilter.Range) && this.AdvancedFilter.Range != null && this.AdvancedFilter.Point != null && valid) {
+                if (this.AdvancedFilter.SheetIndex != null && this.validateCellNoRef(this.AdvancedFilter.Range) && this.AdvancedFilter.Range != null && this.AdvancedFilter.point != null && valid) {
                     var content = [];
                     for (let index = 1; index <= this.AdvancedFilter.countCriteria; index++) {
                         content.push(
                             {
                                 SheetIndex: this.AdvancedFilter.SheetIndexCriteria[index],
                                 TitleRange: this.AdvancedFilter.TitleRange[index],
-                                TitleContent: this.AdvancedFilter.TitleContent[index],
-                                CriteriaContent: this.AdvancedFilter.CriteriaContent[index],
+                                Titlecontent: this.AdvancedFilter.Titlecontent[index],
+                                Criteriacontent: this.AdvancedFilter.Criteriacontent[index],
                                 CriteriaRange: this.AdvancedFilter.CriteriaRange[index],
                             }
                         );
@@ -2952,16 +3007,16 @@ export default {
                                 range: this.AdvancedFilter.DataRange,
                             }
                         ),
-                        Content: JSON.stringify(content),
+                        content: JSON.stringify(content),
                         PropertyName: 'AdvancedFilter',
                         TypeProperty: this.TypeProperty['AdvancedFilter'],
-                        Point: this.AdvancedFilter.Point
+                        point: this.AdvancedFilter.point
                     });
                     //clear giá trị
-                    this.Formula.Content = this.Format.FormulaType = this.Formula.SheetIndex = null;
+                    this.Formula.content = this.Format.FormulaType = this.Formula.SheetIndex = null;
                     this.showToast("Thiết lập tiêu chí thành công");
                     this.saveToLocalStorage();
-                } else if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.Point != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null) {
+                } else if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.point != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null) {
 
                     if (this.AdvancedFilter.SheetIndex == null) {
                         this.invalidData['SheetIndexAdvancedFilter'] = 'Sheet không được để trống';
@@ -2978,8 +3033,8 @@ export default {
                     if (this.AdvancedFilter.Range == null) {
                         this.invalidData['RangeAdvancedFilter'] = 'Vùng không được để trống';
                     }
-                    if (this.AdvancedFilter.Point == null) {
-                        this.invalidData['PointAdvancedFilter'] = 'Điểm không được để trống';
+                    if (this.AdvancedFilter.point == null) {
+                        this.invalidData['pointAdvancedFilter'] = 'Điểm không được để trống';
                     }
 
                     if (this.AdvancedFilter.Range != null && this.validateCellNoRef(this.AdvancedFilter.Range)) {
@@ -2991,145 +3046,60 @@ export default {
                     }
 
                 }
-            } else if (this.tabViewIndex == 2) {
-                for (var property in this.General.Property) {
-                    var validData = true;
-                    if (property != 'Info' && property != 'FileName' && (this.General.Property[property].Content != null || this.General.Property[property].Point != null)) {
-                        if (this.General.SheetIndex == null) {
-                            this.invalidData['sheetIndexGeneral'] = 'Sheet không được để trống';
+            } else if (this.tabViewIndex === 2) {
+                for (let property in this.generals.properties) {
+                    let validData = true;
+                    if (this.generals.properties[property].content != null || this.generals.properties[property].point != null) {
+                        if ((this.generals.properties[property].content == null || (this.generals.properties[property].type === 'Text' && this.generals.properties[property].content === ''))) {
+                            this.invalidData[`c-${property}`] = 'Nội dung không được để trống';
+                            validData = false;
+                        }
+                        if (this.generals.properties[property].point == null) {
+                            this.invalidData[`p-${property}`] = 'Điểm không được để trống';
+                            validData = false;
+                        }
+                        if (this.generals.properties[property].content === this.configureExamData.infoTypeEnums['OTHER'].value && this.generals.properties[property].value == null) {
+                            this.invalidData[`v-${property}`] = 'Nội dung không được để trống';
                             validData = false;
                         }
                     }
-                    if (this.General.Property[property].Content != null || this.General.Property[property].Point != null) {
-                        if ((this.General.Property[property].Content == null || (this.General.Property[property].type == 'Text' && this.General.Property[property].Content == ''))) {
-                            this.invalidData[`content${property}`] = 'Nội dung không được để trống';
-                            validData = false;
+                    if (validData && this.generals.properties[property].content != null && this.generals.properties[property].point != null) {
+                        let content = {
+                            'key': this.generals.properties[property].content,
+                            'value': this.generals.properties[property].value,
                         }
-                        if (this.General.Property[property].Point == null) {
-                            this.invalidData[`point${property}`] = 'Điểm không được để trống';
-                            validData = false;
-                        }
-                    }
-                    if (validData && this.General.Property[property].Content != null && this.General.Property[property].Point != null) {
                         //add vào danh sách tiêu chí
                         this.listCriteria.push({
-                            SheetID: this.General.SheetIndex,
-                            ExamBankId: this.selectedData.ExamBankId,
-                            Content: this.General.Property[property].Content,
-                            DataReference: null,
-                            Range: null,
-                            PropertyName: this.General.Property[property].propertyName,
-                            TypeProperty: this.TypeProperty[property],
-                            Point: this.General.Property[property].Point
+                            exam_bank_id: this.examBankId,
+                            content: JSON.stringify(content),
+                            page: 0,
+                            paragraph: null,
+                            property_name: this.generals.properties[property].propertyName,
+                            property_type: this.TypeProperty[property],
+                            point: this.generals.properties[property].point,
+                            priority: 0,
                         });
                         //clear giá trị
-                        this.General.Property[property].Content = this.General.Property[property].Point = null;
-                        this.showToast("Thiết lập tiêu chí thành công");
-                        this.saveToLocalStorage();
+                        this.generals.properties[property].content = this.generals.properties[property].point = this.generals.properties[property].value = null;
                     }
                 }
-
-                //tên sheet
-                var sheetNameTypeOther = this.configureExamData['SheetName'].find(_item => _item.description == 'Other').value;
-                for (var sheetIndex in this.optionSheet) {
-                    validData = true;
-                    if (this.General.SheetName.Type[sheetIndex] != null || this.General.SheetName.Point[sheetIndex] != null) {
-                        if (this.General.SheetName.Type[sheetIndex] == null) {
-                            validData = false;
-                            this.invalidData[`typeSheetName${sheetIndex}`] = 'Loại Sheet Name không được để trống';
-                        }
-
-                        if (this.General.SheetName.Point[sheetIndex] == null) {
-                            validData = false;
-                            this.invalidData[`pointSheetName${sheetIndex}`] = 'Điểm không được để trống';
-                        }
-                    }
-                    if (this.General.SheetName.Type[sheetIndex] != null && this.General.SheetName.Type[sheetIndex] == sheetNameTypeOther && this.General.SheetName.Content[sheetIndex] == null || String(this.General.SheetName.Content[sheetIndex]).trim() == '') {
-                        this.invalidData[`contentSheetName${sheetIndex}`] = 'Tên sheet không được để trống';
-                        validData = false;
-                    }
-
-                    if (this.General.SheetName.Type[sheetIndex] != null && this.General.SheetName.Point[sheetIndex] != null && validData) {
-                        //add vào danh sách tiêu chí
-                        this.listCriteria.push({
-                            SheetID: sheetIndex,
-                            ExamBankId: this.selectedData.ExamBankId,
-                            Content: JSON.stringify({
-                                type: this.General.SheetName.Type[sheetIndex],
-                                content: this.General.SheetName.Content[sheetIndex],
-                            }),
-                            DataReference: null,
-                            Range: null,
-                            PropertyName: `Sheet Name ${sheetIndex}`,
-                            TypeProperty: this.TypeProperty['SheetName'],
-                            Point: this.General.SheetName.Point[sheetIndex]
-                        });
-                        //clear giá trị
-                        this.General.SheetName.Type[sheetIndex] = this.General.SheetName.Content[sheetIndex] = this.General.SheetName.Point[sheetIndex] = null;
-                        this.showToast("Thiết lập tiêu chí thành công");
-                        this.saveToLocalStorage();
-                    }
-
-                    console.log(this.invalidData);
-                }
-
-
             }
-        },
 
-        isFormula(formula) {
-            var result = true;
-            var comparisonOperators = {'>': true, '<': true, '=': true, '>=': true, '<=': true, '<>': true};
-            var CALCULATION_OPERATORS = {
-                '+': true, '-': true, '*': true, '/': true,
-                '^': true, '&': true, '%': false, '~': false,
-                '>': true, '<': true, '=': true, '>=': true,
-                '<=': true, '<>': true, '∩': true, '∪': true,
-                ':': true,
-            };
-            var operatorAssociativity = {
-                '^': 0, //    Exponentiation
-                '*': 0, '/': 0, //    Multiplication and Division
-                '+': 0, '-': 0, //    Addition and Subtraction
-                '&': 0, //    Concatenation
-                '∪': 0, '∩': 0, ':': 0, //    Union, Intersect and Range
-                '>': 0, '<': 0, '=': 0, '>=': 0, '<=': 0, '<>': 0, //    Comparison
-            };
-            var index = 0;
-            var stack = [];
-            var output = [];
-            var expectingOperator = false; //    We use this test in syntax-checking the expression to determine when a
-            //        - is a negation or + is a positive operator rather than an operation
-            var expectingOperand = false; //    We use this test in syntax-checking the expression to determine whether an operand
-            //        should be null in a function call
-
-            //    The guts of the lexical parser
-            //    Loop through the formula extracting each operator and operand in turn
-            while (true) {
-                var opCharacter = formula[index]; //    Get the first character of the value at the current index position
-                // Check for two-character operators (e.g. >=, <=, <>)
-                if (comparisonOperators[opCharacter] && formula.length > index && comparisonOperators[formula[index + 1]]) {
-                    opCharacter += formula[++index];
-                }
-                var isOperandOrFunction = formula.substr(index).match(regex.regexpMatchString);
-                var expectingOperatorCopy = expectingOperator;
-                if (opCharacter === '-' && !expectingOperator) {                //    Is it a negation instead of a minus?
-                    //    Put a negation on the stack
-                    stack.push('Unary Operator', '~');
-                    ++index; //        and drop the negation symbol
-                } else if (opCharacter === '%' && expectingOperator) {
-                    //    Put a percentage on the stack
-                    stack.push('Unary Operator', '%');
-                    ++index;
-                } else if (opCharacter === '+' && !expectingOperator) {            //    Positive (unary plus rather than binary operator plus) can be discarded?
-                    ++index; //    Drop the redundant plus symbol
-                } else if (((opCharacter === '~') || (opCharacter === '∩') || (opCharacter === '∪')) && (!isOperandOrFunction)) {
-                    //    We have to explicitly deny a tilde, union or intersect because they are legal
-                    alert(1);
-                    break;
-                    // return $this -> raiseFormulaError("Formula Error: Illegal character '~'"); //        on the stack but not in the input expression
-                }
-                break;
+            if (this.listCriteria.length > 0) {
+                this.isLoadingSaveCritera = true;
+                saveCriteria(this.listCriteria).then(res => {
+                    this.listCriteria = [];
+                    this.$store.dispatch('handleSuccess', 'Thiết lập tiêu chí thành công');
+                }).catch(error => {
+                    if (error.request.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
+                        this.$store.dispatch('handleServerError');
+                    }
+                    console.log(error);
+                }).finally(() => {
+                    setTimeout(() => {
+                        this.isLoadingSaveCritera = false;
+                    }, 300);
+                })
             }
         },
 
@@ -3137,10 +3107,12 @@ export default {
          * Load dữ liệu thiết lập đề: enum, sheetIndex
          */
         async loadConfigExamData() {
+            this.examBankId = this.$route.params.id;
             var me = this;
-            await configureExam(this.selectedData.ExamBankId).then(res => {
-                me.configureExamData = res;
-                me.TypeProperty = res.TypeProperty;
+            await configureExam(this.examBankId).then(res => {
+                me.configureExamData = res.data;
+                me.selectedData = res.data.data;
+                me.TypeProperty = res.data.typeProperty;
             }).catch(error => {
                 console.log(error);
             })
@@ -3148,9 +3120,12 @@ export default {
     },
 
     async created() {
-        console.log(this.selectedData.ExamBankId);
-        this.optionSheet = JSON.parse(this.selectedData.SheetIndexReference)[0];
+        // console.log(this.selectedData.ExamBankId);
+        // this.optionSheet = JSON.parse(this.selectedData.SheetIndexReference)[0];
         await this.loadConfigExamData();
+    },
+
+    mounted() {
     },
 
     computed: {

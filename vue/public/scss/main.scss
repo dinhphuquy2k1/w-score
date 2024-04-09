@@ -126,7 +126,13 @@ body {
     }
 
     &.icon-only {
-        min-width: 40px;
+        min-width: 36px;
+        min-height: 36px;
+        height: 36px;
+    }
+
+    &.icon-only-border {
+        border: 1px solid #e0e0e0;
     }
 
     .icon-only {

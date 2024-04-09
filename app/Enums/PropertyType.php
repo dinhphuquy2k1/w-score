@@ -59,4 +59,5 @@ final class PropertyType extends Enum
     const APPLY_STYLE = 45;
     const APPLY_STYLE_ALL = 46;
     const MODIFY_STYLE_AND_APPLY = 47;
+    const FILE_NAME = 48;
 }

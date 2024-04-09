@@ -90,8 +90,8 @@ export function deleteExamBank(id) {
  */
 export function configureExam(id) {
     return request({
-        url: `exambank/${id}`,
-        method: 'get',
+        url: `api/exam-banks/${id}`,
+        method: 'GET',
     })
 }
 
@@ -101,7 +101,7 @@ export function configureExam(id) {
  */
 export function saveCriteria(data) {
     return request({
-        url: `/api/saveCriteria`,
+        url: '/api/exam-banks/saveCriteria',
         method: 'POST',
         data: data
     })

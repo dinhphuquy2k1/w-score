@@ -11,8 +11,8 @@ use BenSampo\Enum\Enum;
  */
 final class InfoType extends Enum
 {
-    const STUDENT_NAME =   0;
-    const STUDENT_CODE =   1;
-    const STUDENT_CODE_NAME =   2;
-    const OTHER = 3;
+    const STUDENT_NAME = 1;
+    const STUDENT_CODE = 2;
+    const STUDENT_CODE_NAME = 3;
+    const OTHER = 4;
 }

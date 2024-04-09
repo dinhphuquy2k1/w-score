@@ -92,11 +92,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="item" @click="deleteRowSelect(slotProps.data)">
-                                    <div class="v-popover popover">
-                                        <div class="icon24 delete"></div>
-                                    </div>
-                                </div>
+                                <Button
+                                    class="ms-btn white ms-1 rounded-circle d-flex icon-only icon-only-border justify-content-center ms-btn_search"
+                                    @click="toggle($event, slotProps.data)" aria-haspopup="true"
+                                    aria-controls="overlay_menu">
+                                    <div class="icon-only icon24 more"></div>
+                                </Button>
+                                <Menu ref="menu" id="overlay_menu" :model="actionItems" :popup="true"/>
                             </div>
                             <div v-else>
                                 <Skeleton height="18px" class="mb-2"></Skeleton>
@@ -224,7 +226,7 @@
                     class="ms-btn secondary blue me-3 d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                     <div class="">Đóng</div>
                 </Button>
-                <Button @click="doSave" @keyup.enter="doSave"
+                <Button @click="doSave" @keyup.enter.prevent="doSave"
                         class="ms-btn primary blue d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                     <div class="">Lưu</div>
                 </Button>
@@ -250,12 +252,12 @@ import InputText from 'primevue/inputtext';
 import ExamPopup from '@/views/user/components/ExamPopup.vue';
 import ExamSetup from '@/views/user/components/ExamSetup.vue';
 import DataTable from 'primevue/datatable';
+import Menu from 'primevue/menu';
 import Auth from "../../../api/utils/auth";
 import Dialog from 'primevue/dialog';
 import Column from 'primevue/column';
 import InputNumber from 'primevue/inputnumber';
 import Dropdown from 'primevue/dropdown';
-import * as XLSX from 'xlsx';
 import Skeleton from 'primevue/skeleton';
 import {generateCode} from '@/common/functions'
 import Resumable from 'resumablejs';
@@ -272,6 +274,7 @@ export default {
         ExamPopup,
         ExamSetup,
         DataTable,
+        Menu,
         Column,
         Button,
         Dropdown,
@@ -304,6 +307,22 @@ export default {
                 fileSize: null,
                 success: true,
             },
+            actionItems: [
+                {
+                    label: 'Thiết lập đề',
+                    icon: 'pi pi-refresh',
+                    command: () => {
+                        this.activeMenuItem(1)
+                    }
+                },
+                {
+                    label: 'Xóa',
+                    icon: 'pi pi-upload',
+                    command: () => {
+                        this.activeMenuItem(2)
+                    }
+                }
+            ],
 
             defaultData: {
                 id: null,
@@ -386,6 +405,7 @@ export default {
                     }
                 }
             } catch (error) {
+                this.popupLoading = false;
                 console.log(error);
             }
         }
@@ -472,6 +492,22 @@ export default {
                     this.isLoadingDelete = false;
                 }, 300);
             })
+        },
+
+        /**
+         * sự kiện click menu item
+         * @param index
+         */
+        activeMenuItem(index) {
+            switch (index) {
+                // click item thiết lập đề
+                case 1:
+                    this.$router.push({name: 'setup', params: {id: this.selectedData.id}});
+                    break;
+                // click item xóa
+                case 2:
+                    break;
+            }
         },
 
         /**
@@ -647,6 +683,15 @@ export default {
             this.selectedData = {...data};
             this.file.fileSize = this.selectedData.file_size
             this.file.fileName = this.selectedData.file_name
+        },
+        /**
+         * mở action menu
+         * @param event
+         * @param data
+         */
+        toggle(event, data) {
+            this.$refs.menu.toggle(event);
+            this.selectedData = {...data};
         }
     },
     async created() {

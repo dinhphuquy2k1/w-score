@@ -45,6 +45,19 @@ const routes: Array<RouteRecordRaw> = [
                 }
             },
             {
+                path: '/exam-list/:id', // Thêm tham số động :userId vào path
+                name: 'setup',
+                components: {
+                    content: () => import('@/views/user/components/ExamSetup.vue'),
+                    header: () => import('@/views/admin/components/Header.vue'),
+                    navbar: () => import('@/views/admin/components/NavBar.vue')
+                },
+                meta: {
+                    auth: true,
+                    title: 'Thiết lập đề'
+                }
+            },
+            {
                 path: '/exam-manager',
                 name: 'exam-manager',
                 components: {

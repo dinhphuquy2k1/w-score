@@ -68,6 +68,7 @@
 
 .p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled .p-inputtext {
     border: none;
+    line-height: 22px;
 }
 
 .p-multiselect {
@@ -133,5 +134,11 @@
 
     &:last-child {
         margin-bottom: 8px;
+    }
+}
+
+.p-inputnumber {
+    &.error {
+        border: 1px solid red !important;
     }
 }
