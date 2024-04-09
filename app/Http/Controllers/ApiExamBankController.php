@@ -15,6 +15,7 @@ use PhpOffice\PhpWord\IOFactory as PHPIOFactory;
 use ZipArchive;
 use App\Enums\PropertyType;
 use App\Enums\InfoType;
+use App\Enums\PageSize;
 
 class ApiExamBankController extends Controller
 {
@@ -391,6 +392,12 @@ class ApiExamBankController extends Controller
                         'description' => $instance->description,
                     ];
                 })->toArray(),
+                'pageSize' => collect(PageSize::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->description,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
                 'infoType' => collect(InfoType::getInstances())->values()->map(function ($instance) {
                     switch ($instance->value) {
                         case InfoType::STUDENT_NAME:
@@ -439,6 +446,22 @@ class ApiExamBankController extends Controller
             '*.point' => 'required|numeric',
         ]);
         Criteria::insert($attributes);
+    }
+
+    /**
+     * Lấy danh sách tiêu chí
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|object
+     */
+    public function getCriteria(Request $request)
+    {
+        $criterias = Criteria::where('exam_bank_id', $request->id)->get();
+        if ($criterias) {
+            return $this->sendResponseSuccess($criterias->toArray());
+        }
+        else{
+            return $this->sendResponseError();
+        }
     }
 
     public function delete($id)

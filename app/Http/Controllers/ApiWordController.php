@@ -258,10 +258,10 @@ class ApiWordController extends Controller
                     case PropertyType::APPLY_STYLE_ALL:
                         $this->checkApplyStyleAll($criteria, $student, $ret);
                         break;
-                    case PropertyType::MERGE_LEFT_ALL:
-                    case PropertyType::MERGE_RIGHT_ALL:
-                    case PropertyType::MERGE_TOP_ALL:
-                    case PropertyType::MERGE_BOTTOM_ALL:
+                    case PropertyType::MARGIN_LEFT_ALL:
+                    case PropertyType::MARGIN_RIGHT_ALL:
+                    case PropertyType::MARGIN_TOP_ALL:
+                    case PropertyType::MARGIN_BOTTOM_ALL:
                         $this->checkMarginAll($sections, $criteria, $student, $ret);
                         break;
                     case PropertyType::IMAGE:
@@ -609,16 +609,16 @@ class ApiWordController extends Controller
         $value = 0;
         foreach ($sections as $section) {
             switch ((int)$criteria->property_type) {
-                case PropertyType::MERGE_LEFT_ALL:
+                case PropertyType::MARGIN_LEFT_ALL:
                     $value = round($section->getStyle()->getMarginLeft() / 569, 1);
                     break;
-                case PropertyType::MERGE_RIGHT_ALL:
+                case PropertyType::MARGIN_RIGHT_ALL:
                     $value = round($section->getStyle()->getMarginRight() / 569, 1);
                     break;
-                case PropertyType::MERGE_TOP_ALL:
+                case PropertyType::MARGIN_TOP_ALL:
                     $value = round($section->getStyle()->getMarginTop() / 569, 1);
                     break;
-                case PropertyType::MERGE_BOTTOM_ALL:
+                case PropertyType::MARGIN_BOTTOM_ALL:
                     $value = round($section->getStyle()->getMarginBottom() / 569, 1);
                     break;
             }

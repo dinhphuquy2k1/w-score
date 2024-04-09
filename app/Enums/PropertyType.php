@@ -35,14 +35,14 @@ final class PropertyType extends Enum
     const PAGE_SIZE = 21;
     const PAGE_SIZE_ALL = 22;
 
-    const MERGE_LEFT_ALL = 23;
-    const MERGE_RIGHT_ALL = 24;
-    const MERGE_TOP_ALL = 25;
-    const MERGE_BOTTOM_ALL = 26;
-    const MERGE_LEFT = 27;
-    const MERGE_RIGHT = 28;
-    const MERGE_TOP = 29;
-    const MERGE_BOTTOM = 30;
+    const MARGIN_LEFT_ALL = 23;
+    const MARGIN_RIGHT_ALL = 24;
+    const MARGIN_TOP_ALL = 25;
+    const MARGIN_BOTTOM_ALL = 26;
+    const MARGIN_LEFT = 27;
+    const MARGIN_RIGHT = 28;
+    const MARGIN_TOP = 29;
+    const MARGIN_BOTTOM = 30;
     const TITLE = 32;
     const AUTHOR = 33;
     const NUMBERING = 34;
@@ -55,7 +55,7 @@ final class PropertyType extends Enum
     const FOOTNOTE = 41;
     const INSERT_FOOTNOTE = 42;
     const FOOTNOTE_CONTENT = 43;
-    const FOOTNOTE_TYPE= 44;
+    const FOOTNOTE_TYPE = 44;
     const APPLY_STYLE = 45;
     const APPLY_STYLE_ALL = 46;
     const MODIFY_STYLE_AND_APPLY = 47;

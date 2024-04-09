@@ -9,7 +9,7 @@
                                 class="ms-btn secondary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                             <div class="">Xem trước</div>
                         </Button>
-                        <Button @click="btnComplete"
+                        <Button @click="saveCriteriaSettings"
                                 class="ms-btn primary ms-3 d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                             <div class="">Hoàn thành</div>
                         </Button>
@@ -56,8 +56,9 @@
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.Font.point"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.Font}`] }"
-                                                                             :maxFractionDigits="5"
-                                                                             placeholder="Enter your point"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -100,8 +101,9 @@
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.FontStyle.point"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.FontStyle}`] }"
-                                                                             :maxFractionDigits="5"
-                                                                             placeholder="Enter your point"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -144,8 +146,9 @@
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.FontColor.point"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.FontColor}`] }"
-                                                                             :maxFractionDigits="5"
-                                                                             placeholder="Enter your point"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -189,8 +192,9 @@
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.FontSize.point"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.FontSize}`] }"
-                                                                             :maxFractionDigits="5"
-                                                                             placeholder="Enter your point"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -232,7 +236,7 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"
+                                                                <InputNumber placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -273,7 +277,7 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"
+                                                                <InputNumber placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -325,7 +329,7 @@
                                                                 <InputNumber v-model="Format.Property.Horizontal.point"
                                                                              :max-fraction-digits="5" :min="0"
                                                                              :max="100"
-                                                                             placeholder="Enter your point"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -370,7 +374,7 @@
                                                                 <InputNumber v-model="Format.Property.Vertical.point"
                                                                              :min="0" :max="100"
                                                                              :max-fraction-digits="5"
-                                                                             placeholder="Enter your point"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -411,7 +415,7 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"/>
+                                                                <InputNumber placeholder="Nhập điểm số"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.TextOrientation}`]">
@@ -459,7 +463,7 @@
                                                                 <InputNumber v-model="Format.Property.TextControl.point"
                                                                              :max-fraction-digits="5" :min="0"
                                                                              :max="100"
-                                                                             placeholder="Enter your point"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -498,7 +502,7 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"/>
+                                                                <InputNumber placeholder="Nhập điểm số"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.TextDirection}`]">
@@ -567,7 +571,8 @@
                                                         <div class="flex1">
                                                             <InputNumber v-model="Format.Property.FormatNumber.decimal"
                                                                          :class="{ 'error': invalidData['decimal'] }"
-                                                                         :maxFractionDigits="5"
+                                                                         :max="10"
+                                                                         :min="0" :maxFractionDigits="5"
                                                                          placeholder="Enter your Deciaml"/>
                                                         </div>
                                                         <div class="error-text" v-if="invalidData['decimal']">
@@ -586,8 +591,9 @@
                                                         <div class="flex1">
                                                             <InputNumber v-model="Format.Property.FormatNumber.point"
                                                                          :class="{ 'error': invalidData[`point${TypeProperty.FormatNumber}`] }"
-                                                                         :maxFractionDigits="5"
-                                                                         placeholder="Enter your point"/>
+                                                                         :max="10"
+                                                                         :min="0" :maxFractionDigits="5"
+                                                                         placeholder="Nhập điểm số"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${TypeProperty.FormatNumber}`]">
@@ -638,7 +644,7 @@
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.ColumnWidth}`] }"
                                                                              :max="100" :min="0"
                                                                              :max-fraction-digits="5"
-                                                                             placeholder="Enter your point"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -682,7 +688,7 @@
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.RowHeight}`] }"
                                                                              :max="100" :min="0"
                                                                              :max-fraction-digits="5"
-                                                                             placeholder="Enter your point"
+                                                                             placeholder="Nhập điểm số"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -736,7 +742,7 @@
                                                                     v-model="Format.Property.FormatAsTable.point"
                                                                     :max-fraction-digits="5" :min="0" :max="100"
                                                                     :class="{ 'error': invalidData[`point${TypeProperty.FormatAsTable}`] }"
-                                                                    placeholder="Enter your point" class="ms-point"/>
+                                                                    placeholder="Nhập điểm số" class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FormatAsTable}`]">
@@ -774,10 +780,10 @@
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.TableName.point"
-                                                                             :min="0" :max="100"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.TableName}`] }"
-                                                                             placeholder="Enter your point"
-                                                                             :maxFractionDigits="5"
+                                                                             placeholder="Nhập điểm số"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"
                                                                              class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
@@ -822,10 +828,10 @@
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber v-model="Format.Property.TableStyle.point"
-                                                                             :min="0" :max="100"
                                                                              :class="{ 'error': invalidData[`point${TypeProperty.TableStyle}`] }"
-                                                                             placeholder="Enter your point"
-                                                                             :maxFractionDigits="5"/>
+                                                                             placeholder="Nhập điểm số"
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.TableStyle}`]">
@@ -868,9 +874,10 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"
+                                                                <InputNumber placeholder="Nhập điểm số"
                                                                              :minFractionDigits="2"
-                                                                             :maxFractionDigits="5"/>
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -903,9 +910,10 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"
+                                                                <InputNumber placeholder="Nhập điểm số"
                                                                              :minFractionDigits="2"
-                                                                             :maxFractionDigits="5"/>
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -927,7 +935,8 @@
                                                                 <InputNumber class="ms-format"
                                                                              placeholder="Enter your Row Height"
                                                                              :minFractionDigits="2"
-                                                                             :maxFractionDigits="5"/>
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -939,9 +948,10 @@
                                                                 <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Enter your point"
+                                                                <InputNumber placeholder="Nhập điểm số"
                                                                              :minFractionDigits="2"
-                                                                             :maxFractionDigits="5"/>
+                                                                             :max="10"
+                                                                             :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -990,7 +1000,7 @@
                                                         <div class="flex1">
                                                             <InputText v-model="InsertSheet.point"
                                                                        :class="{ 'error': invalidData[`point${TypeProperty.InsertSheet}`] }"
-                                                                       class="heigth36" placeholder="Enter your point"/>
+                                                                       class="heigth36" placeholder="Nhập điểm số"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${TypeProperty.InsertSheet}`]">
@@ -1076,8 +1086,9 @@
                                                         <div class="flex1">
                                                             <InputNumber v-model="Text.point"
                                                                          :class="{ 'error': invalidData[`point${this.TypeProperty.Text}`] }"
-                                                                         :maxFractionDigits="5" :min="0" :max="100"
-                                                                         placeholder="Enter your point"/>
+                                                                         :max="10"
+                                                                         :min="0" :maxFractionDigits="5"
+                                                                         placeholder="Nhập điểm số"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${this.TypeProperty.Text}`]">
@@ -1457,45 +1468,6 @@
                                 <div class="right-content flex1">
                                     <Panel header="Page Layout" toggleable class="mt-10">
                                         <div class="flex-column">
-                                            <div class="right-content flex1">
-                                                <div class="text-title flex-row form-group">
-                                                    <span class="mr-10">Thông tin sheet</span>
-                                                </div>
-                                                <div class="list-control">
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Sheet
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <Dropdown v-model="generals.SheetIndex"
-                                                                              :class="{ 'error': invalidData['sheetIndexgenerals'] }"
-                                                                              optionLabel="sheetName"
-                                                                              optionValue="sheetIndex"
-                                                                              :options="optionSheet" editable
-                                                                              placeholder="Select a Sheet"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData['sheetIndexgenerals']">
-                                                                    {{ invalidData['sheetIndexgenerals'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                             <div class="list-control flex-row">
                                                 <div class="panel-left flex1">
                                                     <div class="flex-row">
@@ -1531,7 +1503,7 @@
                                                                     <InputNumber :max-fraction-digits="5"
                                                                                  v-model="generals.properties.pageOrientation.point"
                                                                                  :class="{ 'error': invalidData['pointpageOrientation'] }"
-                                                                                 placeholder="Enter your point"
+                                                                                 placeholder="Nhập điểm số"
                                                                                  class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1552,15 +1524,16 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
-                                                                        v-model="generals.properties.pageSize.content"
+                                                                        v-model="generals.properties.PAGE_SIZE.content"
                                                                         :options="configureExamData.pageSize"
-                                                                        :class="{ 'error': invalidData['contentpageSize'] }"
+                                                                        :class="{ 'error': invalidData['c-PAGE_SIZE'] }"
                                                                         optionLabel="description" optionValue="value"
-                                                                        editable placeholder="Select a Font Underline"/>
+                                                                        editable
+                                                                        placeholder="Vui lòng chọn 1 hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['contentpageSize']">
-                                                                    {{ invalidData['contentpageSize'] }}
+                                                                     v-if="invalidData['c-PAGE_SIZE']">
+                                                                    {{ invalidData['c-PAGE_SIZE'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1568,20 +1541,20 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
-                                                                        v-model="generals.properties.pageSize.point"
+                                                                        v-model="generals.properties.PAGE_SIZE.point"
                                                                         :max-fraction-digits="5"
-                                                                        :class="{ 'error': invalidData['pointpageSize'] }"
-                                                                        placeholder="Enter your point"
+                                                                        :class="{ 'error': invalidData['p-PAGE_SIZE'] }"
+                                                                        placeholder="Nhập điểm số"
                                                                         class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['pointpageSize']">
-                                                                    {{ invalidData['pointpageSize'] }}
+                                                                     v-if="invalidData['p-PAGE_SIZE']">
+                                                                    {{ invalidData['p-PAGE_SIZE'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1609,7 +1582,7 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber placeholder="Nhập điểm số"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1637,38 +1610,7 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Margin
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <Dropdown class="ms-format"
-                                                                              :options="configureExamData.pageOrientation"
-                                                                              optionLabel="description"
-                                                                              optionValue="value"
-                                                                              editable placeholder="Select a Margin"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    point
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber placeholder="Nhập điểm số"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1685,8 +1627,15 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Top"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_TOP_ALL.content"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`c-MARGIN_TOP_ALL`] }"
+                                                                                 placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-MARGIN_TOP_ALL`]">
+                                                                    {{ invalidData[`c-MARGIN_TOP_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1694,11 +1643,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_TOP_ALL.point"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`p-MARGIN_TOP_ALL`] }"
+                                                                                 placeholder="Nhập điểm số"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`p-MARGIN_TOP_ALL`]">
+                                                                    {{ invalidData[`p-MARGIN_TOP_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1713,8 +1670,15 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Left"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_LEFT_ALL.content"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`c-MARGIN_LEFT_ALL`] }"
+                                                                                 placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-MARGIN_LEFT_ALL`]">
+                                                                    {{ invalidData[`c-MARGIN_LEFT_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1722,11 +1686,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_LEFT_ALL.point"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`p-MARGIN_LEFT_ALL`] }"
+                                                                                 placeholder="Nhập điểm số"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`p-MARGIN_LEFT_ALL`]">
+                                                                    {{ invalidData[`p-MARGIN_LEFT_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1741,10 +1713,15 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <!-- :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Right"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_RIGHT_ALL.content"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`c-MARGIN_RIGHT_ALL`] }"
+                                                                                 placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-MARGIN_RIGHT_ALL`]">
+                                                                    {{ invalidData[`c-MARGIN_RIGHT_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1752,11 +1729,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_RIGHT_ALL.point"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`p-MARGIN_RIGHT_ALL`] }"
+                                                                                 placeholder="Nhập điểm số"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`p-MARGIN_RIGHT_ALL`]">
+                                                                    {{ invalidData[`p-MARGIN_RIGHT_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1771,10 +1756,15 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <!--  :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Bottom"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_BOTTOM_ALL.content"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`c-MARGIN_BOTTOM_ALL`] }"
+                                                                                 placeholder="Nhập nội dung"/>
+                                                                </div>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`c-MARGIN_BOTTOM_ALL`]">
+                                                                    {{ invalidData[`c-MARGIN_BOTTOM_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1782,69 +1772,19 @@
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
-                                                                    point
+                                                                    Điểm
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
+                                                                    <InputNumber v-model="generals.properties.MARGIN_BOTTOM_ALL.point"
+                                                                                 :min="0"
+                                                                                 :max="100" :max-fraction-digits="5"
+                                                                                 :class="{ 'error': invalidData[`p-MARGIN_BOTTOM_ALL`] }"
+                                                                                 placeholder="Nhập điểm số"/>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Margin Header
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Header"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    point
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Margin Footer
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText class="ms-format" type="text"
-                                                                               placeholder="Enter your Margin Footer"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    point
-                                                                    <span class="required">*</span>
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputNumber placeholder="Enter your point"
-                                                                                 :minFractionDigits="2"
-                                                                                 :maxFractionDigits="5"/>
+                                                                <div class="error-text"
+                                                                     v-if="invalidData[`p-MARGIN_BOTTOM_ALL`]">
+                                                                    {{ invalidData[`p-MARGIN_BOTTOM_ALL`] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1856,96 +1796,7 @@
                                             </div>
                                         </div>
                                     </Panel>
-                                    <Panel header="Sheet" toggleable class="mt-10" id="scrollToFormatSheet">
-                                        <div class="list-control">
-                                            <div class="flex-row" v-for="item, index in optionSheet">
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Sheet
-                                                            <span class="required">*</span>
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="item.sheetIndex" optionLabel="sheetName"
-                                                                      optionValue="sheetIndex" :options="[item]"
-                                                                      placeholder="Select a Sheet"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Sheet Name
-                                                            <span class="required">*</span>
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="generals.SheetName.Type[index]"
-                                                                      :options="configureExamData.SheetName" showClear
-                                                                      :class="{ 'error': invalidData[`typeSheetName${index}`] }"
-                                                                      optionLabel="description" optionValue="value"
-                                                                      placeholder="Select a Option Sheet Name"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`typeSheetName${index}`]">
-                                                            {{ invalidData[`typeSheetName${index}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp">
-                                                </div>
-                                                <div class="flex1"
-                                                     v-if="generals.SheetName.Type[index] && generals.SheetName.Type[index] == 3">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            content
-                                                            <span class="required">*</span>
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputText v-model="generals.SheetName.content[index]"
-                                                                       :class="{ 'error': invalidData[`contentSheetName${index}`] }"
-                                                                       placeholder="Enter your Sheet Name"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`contentSheetName${index}`]">
-                                                            {{ invalidData[`contentSheetName${index}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            point
-                                                            <span class="required">*</span>
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber v-model="generals.SheetName.point[index]"
-                                                                         :min="0"
-                                                                         :max="100" :max-fraction-digits="5"
-                                                                         :class="{ 'error': invalidData[`pointSheetName${index}`] }"
-                                                                         placeholder="Enter your point"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`pointSheetName${index}`]">
-                                                            {{ invalidData[`pointSheetName${index}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"
-                                                     v-if="!generals.SheetName.Type[index] || generals.SheetName.Type[index] != 3">
-                                                </div>
-                                                <div class="flex1"
-                                                     v-if="!generals.SheetName.Type[index] || generals.SheetName.Type[index] != 3">
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                            </div>
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Thông tin chung" toggleable class="mt-10">
+                                    <Panel header="Thông tin chung" toggleable class="mt-4">
                                         <div class="flex-column">
                                             <div class="right-content flex1">
                                                 <div class="list-control">
@@ -2002,7 +1853,8 @@
                                                                     <InputNumber
                                                                         v-model="generals.properties.FILE_NAME.point"
                                                                         :class="{ 'error': invalidData[`p-FILE_NAME`] }"
-                                                                        :maxFractionDigits="5" :min="0"
+                                                                        :max="10"
+                                                                        :min="0" :maxFractionDigits="5"
                                                                         placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -2069,7 +1921,8 @@
                                                                     <InputNumber
                                                                         v-model="generals.properties.AUTHOR.point"
                                                                         :class="{ 'error': invalidData[`p-AUTHOR`] }"
-                                                                        :maxFractionDigits="5" :min="0"
+                                                                        :max="10"
+                                                                        :min="0" :maxFractionDigits="5"
                                                                         placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -2097,7 +1950,7 @@
                                                                         :options="configureExamData.infoType"
                                                                         optionLabel="description" optionValue="value"
                                                                         :class="{ 'error': invalidData[`c-TITLE`] }"
-                                                                        placeholder="Select a Font Effect"/>
+                                                                        placeholder="Vui lòng chọn một hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData['c-TITLE']">
@@ -2137,8 +1990,9 @@
                                                                     <InputNumber
                                                                         v-model="generals.properties.TITLE.point"
                                                                         :class="{ 'error': invalidData['p-TITLE'] }"
-                                                                        :maxFractionDigits="5"
-                                                                        placeholder="Enter your point"/>
+                                                                        :max="10"
+                                                                        :min="0"
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text" v-if="invalidData['p-TITLE']">
                                                                     {{ invalidData['p-TITLE'] }}
@@ -2169,16 +2023,6 @@
                             </template>
                         </TabPanel>
                     </TabView>
-                    <div class="tab-footer">
-                        <div class="flex-row">
-                            <div class="flex1"></div>
-                            <div class="flex-rtl">
-                                <button class="ms-button btn primary has-tooltip" @click="saveCriteriaSettings">
-                                    <div class="text">Thiết lập tiêu chí</div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -2190,7 +2034,7 @@
             <div class="ms-content--table flex-column flex1">
                 <DataTable paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="flex1 flex-column"
                            :class="{ 'loading': isLoading }" :loading="isLoading"
-                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...{} })) : listCriteria"
+                           :value="isLoading ? Array.from({ length: 8 }, () => ({ ...{} })) : listCriteriaExam"
                            table-class="grid-group"
                            currentPageReportTemplate="{first} to {last} of {totalRecords}"
                            paginatorTemplate="FirstPageLink PrevPageLink flex1 CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
@@ -2203,23 +2047,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="SheetId" header="Sheet">
-                        <template #body="{ data, field, slotProps }">
-                            <div v-if="!isLoading"> {{ data[field] }}</div>
-                            <div v-else>
-                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                            </div>
-                        </template>
-                    </Column>
-                    <Column field="PropertyName" header="Tiêu chí">
-                        <template #body="{ data, field, slotProps }">
-                            <div v-if="!isLoading"> {{ data[field] }}</div>
-                            <div v-else>
-                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                            </div>
-                        </template>
-                    </Column>
-                    <Column field="Range" dataKey="id" header="Vùng dữ liệu">
+                    <Column field="property_name" header="Tiêu chí">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -2459,13 +2287,6 @@ export default {
                         propertyName: 'File Name',
                     },
 
-                    info: {
-                        content: null,
-                        point: null,
-                        type: 'Option',
-                        propertyName: 'Info',
-                    },
-
                     pageOrientation: {
                         content: null,
                         point: null,
@@ -2473,11 +2294,39 @@ export default {
                         propertyName: 'Page Orientation',
                     },
 
-                    pageSize: {
+                    PAGE_SIZE: {
                         content: null,
                         point: null,
                         type: 'Option',
                         propertyName: 'Page Size',
+                    },
+
+                    MARGIN_TOP_ALL: {
+                        content: null,
+                        point: null,
+                        type: 'Option',
+                        propertyName: 'Margin top all',
+                    },
+
+                    MARGIN_LEFT_ALL: {
+                        content: null,
+                        point: null,
+                        type: 'Option',
+                        propertyName: 'Margin left all',
+                    },
+
+                    MARGIN_RIGHT_ALL: {
+                        content: null,
+                        point: null,
+                        type: 'Option',
+                        propertyName: 'Margin right all',
+                    },
+
+                    MARGIN_BOTTOM_ALL: {
+                        content: null,
+                        point: null,
+                        type: 'Option',
+                        propertyName: 'Margin bottom all',
                     },
 
                     AUTHOR: {
@@ -2536,6 +2385,7 @@ export default {
             //dữ liệu thiết lập đề: enum,sheetIndex
             configureExamData: [],
             listCriteria: [],
+            listCriteriaExam: [],
             examBankId: null,
             isLoadingSaveCritera: false,
 
@@ -2569,13 +2419,13 @@ export default {
         loadCriteriaByExamId() {
             this.isLoading = true;
             getCriteriaByExamBankId(this.selectedData).then(res => {
-                this.listCriteria.unshift(...res);
+                this.listCriteriaExam = res.data;
             }).catch(error => {
                 console.log(error);
             }).finally(() => {
-                setTimeout(() => {
+                setTimeout(() => {5
                     this.isLoading = false;
-                }, 750);
+                }, 300);
             });
         },
 
@@ -3049,6 +2899,7 @@ export default {
             } else if (this.tabViewIndex === 2) {
                 for (let property in this.generals.properties) {
                     let validData = true;
+                    let content = this.generals.properties[property].content;
                     if (this.generals.properties[property].content != null || this.generals.properties[property].point != null) {
                         if ((this.generals.properties[property].content == null || (this.generals.properties[property].type === 'Text' && this.generals.properties[property].content === ''))) {
                             this.invalidData[`c-${property}`] = 'Nội dung không được để trống';
@@ -3058,20 +2909,22 @@ export default {
                             this.invalidData[`p-${property}`] = 'Điểm không được để trống';
                             validData = false;
                         }
-                        if (this.generals.properties[property].content === this.configureExamData.infoTypeEnums['OTHER'].value && this.generals.properties[property].value == null) {
+                        if (this.generals.properties[property].content === this.configureExamData.infoTypeEnums['OTHER'].value && this.generals.properties[property]?.value !== undefined && this.generals.properties[property]?.value === null) {
                             this.invalidData[`v-${property}`] = 'Nội dung không được để trống';
                             validData = false;
                         }
                     }
                     if (validData && this.generals.properties[property].content != null && this.generals.properties[property].point != null) {
-                        let content = {
-                            'key': this.generals.properties[property].content,
-                            'value': this.generals.properties[property].value,
+                        if (this.generals.properties[property]?.value !== undefined) {
+                            content = JSON.stringify({
+                                'key': this.generals.properties[property].content,
+                                'value': this.generals.properties[property].value,
+                            });
                         }
                         //add vào danh sách tiêu chí
                         this.listCriteria.push({
                             exam_bank_id: this.examBankId,
-                            content: JSON.stringify(content),
+                            content: content,
                             page: 0,
                             paragraph: null,
                             property_name: this.generals.properties[property].propertyName,
@@ -3100,6 +2953,8 @@ export default {
                         this.isLoadingSaveCritera = false;
                     }, 300);
                 })
+            } else if(Object.keys(this.invalidData).length === 0) {
+                this.$store.dispatch('handleError', 'Chưa thiết lập tiêu chí');
             }
         },
 

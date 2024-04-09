@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/exam-banks/{id}', [ApiExamBankController::class, 'configureExam']);
     Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
     Route::post('/exam-banks/saveCriteria', [ApiExamBankController::class, 'saveCriteria']);
+    Route::post('/exam-banks/getCriteria', [ApiExamBankController::class, 'getCriteria']);
     Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
     Route::delete('/exam-banks/{id}', [ApiExamBankController::class, 'delete']);
     Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']);

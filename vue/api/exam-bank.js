@@ -28,7 +28,7 @@ export function getExamBankSetting() {
  */
 export function getCriteriaByExamBankId(data) {
     return request({
-        url: 'api/exambank/getCriteriaByExambankId',
+        url: 'api/exam-banks/getCriteria',
         method: 'post',
         data: data
     })
