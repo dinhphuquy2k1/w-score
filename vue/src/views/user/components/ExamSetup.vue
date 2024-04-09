@@ -34,7 +34,7 @@
                                                             <div class="flex1">
                                                                 <Dropdown v-model="Format.Property.Font.content"
                                                                           showClear
-                                                                          editable
+
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.Font}`] }"
                                                                           :options="configureExamData.Font"
                                                                           optionLabel="description" optionValue="value"
@@ -82,7 +82,7 @@
                                                                           :options="configureExamData.FontStyle"
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.FontStyle}`] }"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Font Style"/>
                                                             </div>
                                                             <div class="error-text"
@@ -128,7 +128,7 @@
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.FontColor}`] }"
                                                                           optionLabel="description"
                                                                           optionValue="description"
-                                                                          editable placeholder="Select a Font Color"/>
+                                                                          placeholder="Select a Font Color"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`content${TypeProperty.FontColor}`]">
@@ -174,7 +174,7 @@
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.FontSize}`] }"
                                                                           property-name="Font Size" class="ms-format"
                                                                           :options="Array(50).fill().map((_, index) => index + 1)"
-                                                                          editable placeholder="Select a Font Size"/>
+                                                                          placeholder="Select a Font Size"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`content${TypeProperty.FontSize}`]">
@@ -219,7 +219,7 @@
                                                                           class="ms-format"
                                                                           :options="configureExamData.FontUnderline"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Font Underline"/>
                                                             </div>
                                                             <div class="error-text"
@@ -260,7 +260,7 @@
                                                                           property-name="Font Effect" class="ms-format"
                                                                           :options="configureExamData.FontEffect"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Font Effect"/>
                                                             </div>
                                                             <div class="error-text"
@@ -309,7 +309,7 @@
                                                                           class="ms-format"
                                                                           :options="configureExamData.Horizontal"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Horizontal"/>
                                                             </div>
                                                             <div class="error-text"
@@ -354,7 +354,7 @@
                                                                           class="ms-format"
                                                                           :options="configureExamData.Vertical"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Vertical"/>
                                                             </div>
                                                             <div class="error-text"
@@ -396,7 +396,7 @@
                                                             <div class="flex1">
                                                                 <Dropdown :options="configureExamData.TextOrientation"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Text Orientation"/>
                                                             </div>
                                                             <div class="error-text"
@@ -443,7 +443,7 @@
                                                                           property-name="Text Control" class="ms-format"
                                                                           :options="configureExamData.TextControl"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Text Control"/>
                                                             </div>
                                                             <div class="error-text"
@@ -485,7 +485,7 @@
                                                             <div class="flex1">
                                                                 <Dropdown :options="configureExamData.TextDirection"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Text Direction"/>
                                                             </div>
                                                             <div class="error-text"
@@ -552,7 +552,7 @@
                                                                       :options="[{ description: 'đ VietNamese', value: 'FORMAT_ACCOUNTING_VIETNAMESE' }]"
                                                                       :class="{ 'error': invalidData[`symbol`] }"
                                                                       optionLabel="description" optionValue="value"
-                                                                      editable
+
                                                                       placeholder="Select a Category"/>
                                                         </div>
                                                         <div class="error-text" v-if="invalidData[`symbol`]">
@@ -810,7 +810,7 @@
                                                                           :options="configureExamData.TableStyles"
                                                                           showClear
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Background Color"/>
                                                             </div>
                                                             <div class="error-text"
@@ -861,7 +861,7 @@
                                                                 <Dropdown class="ms-format" v-model="Font"
                                                                           :options="configureExamData.Font"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Background Color"/>
                                                             </div>
                                                         </div>
@@ -897,7 +897,7 @@
                                                                 <Dropdown class="ms-format" v-model="Font"
                                                                           :options="configureExamData.Font"
                                                                           optionLabel="description" optionValue="value"
-                                                                          editable
+
                                                                           placeholder="Select a Background Color"/>
                                                             </div>
                                                         </div>
@@ -981,7 +981,7 @@
                                                             <Dropdown v-model="InsertSheet.content"
                                                                       :class="{ 'error': invalidData[`content${TypeProperty.InsertSheet}`] }"
                                                                       :options="[{ label: 'Choose a Option', value: 1 }, { label: 'Create a Sheet', value: 2 }]"
-                                                                      optionLabel="label" optionValue="value" editable
+                                                                      optionLabel="label" optionValue="value"
                                                                       placeholder="Choose a Option"/>
                                                         </div>
                                                         <div class="error-text"
@@ -1031,7 +1031,7 @@
                                                                       :class="{ 'error': invalidData[`sheetIndex${TypeProperty.Text}`] }"
                                                                       :type-property="TypeProperty.Text"
                                                                       optionValue="sheetIndex"
-                                                                      :options="optionSheet" editable
+                                                                      :options="optionSheet"
                                                                       placeholder="Select a Sheet"/>
                                                         </div>
                                                         <div class="error-text"
@@ -1120,7 +1120,7 @@
                                                                               optionLabel="sheetName"
                                                                               optionValue="sheetIndex"
                                                                               :class="{ 'error': invalidData['SheetIndexAdvancedFilter'] }"
-                                                                              :options="optionSheet" editable
+                                                                              :options="optionSheet"
                                                                               placeholder="Select a Sheet"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1176,7 +1176,7 @@
                                                                               :class="{ 'error': invalidData['DataSheetIndexAdvancedFilter'] }"
                                                                               optionLabel="sheetName"
                                                                               optionValue="sheetIndex"
-                                                                              :options="optionSheet" editable
+                                                                              :options="optionSheet"
                                                                               placeholder="Select a Sheet"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1233,7 +1233,7 @@
                                                                         v-model="AdvancedFilter.SheetIndexCriteria[index]"
                                                                         optionLabel="sheetName" optionValue="sheetIndex"
                                                                         :class="{ 'error': invalidData[`SheetIndexCriteria${index}`] }"
-                                                                        :options="optionSheet" editable
+                                                                        :options="optionSheet"
                                                                         placeholder="Select a Sheet"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1483,7 +1483,7 @@
                                                                         :options="configureExamData.pageOrientation"
                                                                         optionLabel="description" optionValue="value"
                                                                         :class="{ 'error': invalidData['contentpageOrientation'] }"
-                                                                        editable
+
                                                                         placeholder="Select a Page Orientation"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1528,7 +1528,7 @@
                                                                         :options="configureExamData.pageSize"
                                                                         :class="{ 'error': invalidData['c-PAGE_SIZE'] }"
                                                                         optionLabel="description" optionValue="value"
-                                                                        editable
+
                                                                         placeholder="Vui lòng chọn 1 hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1627,11 +1627,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_TOP_ALL.content"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`c-MARGIN_TOP_ALL`] }"
-                                                                                 placeholder="Nhập nội dung"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_TOP_ALL.content"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`c-MARGIN_TOP_ALL`] }"
+                                                                        placeholder="Nhập nội dung"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`c-MARGIN_TOP_ALL`]">
@@ -1647,11 +1648,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_TOP_ALL.point"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`p-MARGIN_TOP_ALL`] }"
-                                                                                 placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_TOP_ALL.point"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`p-MARGIN_TOP_ALL`] }"
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_TOP_ALL`]">
@@ -1670,11 +1672,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_LEFT_ALL.content"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`c-MARGIN_LEFT_ALL`] }"
-                                                                                 placeholder="Nhập nội dung"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_LEFT_ALL.content"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`c-MARGIN_LEFT_ALL`] }"
+                                                                        placeholder="Nhập nội dung"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`c-MARGIN_LEFT_ALL`]">
@@ -1690,11 +1693,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_LEFT_ALL.point"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`p-MARGIN_LEFT_ALL`] }"
-                                                                                 placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_LEFT_ALL.point"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`p-MARGIN_LEFT_ALL`] }"
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_LEFT_ALL`]">
@@ -1713,11 +1717,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_RIGHT_ALL.content"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`c-MARGIN_RIGHT_ALL`] }"
-                                                                                 placeholder="Nhập nội dung"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_RIGHT_ALL.content"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`c-MARGIN_RIGHT_ALL`] }"
+                                                                        placeholder="Nhập nội dung"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`c-MARGIN_RIGHT_ALL`]">
@@ -1733,11 +1738,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_RIGHT_ALL.point"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`p-MARGIN_RIGHT_ALL`] }"
-                                                                                 placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_RIGHT_ALL.point"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`p-MARGIN_RIGHT_ALL`] }"
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_RIGHT_ALL`]">
@@ -1756,11 +1762,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_BOTTOM_ALL.content"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`c-MARGIN_BOTTOM_ALL`] }"
-                                                                                 placeholder="Nhập nội dung"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_BOTTOM_ALL.content"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`c-MARGIN_BOTTOM_ALL`] }"
+                                                                        placeholder="Nhập nội dung"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`c-MARGIN_BOTTOM_ALL`]">
@@ -1776,11 +1783,12 @@
                                                                     <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber v-model="generals.properties.MARGIN_BOTTOM_ALL.point"
-                                                                                 :min="0"
-                                                                                 :max="100" :max-fraction-digits="5"
-                                                                                 :class="{ 'error': invalidData[`p-MARGIN_BOTTOM_ALL`] }"
-                                                                                 placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        v-model="generals.properties.MARGIN_BOTTOM_ALL.point"
+                                                                        :min="0"
+                                                                        :max="100" :max-fraction-digits="5"
+                                                                        :class="{ 'error': invalidData[`p-MARGIN_BOTTOM_ALL`] }"
+                                                                        placeholder="Nhập điểm số"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_BOTTOM_ALL`]">
@@ -2423,7 +2431,8 @@ export default {
             }).catch(error => {
                 console.log(error);
             }).finally(() => {
-                setTimeout(() => {5
+                setTimeout(() => {
+                    5
                     this.isLoading = false;
                 }, 300);
             });
@@ -2953,7 +2962,7 @@ export default {
                         this.isLoadingSaveCritera = false;
                     }, 300);
                 })
-            } else if(Object.keys(this.invalidData).length === 0) {
+            } else if (Object.keys(this.invalidData).length === 0) {
                 this.$store.dispatch('handleError', 'Chưa thiết lập tiêu chí');
             }
         },
