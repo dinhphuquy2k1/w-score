@@ -551,7 +551,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Điểm
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -576,7 +575,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Margin Left
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -599,7 +597,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Điểm
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -625,7 +622,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Margin Right
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -670,21 +666,21 @@
                                             </div>
                                         </div>
                                     </Panel>
-                                    <Panel header="Number" toggleable class="mt-10">
+                                    <Panel header="Áp dụng style" toggleable class="mt-4">
                                         <div class="list-control">
                                             <div class="flex-row">
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Category
-
+                                                            Style format
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown class="ms-format" :showClear="true"
                                                                       :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
                                                                       v-model="formats.properties.FormatNumber.content"
-                                                                      :options="configureExamData.FormatNumberLabel"
-                                                                      placeholder="Select a Category"/>
+                                                                      :options="configureExamData.style"
+                                                                      optionLabel="description" optionValue="value"
+                                                                      :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
@@ -692,73 +688,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail"
-                                                         v-if="formats.properties.FormatNumber.content == 'Currency' || formats.properties.FormatNumber.content == 'Accounting'">
-                                                        <label class="top-label d-flex">
-                                                            Symbol
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="formats.properties.FormatNumber.symbol"
-                                                                      :options="[{ description: 'đ VietNamese', value: 'FORMAT_ACCOUNTING_VIETNAMESE' }]"
-                                                                      :class="{ 'error': invalidData[`symbol`] }"
-                                                                      optionLabel="description" optionValue="value"
-
-                                                                      placeholder="Select a Category"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData[`symbol`]">
-                                                            {{ invalidData[`symbol`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail"
-                                                         v-if="formats.properties.FormatNumber.content == 'Currency' || formats.properties.FormatNumber.content == 'Accounting'">
-                                                        <label class="top-label d-flex">
-                                                            Decimal
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber
-                                                                v-model="formats.properties.FormatNumber.decimal"
-                                                                :class="{ 'error': invalidData['decimal'] }"
-                                                                :max="10"
-                                                                :min="0" :maxFractionDigits="5"
-                                                                placeholder="Enter your Deciaml"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['decimal']">
-                                                            {{ invalidData['decimal'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail"
-                                                         v-if="formats.properties.FormatNumber.content">
-                                                        <label class="top-label d-flex">
-                                                            point
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber v-model="formats.properties.FormatNumber.point"
-                                                                         :class="{ 'error': invalidData[`point${TypeProperty.FormatNumber}`] }"
-                                                                         :max="10"
-                                                                         :min="0" :maxFractionDigits="5"
-                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`point${TypeProperty.FormatNumber}`]">
-                                                            {{ invalidData[`point${TypeProperty.FormatNumber}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
                                             </div>
                                         </div>
                                     </Panel>
@@ -770,7 +699,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Column Width
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -3023,7 +2951,7 @@ export default {
             var me = this;
             await configureExam(this.examBankId).then(res => {
                 me.configureExamData = res.data;
-                me.totalScore = res.data.data.criterias_sum_point;
+                me.totalScore = res.data.data.criterias_sum_point ?? 0;
                 me.selectedData = res.data.data;
                 me.TypeProperty = res.data.typeProperty;
             }).catch(error => {

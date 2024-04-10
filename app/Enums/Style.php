@@ -18,4 +18,6 @@ final class Style extends Enum
     const TITLE = 'Title';
 
     const EMPHASIS = 'Emphasis';
+
+    const OTHER = 'Other';
 }

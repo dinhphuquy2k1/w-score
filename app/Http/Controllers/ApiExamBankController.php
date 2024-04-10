@@ -415,6 +415,12 @@ class ApiExamBankController extends Controller
                         'description' => $instance->description,
                     ];
                 })->toArray(),
+                'styleEnum' => collect(Style::getInstances())->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
                 'fontColor' => collect(FontColor::getInstances())->values()->map(function ($instance) {
                     return [
                         'value' => $instance->value,
