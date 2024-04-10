@@ -97,7 +97,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
@@ -122,7 +121,6 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font Color
-
                                                             </label>
                                                             <div class="flex1">
                                                                 <Dropdown v-model="formats.properties.FontColor.content"
@@ -677,8 +675,8 @@
                                                         <div class="flex1">
                                                             <Dropdown class="ms-format" :showClear="true"
                                                                       :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
-                                                                      v-model="formats.properties.FormatNumber.content"
-                                                                      :options="configureExamData.style"
+                                                                      v-model="formats.properties.APPLY_STYLE.content"
+                                                                      :options="configureExamData.applyStyle"
                                                                       optionLabel="description" optionValue="value"
                                                                       :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                         </div>
@@ -688,6 +686,69 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1" v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['PARAGRAPH'].value === formats.properties.APPLY_STYLE.content">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Đoạn văn áp dụng
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <MultiSelect class="ms-format" :showClear="true"
+                                                                         :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
+                                                                         v-model="formats.properties.APPLY_STYLE.content"
+                                                                         :options="configureExamData.paragraphs"
+                                                                         :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
+                                                            {{ invalidData[`content${TypeProperty.FormatNumber}`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex1" v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['OTHER'].value === formats.properties.APPLY_STYLE.content">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Đoạn văn áp dụng
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputText
+                                                                v-model="formats.properties.APPLY_STYLE.value"
+                                                                :class="{ 'error': invalidData[`v-FILE_NAME`] }"
+                                                                class="heigth36" placeholder="Nhập nội dung"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
+                                                            {{ invalidData[`content${TypeProperty.FormatNumber}`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="formats.properties.MODIFY_STYLE.properties.FONT.point"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT`] }"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-MODIFY_STYLE-FONT`]">
+                                                            {{ invalidData[`p-MODIFY_STYLE-FONT`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
                                             </div>
                                         </div>
                                     </Panel>
@@ -1569,7 +1630,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Orientation
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1591,7 +1651,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber :max-fraction-digits="5"
@@ -1614,7 +1673,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Size
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1622,8 +1680,8 @@
                                                                         :options="configureExamData.pageSize"
                                                                         :class="{ 'error': invalidData['c-PAGE_SIZE'] }"
                                                                         optionLabel="description" optionValue="value"
-
-                                                                        placeholder="Vui lòng chọn 1 hạng mục"/>
+                                                                        showClear
+                                                                        :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData['c-PAGE_SIZE']">
@@ -1636,7 +1694,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1660,7 +1717,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Center on page
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown class="ms-format"
@@ -1673,7 +1729,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1689,7 +1744,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Effect
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown class="ms-format"
@@ -1702,7 +1756,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1720,7 +1773,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Top
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1741,7 +1793,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1765,7 +1816,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Left
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1786,7 +1836,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1810,7 +1859,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Right
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1831,7 +1879,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1855,7 +1902,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Bottom
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1876,7 +1922,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -2231,6 +2276,7 @@ import {mapState, mapActions} from 'vuex'
 import {configureExam, saveCriteria, getCriteriaByExamBankId, deleteCriteria} from '/api/exam-bank'
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
 import {MESSAGE, RESPONSE_STATUS} from "@/common/enums";
+import MultiSelect from 'primevue/multiselect';
 
 export default {
     components: {
@@ -2247,6 +2293,7 @@ export default {
         Dialog,
         DataTable,
         Column,
+        MultiSelect,
         TheLoadingProgress
     },
     data() {
@@ -2330,6 +2377,12 @@ export default {
                         content: null,
                         point: null,
                         propertyName: 'Modify Style',
+                    },
+
+                    APPLY_STYLE: {
+                        content: null,
+                        point: null,
+                        propertyName: 'Apply Style',
                     },
 
                     FontSize: {
@@ -2558,6 +2611,34 @@ export default {
                     this.isLoading = false;
                 }, 300);
             });
+        },
+
+        /**
+         * Nếu văn bản quá dài nối đoạn đầu và đoạn cuối bằng dấu ...
+         * Ví dụ: Nếu văn bản quá dài nối đoạn đầu và đoạn cuối bằng dấu ... => Nếu văn bản ... cuối bằng dấu
+         * @param paragraphs
+         * @returns {(string|string)[]}
+         */
+        textWithEllipsis(paragraphs) {
+            const formattedText = [];
+            // Lặp qua mỗi đoạn văn bản trong mảng paragraphs
+            for (let index in paragraphs) {
+                if (paragraphs[index].length > 30) {
+                    // Tách thành từng từ
+                    const words = paragraphs[index].split(" ");
+                    // Lấy 5 từ đầu
+                    const firstFiveWords = words.slice(0, 5).join(" ");
+                    // Lấy 4 từ cuối
+                    const lastFourWords = words.slice(-4).join(" ");
+                    // Nối 5 từ đầu và 4 từ cuối với nhau bằng dấu "..."
+                    const result = firstFiveWords + " ..." + lastFourWords;
+                    // Trả về mảng các đoạn văn bản với đoạn cuối đã được thêm dấu "..."
+                    formattedText.push(result);
+                } else {
+                    formattedText.push(paragraphs[index])
+                }
+            }
+            return formattedText;
         },
 
         /**
@@ -2951,6 +3032,7 @@ export default {
             var me = this;
             await configureExam(this.examBankId).then(res => {
                 me.configureExamData = res.data;
+                me.configureExamData.paragraphs = this.textWithEllipsis(res.data.paragraphs)
                 me.totalScore = res.data.data.criterias_sum_point ?? 0;
                 me.selectedData = res.data.data;
                 me.TypeProperty = res.data.typeProperty;

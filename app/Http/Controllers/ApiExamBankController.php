@@ -24,6 +24,7 @@ use App\Enums\FontStyleType;
 use App\Enums\FontColor;
 use App\Enums\FontType;
 use App\Enums\NumberingType;
+use App\Enums\ApplyStyle;
 
 class ApiExamBankController extends Controller
 {
@@ -419,6 +420,18 @@ class ApiExamBankController extends Controller
                     return [
                         'value' => $instance->value,
                         'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'applyStyle' => collect(ApplyStyle::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->description,
+                        'description' => $instance->value,
+                    ];
+                })->toArray(),
+                'applyStyleEnum' => collect(ApplyStyle::getInstances())->map(function ($instance) {
+                    return [
+                        'value' => $instance->description,
+                        'description' => $instance->value,
                     ];
                 })->toArray(),
                 'fontColor' => collect(FontColor::getInstances())->values()->map(function ($instance) {
