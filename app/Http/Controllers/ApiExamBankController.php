@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StyleType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\ExamBank;
 use App\Models\Criteria;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
+use PhpOffice\PhpWord\Style\Font;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use PhpOffice\PhpWord\IOFactory as PHPIOFactory;
@@ -16,6 +19,11 @@ use ZipArchive;
 use App\Enums\PropertyType;
 use App\Enums\InfoType;
 use App\Enums\PageSize;
+use App\Enums\Style;
+use App\Enums\FontStyleType;
+use App\Enums\FontColor;
+use App\Enums\FontType;
+use App\Enums\NumberingType;
 
 class ApiExamBankController extends Controller
 {
@@ -378,7 +386,7 @@ class ApiExamBankController extends Controller
     public function configureExam($id)
     {
         try {
-            $examBank = ExamBank::where('id', $id)->first();
+            $examBank = ExamBank::withSum('criterias', 'point')->find($id);
             if (empty($examBank)) {
                 return $this->sendResponseError();
             }
@@ -398,6 +406,36 @@ class ApiExamBankController extends Controller
                 'pageSize' => collect(PageSize::getInstances())->values()->map(function ($instance) {
                     return [
                         'value' => $instance->description,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'style' => collect(Style::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'fontColor' => collect(FontColor::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'fontType' => collect(FontType::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->value,
+                    ];
+                })->toArray(),
+                'numberType' => collect(NumberingType::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->description,
+                        'description' => $instance->value,
+                    ];
+                })->toArray(),
+                'fontStyling' => collect(FontStyleType::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
                         'description' => $instance->description,
                     ];
                 })->toArray(),
@@ -434,21 +472,38 @@ class ApiExamBankController extends Controller
 
     /**
      * Lưu tiêu chí
-     * @return void
+     * @param Request $request
+     * @return JsonResponse|object|void
      */
     public function saveCriteria(Request $request)
     {
-        $attributes = $request->validate([
-            '*.exam_bank_id' => 'required|numeric', // 'exam_bank_id' là bắt buộc và phải là số
-            '*.content' => 'required', // 'content' là bắt buộc và phải là JSON
-            '*.page' => '',
-            '*.paragraph' => '',
-            '*.property_type' => 'required|integer',
-            '*.property_name' => 'required|string',
-            '*.priority' => 'required|integer',
-            '*.point' => 'required|numeric',
-        ]);
-        Criteria::insert($attributes);
+        try {
+            $attributes = $request->validate([
+                '0.*.exam_bank_id' => 'required|numeric', // 'exam_bank_id' là bắt buộc và phải là số
+                '0.*.content' => 'required', // 'content' là bắt buộc và phải là JSON
+                '0.*.page' => '',
+                '0.*.paragraph' => '',
+                '0.*.property_type' => 'required|integer',
+                '0.*.property_name' => 'required|string',
+                '0.*.priority' => 'required|integer',
+                '0.*.point' => 'required|numeric',
+            ]);
+
+            try {
+                DB::beginTransaction();
+                Criteria::insert($attributes);
+                DB::commit();
+            }
+            catch (\Throwable $th) {
+                dd($th);
+                DB::rollBack();
+                return $this->sendResponseError();
+            }
+        }
+        catch (\Throwable $th) {
+            dd($th);
+            return $this->sendResponseError();
+        }
     }
 
     /**

@@ -22,4 +22,9 @@ class ExamBank extends Model
         'exam_bank_code',
     ];
 
+    public function criterias()
+    {
+        return $this->hasMany(Criteria::class, 'exam_bank_id');
+    }
+
 }

@@ -11,9 +11,9 @@ use BenSampo\Enum\Enum;
  */
 final class FontType extends Enum
 {
-    const CAMBRIA = 0;
-    const CALIBRI = 1;
+    const CAMBRIA = 'Cambria';
+    const CALIBRI = 'Calibri';
     const ARIAL =  'Arial';
     const TIME_NEW_ROMAN = 'Times New Roman';
-    const TAHOMA = 5;
+    const TAHOMA = 'Tahoma';
 }

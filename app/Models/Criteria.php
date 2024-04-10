@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Criteria extends Model
 {
     use HasFactory;
+
+    public function examBank()
+    {
+        return $this->belongsTo(ExamBank::class, 'exam_bank_id');
+    }
 }

@@ -39,4 +39,10 @@ export const MESSAGE = {
     HTTP_INSERT_OK: 'Thêm mới thành công',
     HTTP_UPDATE_OK: 'Cập nhật thành công',
     HTTP_DELETE_OK: 'Xóa thành công',
+    DROPDOWN_PLACEHOLDER_SETUP: 'Vui lòng chọn 1 hạng mục',
+    INPUT_NUMBER_PLACEHOLDER_SETUP: 'Nhập điểm số',
+    INPUT_PLACEHOLDER_SETUP: 'Nhập nội dung',
+    INVALID_POINT_SETUP: 'Điểm không được để trống',
+    INVALID_CONTENT_SETUP: 'Nội dung không được để trống',
+    INVALID_CONTENT_CHILD_SETUP: 'Vui lòng thiết lập ít nhất 1 tiêu chí',
 };

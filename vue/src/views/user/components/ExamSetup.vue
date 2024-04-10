@@ -29,20 +29,20 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.Font.content"
-                                                                          showClear
-
-                                                                          :class="{ 'error': invalidData[`content${TypeProperty.Font}`] }"
-                                                                          :options="configureExamData.Font"
-                                                                          optionLabel="description" optionValue="value"
-                                                                          placeholder="Select a Font"/>
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.content"
+                                                                    showClear
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT`] }"
+                                                                    :options="configureExamData.Font"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.Font}`]">
-                                                                {{ invalidData[`content${TypeProperty.Font}`] }}
+                                                                 v-if="invalidData['c-MODIFY_STYLE-FONT']">
+                                                                {{ invalidData['c-MODIFY_STYLE-FONT'] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -50,16 +50,17 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                point 123
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.Font.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.Font}`] }"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.Font}`] }"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.Font}`]">
@@ -75,10 +76,10 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font Style
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.FontStyle.content"
+                                                                <Dropdown v-model="formats.properties.FontStyle.content"
                                                                           :options="configureExamData.FontStyle"
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.FontStyle}`] }"
                                                                           optionLabel="description" optionValue="value"
@@ -96,15 +97,16 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.FontStyle.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.FontStyle}`] }"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.FontStyle.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.FontStyle}`] }"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FontStyle}`]">
@@ -120,10 +122,10 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font Color
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.FontColor.content"
+                                                                <Dropdown v-model="formats.properties.FontColor.content"
                                                                           :options="configureExamData.FontColor"
                                                                           :class="{ 'error': invalidData[`content${TypeProperty.FontColor}`] }"
                                                                           optionLabel="description"
@@ -141,15 +143,16 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.FontColor.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.FontColor}`] }"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.FontColor.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.FontColor}`] }"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FontColor}`]">
@@ -167,18 +170,19 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font size
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.FontSize.content"
-                                                                          :class="{ 'error': invalidData[`content${TypeProperty.FontSize}`] }"
-                                                                          property-name="Font Size" class="ms-format"
-                                                                          :options="Array(50).fill().map((_, index) => index + 1)"
-                                                                          placeholder="Select a Font Size"/>
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.content"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }"
+                                                                    class="ms-format"
+                                                                    :options="Array(50).fill().map((_, index) => index + 1)"
+                                                                    placeholder="Select a Font Size"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.FontSize}`]">
-                                                                {{ invalidData[`content${TypeProperty.FontSize}`] }}
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-FONT_SIZE`]">
+                                                                {{ invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -187,19 +191,20 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.FontSize.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.FontSize}`] }"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.point"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontSize}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontSize}`] }}
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT_SIZE`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -211,7 +216,7 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font Underline
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <Dropdown :type-property="TypeProperty.FontUnderline"
@@ -233,11 +238,12 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FontUnderline}`]">
@@ -253,14 +259,13 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Font Effect
-                                                                <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
                                                                 <Dropdown :type-property="TypeProperty.FontEffect"
                                                                           property-name="Font Effect" class="ms-format"
                                                                           :options="configureExamData.FontEffect"
                                                                           optionLabel="description" optionValue="value"
-
+                                                                          showClear
                                                                           placeholder="Select a Font Effect"/>
                                                             </div>
                                                             <div class="error-text"
@@ -274,11 +279,11 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FontEffect}`]">
@@ -293,28 +298,58 @@
 
                                         </div>
                                     </Panel>
-                                    <Panel header="Alignment" toggleable class="mt-10">
+                                    <Panel header="Hiệu chỉnh" toggleable class="mt-4">
                                         <div class="list-control flex-row">
                                             <div class="panel-left flex1">
                                                 <div class="flex-row">
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Horizontal
-                                                                <span class="required">*</span>
+                                                                Style format
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.Horizontal.content"
-                                                                          property-name="Text Horizontal"
-                                                                          class="ms-format"
-                                                                          :options="configureExamData.Horizontal"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Horizontal"/>
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.content"
+                                                                    class="ms-format"
+                                                                    showClear
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE`] }"
+                                                                    :options="configureExamData.style"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"
+                                                                />
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.Horizontal}`]">
-                                                                {{ invalidData[`point${TypeProperty.Horizontal}`] }}
+                                                                 v-if="invalidData['c-MODIFY_STYLE']">
+                                                                {{ invalidData['c-MODIFY_STYLE'] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="list-control flex-row"
+                                             v-if="formats.properties.MODIFY_STYLE.content">
+                                            <div class="panel-left flex1">
+                                                <div class="flex-row">
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Font
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <Dropdown
+                                                                    showClear
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.content"
+                                                                    class="ms-format"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT`] }"
+                                                                    :options="configureExamData.fontType"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"
+                                                                />
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData['c-MODIFY_STYLE-FONT']">
+                                                                {{ invalidData['c-MODIFY_STYLE-FONT'] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -322,19 +357,20 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                Điểm
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.Horizontal.point"
-                                                                             :max-fraction-digits="5" :min="0"
-                                                                             :max="100"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.point"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.Horizontal}`]">
-                                                                {{ invalidData[`point${TypeProperty.Horizontal}`] }}
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-FONT`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -345,21 +381,21 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Vertical
-                                                                <span class="required">*</span>
+                                                                Font Size
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.Vertical.content"
-                                                                          property-name="Text Vertical"
-                                                                          class="ms-format"
-                                                                          :options="configureExamData.Vertical"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Vertical"/>
+                                                                <Dropdown
+                                                                    showClear
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.content"
+                                                                    property-name="Text Vertical"
+                                                                    class="ms-format"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }"
+                                                                    :options="Array(50).fill().map((_, index) => index + 1)"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.Vertical}`]">
-                                                                {{ invalidData[`point${TypeProperty.Vertical}`] }}
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-FONT_SIZE`]">
+                                                                {{ invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -367,19 +403,20 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                Điểm
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.Vertical.point"
-                                                                             :min="0" :max="100"
-                                                                             :max-fraction-digits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.point"
+                                                                    :min="0" :max="100"
+                                                                    :max-fraction-digits="5"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.Vertical}`]">
-                                                                {{ invalidData[`point${TypeProperty.Vertical}`] }}
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT_SIZE`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -390,19 +427,21 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Text Orientation
-                                                                <span class="required">*</span>
+                                                                Font Style
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown :options="configureExamData.TextOrientation"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Text Orientation"/>
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_STYLE.content"
+                                                                    :options="configureExamData.fontStyling"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT_STYLE`] }"
+                                                                    showClear
+                                                                    optionLabel="description" optionValue="value"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextOrientation}`]">
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-FONT_STYLE`]">
                                                                 {{
-                                                                    invalidData[`point${TypeProperty.TextOrientation}`]
+                                                                    invalidData[`c-MODIFY_STYLE-FONT_STYLE`]
                                                                 }}
                                                             </div>
                                                         </div>
@@ -411,16 +450,70 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                Điểm
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_STYLE.point"
+                                                                    :min="0" :max="100"
+                                                                    :max-fraction-digits="5"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT_STYLE`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextOrientation}`]">
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT_STYLE`]">
                                                                 {{
-                                                                    invalidData[`point${TypeProperty.TextOrientation}`]
+                                                                    invalidData[`p-MODIFY_STYLE-FONT_STYLE`]
+                                                                }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1"></div>
+                                                </div>
+                                                <div class="flex-row">
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Number
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.NUMBERING.content"
+                                                                    :options="configureExamData.numberType"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-NUMBERING`] }"
+                                                                    showClear
+                                                                    optionLabel="description" optionValue="value"
+                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-NUMBERING`]">
+                                                                {{
+                                                                    invalidData[`c-MODIFY_STYLE-NUMBERING`]
+                                                                }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Điểm
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.NUMBERING.point"
+                                                                    :min="0" :max="100"
+                                                                    :max-fraction-digits="5"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-NUMBERING`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-NUMBERING`]">
+                                                                {{
+                                                                    invalidData[`p-MODIFY_STYLE-NUMBERING`]
                                                                 }}
                                                             </div>
                                                         </div>
@@ -434,21 +527,22 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Text Control
-                                                                <span class="required">*</span>
+                                                                Font Color
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.TextControl.content"
-                                                                          :type-property="TypeProperty.TextControl"
-                                                                          property-name="Text Control" class="ms-format"
-                                                                          :options="configureExamData.TextControl"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Text Control"/>
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_COLOR.content"
+                                                                    :type-property="TypeProperty.TextControl"
+                                                                    property-name="Text Control" class="ms-format"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT_COLOR`] }"
+                                                                    :options="configureExamData.fontColor"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    showClear
+                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextControl}`]">
-                                                                {{ invalidData[`point${TypeProperty.TextControl}`] }}
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-FONT_COLOR`]">
+                                                                {{ invalidData[`c-MODIFY_STYLE-FONT_COLOR`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -456,19 +550,21 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                Điểm
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.TextControl.point"
-                                                                             :max-fraction-digits="5" :min="0"
-                                                                             :max="100"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_COLOR.point"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT_COLOR`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextControl}`]">
-                                                                {{ invalidData[`point${TypeProperty.TextControl}`] }}
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT_COLOR`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-FONT_COLOR`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -479,18 +575,22 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Text Direction
-                                                                <span class="required">*</span>
+                                                                Margin Left
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown :options="configureExamData.TextDirection"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Text Direction"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.MARGIN_LEFT.content"
+                                                                    :max-fraction-digits="5"
+                                                                    :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-MARGIN_LEFT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextDirection}`]">
-                                                                {{ invalidData[`point${TypeProperty.TextDirection}`] }}
+                                                                 v-if="invalidData[`c-MODIFY_STYLE-MARGIN_LEFT`]">
+                                                                {{ invalidData[`c-MODIFY_STYLE-MARGIN_LEFT`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -498,15 +598,69 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                point
-                                                                <span class="required">*</span>
+                                                                Điểm
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.MARGIN_LEFT.point"
+                                                                    :max-fraction-digits="5"
+                                                                    :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-MARGIN_LEFT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TextDirection}`]">
-                                                                {{ invalidData[`point${TypeProperty.TextDirection}`] }}
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-MARGIN_LEFT`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-MARGIN_LEFT`] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1"></div>
+                                                </div>
+                                                <div class="flex-row">
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Margin Right
+
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.MARGIN_RIGHT.content"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-MARGIN_RIGHT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData['c-MODIFY_STYLE-MARGIN_RIGHT']">
+                                                                {{ invalidData['c-MODIFY_STYLE-MARGIN_RIGHT'] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Điểm
+
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.MARGIN_RIGHT.point"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-MARGIN_RIGHT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-MARGIN_RIGHT`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-MARGIN_RIGHT`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -514,7 +668,6 @@
                                                     <div class="flex1"></div>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </Panel>
                                     <Panel header="Number" toggleable class="mt-10">
@@ -524,12 +677,12 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Category
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown class="ms-format" :showClear="true"
                                                                       :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
-                                                                      v-model="Format.Property.FormatNumber.content"
+                                                                      v-model="formats.properties.FormatNumber.content"
                                                                       :options="configureExamData.FormatNumberLabel"
                                                                       placeholder="Select a Category"/>
                                                         </div>
@@ -542,13 +695,13 @@
                                                 <div class="col-sp"></div>
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail"
-                                                         v-if="Format.Property.FormatNumber.content == 'Currency' || Format.Property.FormatNumber.content == 'Accounting'">
+                                                         v-if="formats.properties.FormatNumber.content == 'Currency' || formats.properties.FormatNumber.content == 'Accounting'">
                                                         <label class="top-label d-flex">
                                                             Symbol
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
-                                                            <Dropdown v-model="Format.Property.FormatNumber.symbol"
+                                                            <Dropdown v-model="formats.properties.FormatNumber.symbol"
                                                                       :options="[{ description: 'đ VietNamese', value: 'FORMAT_ACCOUNTING_VIETNAMESE' }]"
                                                                       :class="{ 'error': invalidData[`symbol`] }"
                                                                       optionLabel="description" optionValue="value"
@@ -563,17 +716,18 @@
                                                 <div class="col-sp"></div>
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail"
-                                                         v-if="Format.Property.FormatNumber.content == 'Currency' || Format.Property.FormatNumber.content == 'Accounting'">
+                                                         v-if="formats.properties.FormatNumber.content == 'Currency' || formats.properties.FormatNumber.content == 'Accounting'">
                                                         <label class="top-label d-flex">
                                                             Decimal
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="Format.Property.FormatNumber.decimal"
-                                                                         :class="{ 'error': invalidData['decimal'] }"
-                                                                         :max="10"
-                                                                         :min="0" :maxFractionDigits="5"
-                                                                         placeholder="Enter your Deciaml"/>
+                                                            <InputNumber
+                                                                v-model="formats.properties.FormatNumber.decimal"
+                                                                :class="{ 'error': invalidData['decimal'] }"
+                                                                :max="10"
+                                                                :min="0" :maxFractionDigits="5"
+                                                                placeholder="Enter your Deciaml"/>
                                                         </div>
                                                         <div class="error-text" v-if="invalidData['decimal']">
                                                             {{ invalidData['decimal'] }}
@@ -583,17 +737,17 @@
                                                 <div class="col-sp"></div>
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail"
-                                                         v-if="Format.Property.FormatNumber.content">
+                                                         v-if="formats.properties.FormatNumber.content">
                                                         <label class="top-label d-flex">
                                                             point
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
-                                                            <InputNumber v-model="Format.Property.FormatNumber.point"
+                                                            <InputNumber v-model="formats.properties.FormatNumber.point"
                                                                          :class="{ 'error': invalidData[`point${TypeProperty.FormatNumber}`] }"
                                                                          :max="10"
                                                                          :min="0" :maxFractionDigits="5"
-                                                                         placeholder="Nhập điểm số"/>
+                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${TypeProperty.FormatNumber}`]">
@@ -616,11 +770,11 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Column Width
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
-                                                                    v-model="Format.Property.ColumnWidth.content"
+                                                                    v-model="formats.properties.ColumnWidth.content"
                                                                     :max="100" :min="0" :max-fraction-digits="5"
                                                                     :class="{ 'error': invalidData[`content${TypeProperty.ColumnWidth}`] }"
                                                                     property-name="Column Width" class="ms-format"
@@ -637,15 +791,16 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.ColumnWidth.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.ColumnWidth}`] }"
-                                                                             :max="100" :min="0"
-                                                                             :max-fraction-digits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.ColumnWidth.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.ColumnWidth}`] }"
+                                                                    :max="100" :min="0"
+                                                                    :max-fraction-digits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.ColumnWidth}`]">
@@ -663,12 +818,13 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Row Height
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.RowHeight.content"
-                                                                             :class="{ 'error': invalidData[`content${TypeProperty.RowHeight}`] }"
-                                                                             placeholder="Enter your Row Height"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.RowHeight.content"
+                                                                    :class="{ 'error': invalidData[`content${TypeProperty.RowHeight}`] }"
+                                                                    placeholder="Enter your Row Height"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`content${TypeProperty.RowHeight}`]">
@@ -681,15 +837,16 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.RowHeight.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.RowHeight}`] }"
-                                                                             :max="100" :min="0"
-                                                                             :max-fraction-digits="5"
-                                                                             placeholder="Nhập điểm số"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.RowHeight.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.RowHeight}`] }"
+                                                                    :max="100" :min="0"
+                                                                    :max-fraction-digits="5"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.RowHeight}`]">
@@ -711,15 +868,15 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Format as Table
-                                                                <span class="required">*</span>
+                                                                formats as Table
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <Dropdown
-                                                                    v-model="Format.Property.FormatAsTable.content"
+                                                                    v-model="formats.properties.FormatAsTable.content"
                                                                     showClear
                                                                     :class="{ 'error': invalidData[`content${TypeProperty.FormatAsTable}`] }"
-                                                                    :options="['Format as Table']"
+                                                                    :options="['formats as Table']"
                                                                     placeholder="Select a option"/>
                                                             </div>
                                                             <div class="error-text"
@@ -735,14 +892,15 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <InputNumber
-                                                                    v-model="Format.Property.FormatAsTable.point"
+                                                                    v-model="formats.properties.FormatAsTable.point"
                                                                     :max-fraction-digits="5" :min="0" :max="100"
                                                                     :class="{ 'error': invalidData[`point${TypeProperty.FormatAsTable}`] }"
-                                                                    placeholder="Nhập điểm số" class="ms-point"/>
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.FormatAsTable}`]">
@@ -758,12 +916,13 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Table Name
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputText v-model="Format.Property.TableName.content"
-                                                                           :class="{ 'error': invalidData[`content${TypeProperty.TableName}`] }"
-                                                                           placeholder="Enter your Table Name"/>
+                                                                <InputText
+                                                                    v-model="formats.properties.TableName.content"
+                                                                    :class="{ 'error': invalidData[`content${TypeProperty.TableName}`] }"
+                                                                    placeholder="Enter your Table Name"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`content${TypeProperty.TableName}`]">
@@ -776,15 +935,16 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.TableName.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.TableName}`] }"
-                                                                             placeholder="Nhập điểm số"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"
-                                                                             class="ms-point"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.TableName.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.TableName}`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"
+                                                                    class="ms-point"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.TableName}`]">
@@ -802,16 +962,17 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Table Style
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <Dropdown v-model="Format.Property.TableStyle.content"
-                                                                          :class="{ 'error': invalidData[`content${TypeProperty.TableStyle}`] }"
-                                                                          :options="configureExamData.TableStyles"
-                                                                          showClear
-                                                                          optionLabel="description" optionValue="value"
+                                                                <Dropdown
+                                                                    v-model="formats.properties.TableStyle.content"
+                                                                    :class="{ 'error': invalidData[`content${TypeProperty.TableStyle}`] }"
+                                                                    :options="configureExamData.TableStyles"
+                                                                    showClear
+                                                                    optionLabel="description" optionValue="value"
 
-                                                                          placeholder="Select a Background Color"/>
+                                                                    placeholder="Select a Background Color"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`content${TypeProperty.TableStyle}`]">
@@ -824,14 +985,15 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber v-model="Format.Property.TableStyle.point"
-                                                                             :class="{ 'error': invalidData[`point${TypeProperty.TableStyle}`] }"
-                                                                             placeholder="Nhập điểm số"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"/>
+                                                                <InputNumber
+                                                                    v-model="formats.properties.TableStyle.point"
+                                                                    :class="{ 'error': invalidData[`point${TypeProperty.TableStyle}`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                             <div class="error-text"
                                                                  v-if="invalidData[`point${TypeProperty.TableStyle}`]">
@@ -853,7 +1015,7 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Background Color
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <!--    :type-property="configureExamData.TypeProperty.FontColor.value"
@@ -871,13 +1033,14 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"
-                                                                             :minFractionDigits="2"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"/>
+                                                                <InputNumber
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    :minFractionDigits="2"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -889,7 +1052,7 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Border Presets
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <!--    :type-property="configureExamData.TypeProperty.FontColor.value"
@@ -907,13 +1070,14 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"
-                                                                             :minFractionDigits="2"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"/>
+                                                                <InputNumber
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    :minFractionDigits="2"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -927,7 +1091,7 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 Fill Effects
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
                                                                 <!--   :type-property="configureExamData.TypeProperty.FontColor.value"
@@ -945,13 +1109,14 @@
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
                                                                 point
-                                                                <span class="required">*</span>
+
                                                             </label>
                                                             <div class="flex1">
-                                                                <InputNumber placeholder="Nhập điểm số"
-                                                                             :minFractionDigits="2"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"/>
+                                                                <InputNumber
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    :minFractionDigits="2"
+                                                                    :max="10"
+                                                                    :min="0" :maxFractionDigits="5"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -975,7 +1140,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Create a Sheet
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown v-model="InsertSheet.content"
@@ -995,12 +1160,13 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             point
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText v-model="InsertSheet.point"
                                                                        :class="{ 'error': invalidData[`point${TypeProperty.InsertSheet}`] }"
-                                                                       class="heigth36" placeholder="Nhập điểm số"/>
+                                                                       class="heigth36"
+                                                                       :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${TypeProperty.InsertSheet}`]">
@@ -1024,7 +1190,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Sheet
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown v-model="Text.SheetIndex" optionLabel="sheetName"
@@ -1045,7 +1211,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Range
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText v-model="Text.Range"
@@ -1063,7 +1229,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             content
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText v-model="Text.content"
@@ -1081,14 +1247,14 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             point
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputNumber v-model="Text.point"
                                                                          :class="{ 'error': invalidData[`point${this.TypeProperty.Text}`] }"
                                                                          :max="10"
                                                                          :min="0" :maxFractionDigits="5"
-                                                                         placeholder="Nhập điểm số"/>
+                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`point${this.TypeProperty.Text}`]">
@@ -1113,7 +1279,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Sheet
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown v-model="AdvancedFilter.SheetIndex"
@@ -1134,7 +1300,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Range
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText v-model="AdvancedFilter.Range"
@@ -1169,7 +1335,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Sheet
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown v-model="AdvancedFilter.DataSheetIndex"
@@ -1190,7 +1356,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Range
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText v-model="AdvancedFilter.DataRange"
@@ -1226,7 +1392,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Sheet
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1247,7 +1413,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Title Range
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1268,7 +1434,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Title content
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1288,7 +1454,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Criteria Range
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1309,7 +1475,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Criteria content
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1335,7 +1501,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             point
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputNumber v-model="AdvancedFilter.point" :min="0"
@@ -1369,7 +1535,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Sheet
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown v-model="Formula.SheetIndex"
@@ -1389,7 +1555,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Range
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText v-model="Formula.Range"
@@ -1407,7 +1573,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Formula Type
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown v-model="Formula.FormulaType"
@@ -1426,7 +1592,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             content
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText v-model="Formula.content"
@@ -1443,7 +1609,7 @@
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             point
-                                                            <span class="required">*</span>
+
                                                         </label>
                                                         <div class="flex1">
                                                             <InputNumber v-model="Formula.point" :min="0" :max="100"
@@ -1475,7 +1641,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Orientation
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1497,13 +1663,13 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber :max-fraction-digits="5"
                                                                                  v-model="generals.properties.pageOrientation.point"
                                                                                  :class="{ 'error': invalidData['pointpageOrientation'] }"
-                                                                                 placeholder="Nhập điểm số"
+                                                                                 :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
                                                                                  class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1520,7 +1686,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Size
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1542,14 +1708,14 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
                                                                         v-model="generals.properties.PAGE_SIZE.point"
                                                                         :max-fraction-digits="5"
                                                                         :class="{ 'error': invalidData['p-PAGE_SIZE'] }"
-                                                                        placeholder="Nhập điểm số"
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
                                                                         class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1566,7 +1732,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Center on page
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown class="ms-format"
@@ -1579,10 +1745,11 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1594,7 +1761,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Page Effect
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown class="ms-format"
@@ -1607,10 +1774,11 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     point
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
-                                                                    <InputNumber placeholder="Nhập điểm số"/>
+                                                                    <InputNumber
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1624,7 +1792,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Top
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1645,7 +1813,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1653,7 +1821,7 @@
                                                                         :min="0"
                                                                         :max="100" :max-fraction-digits="5"
                                                                         :class="{ 'error': invalidData[`p-MARGIN_TOP_ALL`] }"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_TOP_ALL`]">
@@ -1669,7 +1837,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Left
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1690,7 +1858,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1698,7 +1866,7 @@
                                                                         :min="0"
                                                                         :max="100" :max-fraction-digits="5"
                                                                         :class="{ 'error': invalidData[`p-MARGIN_LEFT_ALL`] }"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_LEFT_ALL`]">
@@ -1714,7 +1882,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Right
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1735,7 +1903,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1743,7 +1911,7 @@
                                                                         :min="0"
                                                                         :max="100" :max-fraction-digits="5"
                                                                         :class="{ 'error': invalidData[`p-MARGIN_RIGHT_ALL`] }"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_RIGHT_ALL`]">
@@ -1759,7 +1927,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Margin Bottom
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1780,7 +1948,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1788,7 +1956,7 @@
                                                                         :min="0"
                                                                         :max="100" :max-fraction-digits="5"
                                                                         :class="{ 'error': invalidData[`p-MARGIN_BOTTOM_ALL`] }"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-MARGIN_BOTTOM_ALL`]">
@@ -1813,7 +1981,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     File name
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1821,6 +1988,7 @@
                                                                         :options="configureExamData.infoType"
                                                                         optionLabel="description" optionValue="value"
                                                                         :class="{ 'error': invalidData['c-FILE_NAME'] }"
+                                                                        showClear
                                                                         placeholder="Vui lòng chọn một hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1835,7 +2003,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Nội dung
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1855,7 +2022,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1863,7 +2029,7 @@
                                                                         :class="{ 'error': invalidData[`p-FILE_NAME`] }"
                                                                         :max="10"
                                                                         :min="0" :maxFractionDigits="5"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-FILE_NAME`]">
@@ -1878,7 +2044,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Author
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1886,6 +2051,7 @@
                                                                         :options="configureExamData.infoType"
                                                                         optionLabel="description" optionValue="value"
                                                                         :class="{ 'error': invalidData['c-AUTHOR'] }"
+                                                                        showClear
                                                                         placeholder="Vui lòng chọn một hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1901,7 +2067,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Nội dung
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1923,7 +2088,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -1931,7 +2095,7 @@
                                                                         :class="{ 'error': invalidData[`p-AUTHOR`] }"
                                                                         :max="10"
                                                                         :min="0" :maxFractionDigits="5"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
                                                                      v-if="invalidData[`p-AUTHOR`]">
@@ -1950,7 +2114,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Info title
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
@@ -1958,6 +2121,7 @@
                                                                         :options="configureExamData.infoType"
                                                                         optionLabel="description" optionValue="value"
                                                                         :class="{ 'error': invalidData[`c-TITLE`] }"
+                                                                        showClear
                                                                         placeholder="Vui lòng chọn một hạng mục"/>
                                                                 </div>
                                                                 <div class="error-text"
@@ -1973,7 +2137,6 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Nội dung
-                                                                    <span class="required">*</span>
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputText
@@ -1992,7 +2155,7 @@
                                                             <div class="form-group slide-detail">
                                                                 <label class="top-label d-flex">
                                                                     Điểm
-                                                                    <span class="required">*</span>
+
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
@@ -2000,7 +2163,7 @@
                                                                         :class="{ 'error': invalidData['p-TITLE'] }"
                                                                         :max="10"
                                                                         :min="0"
-                                                                        placeholder="Nhập điểm số"/>
+                                                                        :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text" v-if="invalidData['p-TITLE']">
                                                                     {{ invalidData['p-TITLE'] }}
@@ -2139,7 +2302,7 @@ import Column from 'primevue/column';
 import {mapState, mapActions} from 'vuex'
 import {configureExam, saveCriteria, getCriteriaByExamBankId, deleteCriteria} from '/api/exam-bank'
 import TheLoadingProgress from '@/components/LoadingProgress.vue';
-import {RESPONSE_STATUS} from "@/common/enums";
+import {MESSAGE, RESPONSE_STATUS} from "@/common/enums";
 
 export default {
     components: {
@@ -2193,68 +2356,115 @@ export default {
                 point: null,
             },
 
-            Format: {
+            formats: {
                 SheetIndex: null,
                 Range: null,
-                Property: {
-                    Font: {
+                properties: {
+                    MODIFY_STYLE: {
+                        properties: {
+                            FONT: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Font',
+                            },
+                            FONT_SIZE: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Font size',
+                            },
+                            FONT_STYLE: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Font style',
+                            },
+                            FONT_COLOR: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Font color',
+                            },
+                            MARGIN_LEFT: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Margin left',
+                            },
+                            MARGIN_RIGHT: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Margin right',
+                            },
+                            NUMBERING: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Numbering type',
+                            }
+                        },
+                        required: true,
                         content: null,
                         point: null,
-                        propertyName: 'Font',
+                        propertyName: 'Modify Style',
                     },
 
                     FontSize: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Font Size',
                     },
 
                     FontStyle: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Font Style',
                     },
 
                     FontColor: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Font Color',
                     },
 
                     FormatAsTable: {
                         content: null,
                         point: null,
-                        propertyName: 'Format as Table',
+                        required: true,
+                        propertyName: 'formats as Table',
                     },
 
                     TableStyle: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Table Style',
                     },
 
                     TableName: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Table Name',
                     },
 
                     ColumnWidth: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Column Width',
                     },
 
                     RowHeight: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Row Height',
                     },
 
                     FormatNumber: {
                         content: null,
                         point: null,
-                        propertyName: 'Format Number',
+                        required: true,
+                        propertyName: 'formats Number',
                         decimal: 0,
                         symbol: null,
                     },
@@ -2262,18 +2472,21 @@ export default {
                     TextControl: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Text Control',
                     },
 
                     Horizontal: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Horizontal',
                     },
 
                     Vertical: {
                         content: null,
                         point: null,
+                        required: true,
                         propertyName: 'Vertical',
                     }
                 },
@@ -2402,25 +2615,6 @@ export default {
     },
 
     methods: {
-        ...mapActions('exambank', ['getConfigureExam']),
-        /**
-         * Click nút hoàn thành
-         */
-        btnComplete() {
-            this.listCriteria = [];
-            // window.localStorage.setItem("listCriteria", JSON.stringify(this.listCriteria));
-
-            if (window.localStorage.getItem("listCriteria") != null) {
-                this.listCriteria = JSON.parse(window.localStorage.getItem("listCriteria"));
-            }
-            saveCriteria([this.listCriteria, this.selectedData]).then(res => {
-                window.localStorage.removeItem("listCriteria");
-                console.log(res);
-            }).catch(error => {
-                console.log(error);
-            });
-        },
-
         /**
          * Lấy dữ liệu tiêu chí theo id đề thi
          */
@@ -2476,18 +2670,6 @@ export default {
             });
         },
 
-        rowDblClick(event) {
-            console.log(event.data);
-        },
-
-        /**
-         * Hiển thị toast message
-         * @param {*} message
-         */
-        showToast(message, severity = 'success') {
-            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
-        },
-
         onRowSelect(data) {
             this.isShowConfigureExam = false;
             const el = document.getElementById('scrollToFormatSheet');
@@ -2518,229 +2700,80 @@ export default {
         },
 
         /**
-         * validate vùng chứa tên sheet
-         * @param {*} range Vùng cần validate
-         */
-        validateRangeRef(range) {
-            if (this.regex.REGEXP_RANGEREF.test({context: range})) {
-                return true;
-            }
-            return false;
-        },
-
-        /**
-         * validate chứa cell chứa tên sheet
-         * @param {*} cell Cell cần validate
-         */
-        validateCellRef(cell) {
-            if (this.regex.REGEXP_CELLREF.test({context: cell})) {
-                return true;
-            }
-            return false;
-        },
-
-        /**
-         * validate vùng ko chứa tên sheet
-         * @param {*} range Vùng cần validate
-         */
-        validateRangeNoRef(range) {
-            if (this.regex.REGEXP_RANGE_NO_REF.test({context: range})) {
-                var ranges = Coordinate.splitRange(range)[0];
-                let [rangeStart, rangeEnd] = ranges;
-                let [startColumn, startRow] = Coordinate.coordinateFromStringT(rangeStart);
-                let [endColumn, endRow] = Coordinate.coordinateFromStringT(rangeEnd);
-                let startColumnIndex = Coordinate.columnIndexFromString(startColumn);
-                let endColumnIndex = Coordinate.columnIndexFromString(endColumn);
-                // Current data
-                let currentRow = startRow;
-                if (startColumnIndex > endColumnIndex || Number(currentRow) > Number(endRow)) {
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        },
-
-        /**
-         * validate cell without a sheet reference
-         * @param {*} cell Cell cần validate
-         */
-        validateCellNoRef(cell) {
-            if (this.regex.REGEXP_CELL_NO_REF.test({context: cell})) {
-                return true;
-            }
-            return false;
-        },
-
-        /**
-         * kiểm tra địa chỉ có phải vùng, ko thì kiểm tra
-         * có phải địa chỉ cell
-         */
-        validateRangeOrCell(range) {
-            if (!this.validateRangeNoRef(range)) {
-                if (!this.validateCellNoRef(range)) {
-                    return false;
-                }
-            }
-            return true;
-        },
-
-        validateRangeArea(range) {
-            if (range != null) {
-                var exploded = range.split(',');
-                for (let index = 0; index < exploded.length; ++index) {
-                    if (!this.validateRangeNoRef(exploded[index])) {
-                        if (!this.validateCellNoRef(exploded[index])) {
-                            this.invalidData[`range${this.tabViewIndex}`] = `Vùng dữ liệu chứa ${exploded[index]} không đúng định dạng`
-                            return false;
-                        }
-                    }
-                }
-            } else return false;
-            return true;
-        },
-
-        /**
-         * Lưu xuống localStorage
-         *
-         */
-        saveToLocalStorage() {
-            var list = [...this.listCriteria];
-            this.listCriteria = [];
-            if (window.localStorage.getItem("listCriteria") != null) {
-                this.listCriteria = JSON.parse(window.localStorage.getItem("listCriteria"));
-                window.localStorage.removeItem("listCriteria");
-            }
-            this.listCriteria.push(...list);
-            window.localStorage.setItem("listCriteria", JSON.stringify(this.listCriteria));
-            this.listCriteria = [];
-        },
-
-        /**
-         * Validate vùng điều kiện advanced
-         */
-        validateCriteriaAdvancedFilterEmpty() {
-            var valid = true;
-            for (let index = 1; index <= this.AdvancedFilter.countCriteria; index++) {
-                if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.point != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null || this.AdvancedFilter.SheetIndexCriteria[index] != null || (String(this.AdvancedFilter.TitleRange[index]).trim() !== '' && this.AdvancedFilter.TitleRange[index] != null)
-                    || (String(this.AdvancedFilter.Titlecontent[index]).trim() != '' && this.AdvancedFilter.Titlecontent[index] != null) || (String(this.AdvancedFilter.CriteriaRange[index]).trim() !== '' && this.AdvancedFilter.CriteriaRange[index] != null)
-                    || (String(this.AdvancedFilter.Criteriacontent[index]).trim() != '' && this.AdvancedFilter.Criteriacontent[index] != null)) {
-                    if (this.AdvancedFilter.SheetIndexCriteria[index] == null) {
-                        this.invalidData[`SheetIndexCriteria${index}`] = 'Sheet không được để trống';
-                        valid = false;
-                    }
-                    if ((String(this.AdvancedFilter.TitleRange[index]).trim() == '' || this.AdvancedFilter.TitleRange[index] == null)) {
-                        this.invalidData[`TitleRange${index}`] = 'Tiêu đề không được để trống';
-                        valid = false;
-                    }
-                    if ((String(this.AdvancedFilter.Titlecontent[index]).trim() == '' || this.AdvancedFilter.Titlecontent[index] == null)) {
-                        this.invalidData[`Titlecontent${index}`] = 'Nội dung không được để trống';
-                        valid = false;
-                    }
-                    if ((String(this.AdvancedFilter.CriteriaRange[index]).trim() == '' || this.AdvancedFilter.CriteriaRange[index] == null)) {
-                        this.invalidData[`CriteriaRange${index}`] = 'Tiêu đề không được để trống';
-                        valid = false;
-                    }
-                    if ((String(this.AdvancedFilter.Criteriacontent[index]).trim() == '' || this.AdvancedFilter.Criteriacontent[index] == null)) {
-                        this.invalidData[`Criteriacontent${index}`] = 'Nội dung không được để trống';
-                        valid = false;
-                    }
-                    if (!this.validateCellNoRef(this.AdvancedFilter.TitleRange[index])) {
-                        this.invalidData[`TitleRange${index}`] = 'Vùng không đúng định dạng';
-                        valid = false;
-                    }
-                    if (!this.validateCellNoRef(this.AdvancedFilter.CriteriaRange[index])) {
-                        this.invalidData[`CriteriaRange${index}`] = 'Vùng không đúng định dạng';
-                        valid = false;
-                    }
-                }
-            }
-            return valid;
-        },
-
-        /**
          * Lưu tiêu chí
          */
         saveCriteriaSettings() {
             this.invalidData = [];
+            this.listCriteria = [];
+            let validData = true;
+            let data = [];
             //đang ở tab format
-            if (this.tabViewIndex == 0) {
-                if (this.Format.SheetIndex == null) {
-                    this.invalidData[`sheetIndex${this.tabViewIndex}`] = "Sheet không được để trống";
-                }
-
-                if (this.Format.Range == null) {
-                    this.invalidData[`range${this.tabViewIndex}`] = "Vùng dữ liệu không được để trống";
-                }
-
-                //validate vùng dữ liệu
-                this.validateRangeArea(this.Format.Range);
-
-                //dừng kiểm tra khi ko nhập vùng dữ liệu, sheet index
-                if (Object.keys(this.invalidData).length > 0) {
-                    this.scrollViewToId('scrollToFormat');
-                    return;
-                }
-
-                for (var property in this.Format.Property) {
-                    var invalidProperty = true;
-                    var content = this.Format.Property[property].content;
-                    if (this.Format.Property[property].content != null || this.Format.Property[property].point != null) {
-                        if (this.Format.Property[property].content == null) {
-                            this.invalidData[`content${this.TypeProperty[property]}`] = 'Nội dung không được để trống';
-                            invalidProperty = false;
+            if (this.tabViewIndex === 0) {
+                for (let property in this.formats.properties) {
+                    let isHasChild = false;
+                    let dataChild = [];
+                    let content = this.formats.properties[property].content;
+                    let point = this.formats.properties[property].point;
+                    let required = this.formats.properties[property].required;
+                    for (let child in this.formats.properties[property]?.properties) {
+                        let invalidProperty = true;
+                        isHasChild = true;
+                        let contentChild = this.formats.properties[property].properties[child].content;
+                        let pointChild = this.formats.properties[property].properties[child].point;
+                        let keyChild = `${property}-${child}`;
+                        if (required && content === null) {
+                            continue;
                         }
-                        if (this.Format.Property[property].point == null) {
-                            this.invalidData[`point${this.TypeProperty[property]}`] = 'Điểm tiêu chí không được để trống';
-                            invalidProperty = false;
-                        }
-
-                        if (this.Format.Property[property].propertyName == 'Format Number' && this.Format.Property[property].content != null) {
-                            var valueType = this.configureExamData.FormatNumberValue[this.Format.Property[property].content];
-                            switch (valueType) {
-                                case this.configureExamData.FormatNumberValue.Accounting:
-                                case this.configureExamData.FormatNumberValue.Currency:
-                                    if (this.Format.Property[property].decimal == null) {
-                                        this.invalidData['decimal'] = 'Decimal không được để trống';
-                                        invalidProperty = false;
-                                    }
-                                    if (this.Format.Property[property].symbol == null) {
-                                        this.invalidData['symbol'] = 'Symbol không được để trống';
-                                        invalidProperty = false;
-                                    }
-                                    content = JSON.stringify({
-                                        type: 1,
-                                        decimal: this.Format.Property.FormatNumber.decimal,
-                                        symbol: this.Format.Property.FormatNumber.symbol,
-                                        negativeNumbers: this.negativeNumbers,
-                                    });
-                                    break;
-                                default:
-                                    break;
+                        if (contentChild != null || pointChild != null) {
+                            if (contentChild == null) {
+                                this.invalidData[`c-${keyChild}`] = MESSAGE.INVALID_CONTENT_SETUP;
+                                invalidProperty = false;
+                                validData = false;
+                            }
+                            if (pointChild == null) {
+                                this.invalidData[`p-${keyChild}`] = MESSAGE.INVALID_POINT_SETUP;
+                                invalidProperty = false;
+                                validData = false;
                             }
                         }
-
-                        if (!this.invalidData[`content${this.TypeProperty[property]}`] && !this.invalidData[`point${this.TypeProperty[property]}`] && invalidProperty) {
-                            //add vào danh sách tiêu chí
-                            this.listCriteria.push({
-                                SheetId: this.Format.SheetIndex,
-                                Range: this.Format.Range,
-                                ExamBankId: this.selectedData.ExamBankId,
-                                DataReference: null,
-                                content: content,
-                                PropertyName: this.Format.Property[property].propertyName,
-                                TypeProperty: this.TypeProperty[property],
-                                point: this.Format.Property[property].point
-                            });
-                            //clear giá trị
-                            this.Format.Property[property].content = this.Format.Property[property].point = null;
-                            this.showToast("Thiết lập tiêu chí thành công");
-                            this.saveToLocalStorage();
+                        if (invalidProperty && contentChild != null && pointChild != null) {
+                            point += pointChild;
+                            dataChild.push({
+                                'key': this.TypeProperty[child],
+                                'value': contentChild,
+                                'point': pointChild,
+                            })
                         }
                     }
+
+                    // có các thuộc tính con
+                    if (isHasChild) {
+                        if (content != null && dataChild.length > 0) {
+                            content = JSON.stringify({
+                                'key': content,
+                                'value': dataChild
+                            })
+                        } else if (content != null && dataChild.length === 0) {
+                            validData = false;
+                            this.invalidData[`c-${property}`] = MESSAGE.INVALID_CONTENT_CHILD_SETUP;
+                        }
+                    }
+
+                    // dữ liệu hợp lệ
+                    if (validData && content != null && point != null) {
+                        data.push({
+                            exam_bank_id: this.examBankId,
+                            content: content,
+                            page: 0,
+                            paragraph: null,
+                            property_name: this.formats.properties[property].propertyName,
+                            property_type: this.TypeProperty[property],
+                            point: point,
+                            priority: 0,
+                        });
+                    }
                 }
-                console.log(this.invalidData);
-            } else if (this.tabViewIndex == 1) {
+            } else if (this.tabViewIndex === 1) {
                 //insert text
                 if (this.validateCellNoRef(this.Text.Range) && this.Text.SheetIndex != null && this.Text.content != null && String(this.Text.content).trim() != '' && this.Text.point != null) {
                     //add vào danh sách tiêu chí
@@ -2807,7 +2840,7 @@ export default {
                         point: this.Formula.point
                     });
                     //clear giá trị
-                    this.Formula.content = this.Format.FormulaType = this.Formula.SheetIndex = null;
+                    this.Formula.content = this.formats.FormulaType = this.Formula.SheetIndex = null;
                     this.showToast("Thiết lập tiêu chí thành công");
                     this.saveToLocalStorage();
                 } else if (this.Formula.SheetIndex != null || (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) || this.Formula.FormulaType != null || (this.Formula.content != null && this.Formula.content != '') || this.Formula.point) {
@@ -2872,7 +2905,7 @@ export default {
                         point: this.AdvancedFilter.point
                     });
                     //clear giá trị
-                    this.Formula.content = this.Format.FormulaType = this.Formula.SheetIndex = null;
+                    this.Formula.content = this.formats.FormulaType = this.Formula.SheetIndex = null;
                     this.showToast("Thiết lập tiêu chí thành công");
                     this.saveToLocalStorage();
                 } else if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.point != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null) {
@@ -2907,23 +2940,26 @@ export default {
                 }
             } else if (this.tabViewIndex === 2) {
                 for (let property in this.generals.properties) {
-                    let validData = true;
+                    let invalidProperty = true;
                     let content = this.generals.properties[property].content;
                     if (this.generals.properties[property].content != null || this.generals.properties[property].point != null) {
                         if ((this.generals.properties[property].content == null || (this.generals.properties[property].type === 'Text' && this.generals.properties[property].content === ''))) {
                             this.invalidData[`c-${property}`] = 'Nội dung không được để trống';
+                            invalidProperty = false;
                             validData = false;
                         }
                         if (this.generals.properties[property].point == null) {
                             this.invalidData[`p-${property}`] = 'Điểm không được để trống';
+                            invalidProperty = false;
                             validData = false;
                         }
                         if (this.generals.properties[property].content === this.configureExamData.infoTypeEnums['OTHER'].value && this.generals.properties[property]?.value !== undefined && this.generals.properties[property]?.value === null) {
                             this.invalidData[`v-${property}`] = 'Nội dung không được để trống';
+                            invalidProperty = false;
                             validData = false;
                         }
                     }
-                    if (validData && this.generals.properties[property].content != null && this.generals.properties[property].point != null) {
+                    if (invalidProperty && this.generals.properties[property].content != null && this.generals.properties[property].point != null) {
                         if (this.generals.properties[property]?.value !== undefined) {
                             content = JSON.stringify({
                                 'key': this.generals.properties[property].content,
@@ -2931,7 +2967,7 @@ export default {
                             });
                         }
                         //add vào danh sách tiêu chí
-                        this.listCriteria.push({
+                        data.push({
                             exam_bank_id: this.examBankId,
                             content: content,
                             page: 0,
@@ -2941,15 +2977,27 @@ export default {
                             point: this.generals.properties[property].point,
                             priority: 0,
                         });
-                        //clear giá trị
-                        this.generals.properties[property].content = this.generals.properties[property].point = this.generals.properties[property].value = null;
                     }
                 }
             }
 
+            // ko có tiêu chí lỗi
+            if (validData) {
+                this.listCriteria = data;
+                //clear giá trị
+                for (let property in this.generals.properties) {
+                    this.generals.properties[property].content = this.generals.properties[property].point = this.generals.properties[property].value = null;
+                }
+                for (let property in this.formats.properties) {
+                    this.formats.properties[property].content = this.formats.properties[property].point = null
+                    for (let child in this.formats.properties[property]?.properties) {
+                        this.formats.properties[property].properties[child].content = this.formats.properties[property].properties[child].point = null;
+                    }
+                }
+            } else return;
             if (this.listCriteria.length > 0) {
                 this.isLoadingSaveCritera = true;
-                saveCriteria(this.listCriteria).then(res => {
+                saveCriteria([this.listCriteria, this.selectedData]).then(res => {
                     this.listCriteria = [];
                     this.$store.dispatch('handleSuccess', 'Thiết lập tiêu chí thành công');
                 }).catch(error => {
@@ -2975,6 +3023,7 @@ export default {
             var me = this;
             await configureExam(this.examBankId).then(res => {
                 me.configureExamData = res.data;
+                me.totalScore = res.data.data.criterias_sum_point;
                 me.selectedData = res.data.data;
                 me.TypeProperty = res.data.typeProperty;
             }).catch(error => {
@@ -2993,8 +3042,9 @@ export default {
     },
 
     computed: {
-        ...mapState('exambank', ['examBankData']),
-        // ...mapState('exambank', ['configureExamData']),
+        MESSAGE() {
+            return MESSAGE
+        }
     }
 }
 </script>
