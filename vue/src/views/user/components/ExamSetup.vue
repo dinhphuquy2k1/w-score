@@ -21,281 +21,6 @@
                         <TabPanel header="Định dạng">
                             <div class="form-content flex-row">
                                 <div class="right-content flex1">
-                                    <Panel header="Font" toggleable>
-                                        <div class="list-control flex-row">
-                                            <div class="panel-left flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.content"
-                                                                    showClear
-                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT`] }"
-                                                                    :options="configureExamData.Font"
-                                                                    optionLabel="description" optionValue="value"
-                                                                    :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData['c-MODIFY_STYLE-FONT']">
-                                                                {{ invalidData['c-MODIFY_STYLE-FONT'] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point 123
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.Font}`] }"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.Font}`]">
-                                                                {{ invalidData[`point${TypeProperty.Font}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font Style
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown v-model="formats.properties.FontStyle.content"
-                                                                          :options="configureExamData.FontStyle"
-                                                                          :class="{ 'error': invalidData[`content${TypeProperty.FontStyle}`] }"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Font Style"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.FontStyle}`]">
-                                                                {{ invalidData[`content${TypeProperty.FontStyle}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.FontStyle.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.FontStyle}`] }"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontStyle}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontStyle}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font Color
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown v-model="formats.properties.FontColor.content"
-                                                                          :options="configureExamData.FontColor"
-                                                                          :class="{ 'error': invalidData[`content${TypeProperty.FontColor}`] }"
-                                                                          optionLabel="description"
-                                                                          optionValue="description"
-                                                                          placeholder="Select a Font Color"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.FontColor}`]">
-                                                                {{ invalidData[`content${TypeProperty.FontColor}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.FontColor.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.FontColor}`] }"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontColor}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontColor}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-right flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font size
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.content"
-                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }"
-                                                                    class="ms-format"
-                                                                    :options="Array(50).fill().map((_, index) => index + 1)"
-                                                                    placeholder="Select a Font Size"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`c-MODIFY_STYLE-FONT_SIZE`]">
-                                                                {{ invalidData[`c-MODIFY_STYLE-FONT_SIZE`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.FONT_SIZE.point"
-                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`p-MODIFY_STYLE-FONT_SIZE`]">
-                                                                {{ invalidData[`p-MODIFY_STYLE-FONT_SIZE`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font Underline
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown :type-property="TypeProperty.FontUnderline"
-                                                                          property-name="Font Underline"
-                                                                          class="ms-format"
-                                                                          :options="configureExamData.FontUnderline"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Font Underline"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontUnderline}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontUnderline}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontUnderline}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontUnderline}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Font Effect
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown :type-property="TypeProperty.FontEffect"
-                                                                          property-name="Font Effect" class="ms-format"
-                                                                          :options="configureExamData.FontEffect"
-                                                                          optionLabel="description" optionValue="value"
-                                                                          showClear
-                                                                          placeholder="Select a Font Effect"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontEffect}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontEffect}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FontEffect}`]">
-                                                                {{ invalidData[`point${TypeProperty.FontEffect}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </Panel>
                                     <Panel header="Hiệu chỉnh" toggleable class="mt-4">
                                         <div class="list-control flex-row">
                                             <div class="panel-left flex1">
@@ -670,55 +395,78 @@
                                                 <div class="flex1">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
-                                                            Style format
+                                                            Loại áp dụng
                                                         </label>
                                                         <div class="flex1">
                                                             <Dropdown class="ms-format" :showClear="true"
-                                                                      :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
+                                                                      :class="{ 'error': invalidData[`c-APPLY_STYLE`] }"
                                                                       v-model="formats.properties.APPLY_STYLE.content"
                                                                       :options="configureExamData.applyStyle"
+                                                                      @change="changeApplyStyle"
                                                                       optionLabel="description" optionValue="value"
                                                                       :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
-                                                             v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
-                                                            {{ invalidData[`content${TypeProperty.FormatNumber}`] }}
+                                                             v-if="invalidData[`c-APPLY_STYLE`]">
+                                                            {{ invalidData[`c-APPLY_STYLE`] }}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-sp"></div>
-                                                <div class="flex1" v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['PARAGRAPH'].value === formats.properties.APPLY_STYLE.content">
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Loại style áp dụng
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <Dropdown class="ms-format" :showClear="true"
+                                                                      :class="{ 'error': invalidData[`k-APPLY_STYLE`] }"
+                                                                      v-model="formats.properties.APPLY_STYLE.property.key"
+                                                                      :options="configureExamData.style"
+                                                                      optionLabel="description" optionValue="value"
+                                                                      :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`k-APPLY_STYLE`]">
+                                                            {{ invalidData[`k-APPLY_STYLE`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"
+                                                     v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['PARAGRAPH'].value === formats.properties.APPLY_STYLE.content">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Đoạn văn áp dụng
                                                         </label>
                                                         <div class="flex1">
                                                             <MultiSelect class="ms-format" :showClear="true"
-                                                                         :class="{ 'error': invalidData[`content${TypeProperty.FormatNumber}`] }"
-                                                                         v-model="formats.properties.APPLY_STYLE.content"
-                                                                         :options="configureExamData.paragraphs"
+                                                                         :class="{ 'error': invalidData[`c-APPLY_STYLE-content`] }"
+                                                                         v-model="formats.properties.APPLY_STYLE.property.content"
+                                                                         :options="configureExamData.paragraphsEllipsis"
                                                                          :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                         </div>
                                                         <div class="error-text"
-                                                             v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
-                                                            {{ invalidData[`content${TypeProperty.FormatNumber}`] }}
+                                                             v-if="invalidData[`c-APPLY_STYLE-content`]">
+                                                            {{ invalidData[`c-APPLY_STYLE-content`] }}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="flex1" v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['OTHER'].value === formats.properties.APPLY_STYLE.content">
+                                                <div class="flex1"
+                                                     v-if=" configureExamData.applyStyleEnum && configureExamData.applyStyleEnum['OTHER'].value === formats.properties.APPLY_STYLE.content">
                                                     <div class="form-group slide-detail">
                                                         <label class="top-label d-flex">
                                                             Đoạn văn áp dụng
                                                         </label>
                                                         <div class="flex1">
                                                             <InputText
-                                                                v-model="formats.properties.APPLY_STYLE.value"
-                                                                :class="{ 'error': invalidData[`v-FILE_NAME`] }"
+                                                                v-model="formats.properties.APPLY_STYLE.property.value"
+                                                                :class="{ 'error': invalidData[`c-APPLY_STYLE-value`] }"
                                                                 class="heigth36" placeholder="Nhập nội dung"/>
                                                         </div>
                                                         <div class="error-text"
-                                                             v-if="invalidData[`content${TypeProperty.FormatNumber}`]">
-                                                            {{ invalidData[`content${TypeProperty.FormatNumber}`] }}
+                                                             v-if="invalidData[`c-APPLY_STYLE-value`]">
+                                                            {{ invalidData[`c-APPLY_STYLE-value`] }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -730,16 +478,16 @@
                                                         </label>
                                                         <div class="flex1">
                                                             <InputNumber
-                                                                v-model="formats.properties.MODIFY_STYLE.properties.FONT.point"
+                                                                v-model="formats.properties.APPLY_STYLE.point"
                                                                 :max-fraction-digits="5" :min="0"
                                                                 :max="100"
-                                                                :class="{ 'error': invalidData[`p-MODIFY_STYLE-FONT`] }"
+                                                                :class="{ 'error': invalidData[`p-APPLY_STYLE`] }"
                                                                 :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
                                                                 class="ms-point"/>
                                                         </div>
                                                         <div class="error-text"
-                                                             v-if="invalidData[`p-MODIFY_STYLE-FONT`]">
-                                                            {{ invalidData[`p-MODIFY_STYLE-FONT`] }}
+                                                             v-if="invalidData[`p-APPLY_STYLE`]">
+                                                            {{ invalidData[`p-APPLY_STYLE`] }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -750,370 +498,6 @@
                                                 <div class="flex1"></div>
                                                 <div class="col-sp"></div>
                                             </div>
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Cell Size" toggleable class="mt-10">
-                                        <div class="list-control flex-row">
-                                            <div class="panel-left flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Column Width
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.ColumnWidth.content"
-                                                                    :max="100" :min="0" :max-fraction-digits="5"
-                                                                    :class="{ 'error': invalidData[`content${TypeProperty.ColumnWidth}`] }"
-                                                                    property-name="Column Width" class="ms-format"
-                                                                    placeholder="Enter your Column Width"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.ColumnWidth}`]">
-                                                                {{ invalidData[`content${TypeProperty.ColumnWidth}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.ColumnWidth.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.ColumnWidth}`] }"
-                                                                    :max="100" :min="0"
-                                                                    :max-fraction-digits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.ColumnWidth}`]">
-                                                                {{ invalidData[`point${TypeProperty.ColumnWidth}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-right flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Row Height
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.RowHeight.content"
-                                                                    :class="{ 'error': invalidData[`content${TypeProperty.RowHeight}`] }"
-                                                                    placeholder="Enter your Row Height"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.RowHeight}`]">
-                                                                {{ invalidData[`content${TypeProperty.RowHeight}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.RowHeight.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.RowHeight}`] }"
-                                                                    :max="100" :min="0"
-                                                                    :max-fraction-digits="5"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.RowHeight}`]">
-                                                                {{ invalidData[`point${TypeProperty.RowHeight}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Table" toggleable class="mt-10">
-                                        <div class="list-control flex-row">
-                                            <div class="panel-left flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                formats as Table
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown
-                                                                    v-model="formats.properties.FormatAsTable.content"
-                                                                    showClear
-                                                                    :class="{ 'error': invalidData[`content${TypeProperty.FormatAsTable}`] }"
-                                                                    :options="['formats as Table']"
-                                                                    placeholder="Select a option"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.FormatAsTable}`]">
-                                                                {{
-                                                                    invalidData[`content${TypeProperty.FormatAsTable}`]
-                                                                }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.FormatAsTable.point"
-                                                                    :max-fraction-digits="5" :min="0" :max="100"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.FormatAsTable}`] }"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.FormatAsTable}`]">
-                                                                {{ invalidData[`point${TypeProperty.FormatAsTable}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Table Name
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputText
-                                                                    v-model="formats.properties.TableName.content"
-                                                                    :class="{ 'error': invalidData[`content${TypeProperty.TableName}`] }"
-                                                                    placeholder="Enter your Table Name"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.TableName}`]">
-                                                                {{ invalidData[`content${TypeProperty.TableName}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.TableName.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.TableName}`] }"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TableName}`]">
-                                                                {{ invalidData[`point${TypeProperty.TableName}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-right flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Table Style
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <Dropdown
-                                                                    v-model="formats.properties.TableStyle.content"
-                                                                    :class="{ 'error': invalidData[`content${TypeProperty.TableStyle}`] }"
-                                                                    :options="configureExamData.TableStyles"
-                                                                    showClear
-                                                                    optionLabel="description" optionValue="value"
-
-                                                                    placeholder="Select a Background Color"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`content${TypeProperty.TableStyle}`]">
-                                                                {{ invalidData[`content${TypeProperty.TableStyle}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.TableStyle.point"
-                                                                    :class="{ 'error': invalidData[`point${TypeProperty.TableStyle}`] }"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`point${TypeProperty.TableStyle}`]">
-                                                                {{ invalidData[`point${TypeProperty.TableStyle}`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Fill" toggleable class="mt-10">
-                                        <div class="list-control flex-row">
-                                            <div class="panel-left flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Background Color
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <!--    :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
-                                                                <Dropdown class="ms-format" v-model="Font"
-                                                                          :options="configureExamData.Font"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Background Color"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    :minFractionDigits="2"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Border Presets
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <!--    :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
-                                                                <Dropdown class="ms-format" v-model="Font"
-                                                                          :options="configureExamData.Font"
-                                                                          optionLabel="description" optionValue="value"
-
-                                                                          placeholder="Select a Background Color"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    :minFractionDigits="2"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-right flex1">
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Fill Effects
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <!--   :type-property="configureExamData.TypeProperty.FontColor.value"
-                                                                    :property-name="configureExamData.TypeProperty.FontColor.description" -->
-                                                                <InputNumber class="ms-format"
-                                                                             placeholder="Enter your Row Height"
-                                                                             :minFractionDigits="2"
-                                                                             :max="10"
-                                                                             :min="0" :maxFractionDigits="5"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                point
-
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    :minFractionDigits="2"
-                                                                    :max="10"
-                                                                    :min="0" :maxFractionDigits="5"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                            </div>
-
                                         </div>
                                     </Panel>
                                 </div>
@@ -1122,7 +506,7 @@
                         <TabPanel header="Chèn nội dung">
                             <div class="form-content flex-row">
                                 <div class="right-content flex1">
-                                    <Panel header="Sheet" toggleable class="mt-10">
+                                    <Panel header="Hình ảnh" toggleable class="mt-10">
                                         <div class="list-control">
                                             <div class="flex-row">
                                                 <div class="flex1">
@@ -1172,449 +556,6 @@
                                             </div>
                                         </div>
                                     </Panel>
-                                    <Panel header="Text" toggleable class="mt-10">
-                                        <div class="list-control">
-                                            <div class="flex-row">
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Sheet
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="Text.SheetIndex" optionLabel="sheetName"
-                                                                      :class="{ 'error': invalidData[`sheetIndex${TypeProperty.Text}`] }"
-                                                                      :type-property="TypeProperty.Text"
-                                                                      optionValue="sheetIndex"
-                                                                      :options="optionSheet"
-                                                                      placeholder="Select a Sheet"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`sheetIndex${TypeProperty.Text}`]">
-                                                            {{ invalidData[`sheetIndex${TypeProperty.Text}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Range
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputText v-model="Text.Range"
-                                                                       :class="{ 'error': invalidData[`range${TypeProperty.Text}`] }"
-                                                                       placeholder="Enter your Range"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`range${TypeProperty.Text}`]">
-                                                            {{ invalidData[`range${TypeProperty.Text}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            content
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputText v-model="Text.content"
-                                                                       :class="{ 'error': invalidData[`content${TypeProperty.Text}`] }"
-                                                                       placeholder="Enter your content"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`content${TypeProperty.Text}`]">
-                                                            {{ invalidData[`content${TypeProperty.Text}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            point
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber v-model="Text.point"
-                                                                         :class="{ 'error': invalidData[`point${this.TypeProperty.Text}`] }"
-                                                                         :max="10"
-                                                                         :min="0" :maxFractionDigits="5"
-                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData[`point${this.TypeProperty.Text}`]">
-                                                            {{ invalidData[`point${this.TypeProperty.Text}`] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                            </div>
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Advanced Filter" toggleable class="mt-10">
-                                        <div class="form-content flex-row">
-                                            <div class="right-content flex1">
-                                                <div class="text-title flex-row form-group">
-                                                    <span class="mr-10">Thông tin sheet</span>
-                                                </div>
-                                                <div class="list-control">
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Sheet
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <Dropdown v-model="AdvancedFilter.SheetIndex"
-                                                                              optionLabel="sheetName"
-                                                                              optionValue="sheetIndex"
-                                                                              :class="{ 'error': invalidData['SheetIndexAdvancedFilter'] }"
-                                                                              :options="optionSheet"
-                                                                              placeholder="Select a Sheet"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData['SheetIndexAdvancedFilter']">
-                                                                    {{ invalidData['SheetIndexAdvancedFilter'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Range
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText v-model="AdvancedFilter.Range"
-                                                                               :class="{ 'error': invalidData['RangeAdvancedFilter'] }"
-                                                                               class="heigth36"
-                                                                               placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData['RangeAdvancedFilter']">
-                                                                    {{ invalidData['RangeAdvancedFilter'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-content flex-row">
-                                            <div class="right-content flex1">
-                                                <div class="text-title flex-row form-group">
-                                                    <span class="mr-10">Vùng dữ liệu</span>
-                                                </div>
-                                                <div class="list-control">
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Sheet
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <Dropdown v-model="AdvancedFilter.DataSheetIndex"
-                                                                              :class="{ 'error': invalidData['DataSheetIndexAdvancedFilter'] }"
-                                                                              optionLabel="sheetName"
-                                                                              optionValue="sheetIndex"
-                                                                              :options="optionSheet"
-                                                                              placeholder="Select a Sheet"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData['DataSheetIndexAdvancedFilter']">
-                                                                    {{ invalidData['DataSheetIndexAdvancedFilter'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Range
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText v-model="AdvancedFilter.DataRange"
-                                                                               :class="{ 'error': invalidData['DataRangeAdvancedFilter'] }"
-                                                                               @keypress="validateInputRangeNoRef"
-                                                                               class="heigth36"
-                                                                               placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData['DataRangeAdvancedFilter']">
-                                                                    {{ invalidData['DataRangeAdvancedFilter'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-content flex-row">
-                                            <div class="right-content flex1">
-                                                <div class="text-title flex-row form-group">
-                                                    <span class="mr-10">Vùng điều kiện</span>
-                                                </div>
-                                                <div class="list-control" v-for="index in AdvancedFilter.countCriteria">
-                                                    <div class="flex-row">
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Sheet
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <Dropdown
-                                                                        v-model="AdvancedFilter.SheetIndexCriteria[index]"
-                                                                        optionLabel="sheetName" optionValue="sheetIndex"
-                                                                        :class="{ 'error': invalidData[`SheetIndexCriteria${index}`] }"
-                                                                        :options="optionSheet"
-                                                                        placeholder="Select a Sheet"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData[`SheetIndexCriteria${index}`]">
-                                                                    {{ invalidData[`SheetIndexCriteria${index}`] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Title Range
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText
-                                                                        v-model="AdvancedFilter.TitleRange[index]"
-                                                                        @keypress="validateInputRangeNoRef"
-                                                                        :class="{ 'error': invalidData[`TitleRange${index}`] }"
-                                                                        class="heigth36"
-                                                                        placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData[`TitleRange${index}`]">
-                                                                    {{ invalidData[`TitleRange${index}`] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Title content
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText
-                                                                        v-model="AdvancedFilter.Titlecontent[index]"
-                                                                        :class="{ 'error': invalidData[`Titlecontent${index}`] }"
-                                                                        class="heigth36"
-                                                                        placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData[`Titlecontent${index}`]">
-                                                                    {{ invalidData[`Titlecontent${index}`] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Criteria Range
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText
-                                                                        v-model="AdvancedFilter.CriteriaRange[index]"
-                                                                        :class="{ 'error': invalidData[`CriteriaRange${index}`] }"
-                                                                        @keypress="validateInputRangeNoRef"
-                                                                        class="heigth36"
-                                                                        placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData[`CriteriaRange${index}`]">
-                                                                    {{ invalidData[`CriteriaRange${index}`] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sp"></div>
-                                                        <div class="flex1">
-                                                            <div class="form-group slide-detail">
-                                                                <label class="top-label d-flex">
-                                                                    Criteria content
-
-                                                                </label>
-                                                                <div class="flex1">
-                                                                    <InputText
-                                                                        v-model="AdvancedFilter.Criteriacontent[index]"
-                                                                        :class="{ 'error': invalidData[`Criteriacontent${index}`] }"
-                                                                        class="heigth36"
-                                                                        placeholder="Enter your range"/>
-                                                                </div>
-                                                                <div class="error-text"
-                                                                     v-if="invalidData[`Criteriacontent${index}`]">
-                                                                    {{ invalidData[`Criteriacontent${index}`] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="list-control">
-                                            <div class="flex-row">
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            point
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber v-model="AdvancedFilter.point" :min="0"
-                                                                         :max="100"
-                                                                         :max-fraction-digits="5"
-                                                                         :class="{ 'error': invalidData['pointAdvancedFilter'] }"
-                                                                         placeholder="Enter your content"/>
-                                                        </div>
-                                                        <div class="error-text"
-                                                             v-if="invalidData['pointAdvancedFilter']">
-                                                            {{ invalidData['pointAdvancedFilter'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1"></div>
-                                            </div>
-                                        </div>
-                                    </Panel>
-                                    <Panel header="Formula" toggleable class="mt-10">
-                                        <div class="list-control" ref="scrollToFormula">
-                                            <div class="flex-row">
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Sheet
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="Formula.SheetIndex"
-                                                                      optionLabel="sheetName"
-                                                                      showClear
-                                                                      :class="{ 'error': invalidData['FormulaSheetIndex'] }"
-                                                                      optionValue="sheetIndex" :options="optionSheet"
-                                                                      placeholder="Select a Sheet"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['FormulaSheetIndex']">
-                                                            {{ invalidData['FormulaSheetIndex'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Range
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputText v-model="Formula.Range"
-                                                                       :class="{ 'error': invalidData['FormulaRange'] }"
-                                                                       @change="validateInputRangeNoRef"
-                                                                       placeholder="Enter your Range"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['FormulaRange']">
-                                                            {{ invalidData['FormulaRange'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            Formula Type
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <Dropdown v-model="Formula.FormulaType"
-                                                                      :class="{ 'error': invalidData['FormulaType'] }"
-                                                                      :options="configureExamData.FormulaType" showClear
-                                                                      optionLabel="description" optionValue="value"
-                                                                      placeholder="Choose a Option"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['FormulaType']">
-                                                            {{ invalidData['FormulaType'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            content
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputText v-model="Formula.content"
-                                                                       :class="{ 'error': invalidData['Formulacontent'] }"
-                                                                       placeholder="Enter your content"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['Formulacontent']">
-                                                            {{ invalidData['Formulacontent'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sp"></div>
-                                                <div class="flex1">
-                                                    <div class="form-group slide-detail">
-                                                        <label class="top-label d-flex">
-                                                            point
-
-                                                        </label>
-                                                        <div class="flex1">
-                                                            <InputNumber v-model="Formula.point" :min="0" :max="100"
-                                                                         :max-fraction-digits="5"
-                                                                         :class="{ 'error': invalidData['Formulapoint'] }"
-                                                                         placeholder="Enter your content"/>
-                                                        </div>
-                                                        <div class="error-text" v-if="invalidData['Formulapoint']">
-                                                            {{ invalidData['Formulapoint'] }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Panel>
-
                                 </div>
                             </div>
                         </TabPanel>
@@ -2383,6 +1324,11 @@ export default {
                         content: null,
                         point: null,
                         propertyName: 'Apply Style',
+                        property: {
+                            key: null,
+                            content: null,
+                            value: null,
+                        }
                     },
 
                     FontSize: {
@@ -2696,16 +1642,10 @@ export default {
         },
 
         /**
-         * Không cho phép nhập khoảng trắng và các kí tự
-         * đặc biệt trừ kí tự '$', ':', ','
-         * @param {*} event
+         * Xoá các value của apply style
          */
-        validateInputRangeNoRef(event) {
-            let pattern = /^[a-zA-Z0-9$\,\:]+$/;
-            let res = event.key.match(pattern);
-            if (!res) {
-                event.preventDefault();
-            }
+        changeApplyStyle() {
+            this.formats.properties.APPLY_STYLE.property.key = this.formats.properties.APPLY_STYLE.property.content = this.formats.properties.APPLY_STYLE.property.value = null;
         },
 
         /**
@@ -2719,14 +1659,17 @@ export default {
             //đang ở tab format
             if (this.tabViewIndex === 0) {
                 for (let property in this.formats.properties) {
-                    let isHasChild = false;
+                    let isHasChilds = false; // có nhiều thuộc tính con
+                    let isHasChild = false; // có 1 thuộc tính con
                     let dataChild = [];
                     let content = this.formats.properties[property].content;
                     let point = this.formats.properties[property].point;
+                    let propertyType = this.TypeProperty[property];
+                    let propertyName = this.formats.properties[property].propertyName;
                     let required = this.formats.properties[property].required;
                     for (let child in this.formats.properties[property]?.properties) {
                         let invalidProperty = true;
-                        isHasChild = true;
+                        isHasChilds = true;
                         let contentChild = this.formats.properties[property].properties[child].content;
                         let pointChild = this.formats.properties[property].properties[child].point;
                         let keyChild = `${property}-${child}`;
@@ -2755,8 +1698,73 @@ export default {
                         }
                     }
 
+                    for (let child in this.formats.properties[property]?.property) {
+                        isHasChild = true;
+                        let invalidProperty = true;
+                        let contentChild = this.formats.properties[property].property.content ?? [];
+                        let point = this.formats.properties[property].point;
+                        let keyChild = `${property}-${child}`;
+                        let key = null;
+                        if (propertyType === this.TypeProperty['APPLY_STYLE']) {
+                            key = this.formats.properties[property].property.key;
+                            if (content != null || point != null || key != null) {
+                                if (content == null) {
+                                    this.invalidData[`c-${property}`] = MESSAGE.INVALID_CONTENT_SETUP;
+                                    invalidProperty = false;
+                                    validData = false;
+                                }
+                                if (point == null) {
+                                    this.invalidData[`p-${property}`] = MESSAGE.INVALID_POINT_SETUP;
+                                    invalidProperty = false;
+                                    validData = false;
+                                }
+                                if (key == null) {
+                                    this.invalidData[`k-${property}`] = MESSAGE.INVALID_CONTENT_SETUP;
+                                    invalidProperty = false;
+                                    validData = false;
+                                }
+                            }
+                            switch (content) {
+                                case this.configureExamData.applyStyleEnum['PARAGRAPH'].value:
+                                    if (contentChild === null) {
+                                        this.invalidData[`c-${keyChild}`] = MESSAGE.INVALID_CONTENT_SETUP;
+                                        invalidProperty = false;
+                                        validData = false;
+                                    } else {
+                                        let selectedValue = contentChild;
+                                        contentChild = [];
+                                        for(let index in selectedValue) {
+                                            contentChild.push(this.configureExamData.paragraphs[index]);
+                                        }
+                                        contentChild = contentChild.join(this.configureExamData.separator)
+                                    }
+                                    break;
+                                case this.configureExamData.applyStyleEnum['OTHER'].value:
+                                    let valueChild = this.formats.properties[property].property.value;
+                                    if (valueChild === null) {
+                                        this.invalidData[`c-${keyChild}`] = MESSAGE.INVALID_CONTENT_SETUP;
+                                        invalidProperty = false;
+                                        validData = false;
+                                    }
+                                    contentChild = valueChild;
+                                    break;
+                                case this.configureExamData.applyStyleEnum['ALL'].value:
+                                    propertyType = this.TypeProperty['APPLY_STYLE_ALL'];
+                                    propertyName = 'Apply Style All';
+                                    break;
+                            }
+                        }
+
+                        if (invalidProperty && content != null && point != null) {
+                            dataChild = {
+                                'key': key,
+                                'value': contentChild,
+                            };
+                        }
+
+                    }
                     // có các thuộc tính con
-                    if (isHasChild) {
+                    if (isHasChilds) {
                         if (content != null && dataChild.length > 0) {
                             content = JSON.stringify({
                                 'key': content,
@@ -2767,6 +1775,12 @@ export default {
                             this.invalidData[`c-${property}`] = MESSAGE.INVALID_CONTENT_CHILD_SETUP;
                         }
                     }
+                    // có 1 thuộc tính con
+                    else if (isHasChild) {
+                        if (content != null && dataChild != null) {
+                            content = dataChild;
+                        }
+                    }
 
                     // dữ liệu hợp lệ
                     if (validData && content != null && point != null) {
@@ -2775,178 +1789,15 @@ export default {
                             content: content,
                             page: 0,
                             paragraph: null,
-                            property_name: this.formats.properties[property].propertyName,
-                            property_type: this.TypeProperty[property],
+                            property_name: propertyName,
+                            property_type: propertyType,
                             point: point,
                             priority: 0,
                         });
                     }
                 }
             } else if (this.tabViewIndex === 1) {
-                //insert text
-                if (this.validateCellNoRef(this.Text.Range) && this.Text.SheetIndex != null && this.Text.content != null && String(this.Text.content).trim() != '' && this.Text.point != null) {
-                    //add vào danh sách tiêu chí
-                    this.listCriteria.push({
-                        SheetId: this.Text.SheetIndex,
-                        Range: this.Text.Range,
-                        ExamBankId: this.selectedData.ExamBankId,
-                        DataReference: null,
-                        content: this.Text.content,
-                        PropertyName: 'Insert Text',
-                        TypeProperty: this.TypeProperty['Text'],
-                        point: this.Text.point
-                    });
-                    //clear giá trị
-                    this.Text.Range = this.Text.SheetIndex = this.Text.content = null;
-                    this.showToast("Thiết lập tiêu chí thành công");
-                    this.saveToLocalStorage();
-                } else if (this.Text.Range != null || this.Text.SheetIndex != null || (this.Text.content != null && String(this.Text.content).trim() != '') || this.Text.point != null) {
-                    if (this.Text.SheetIndex == null) {
-                        this.invalidData[`sheetIndex${this.TypeProperty.Text}`] = 'Sheet không được để trống';
-                    }
 
-                    if (this.Text.Range == null) {
-                        this.invalidData[`range${this.TypeProperty.Text}`] = 'Vùng không được để trống';
-                    } else if (!this.validateCellNoRef(this.Text.Range)) {
-                        this.invalidData[`range${this.TypeProperty.Text}`] = 'Vùng không đúng định dạng';
-                    }
-
-                    if (this.Text.content == null || String(this.Text.content).trim() == '') {
-                        this.invalidData[`content${this.TypeProperty.Text}`] = 'Nội dung không được để trống';
-                    }
-
-                    if (this.Text.point == null) {
-                        this.invalidData[`point${this.TypeProperty.Text}`] = 'Điểm không được để trống';
-                    }
-
-                    if (this.invalidData[`sheetIndex${this.TypeProperty.Text}`] && this.invalidData[`range${this.TypeProperty.Text}`] && this.invalidData[`content${this.TypeProperty.Text}`] && this.invalidData[`point${this.TypeProperty.Text}`]) {
-                        alert(1);
-                    }
-                }
-
-                //insert sheet
-                if (this.InsertSheet.content != null && this.InsertSheet.point != null) {
-
-                } else if (this.InsertSheet.content != null || this.InsertSheet.point != null) {
-                    if (this.InsertSheet.content == null) this.invalidData[`content${this.TypeProperty.InsertSheet}`] = 'Nội dung không được để trống';
-                    if (this.InsertSheet.point == null) this.invalidData[`point${this.TypeProperty.InsertSheet}`] = 'Điểm không được để trống';
-                }
-
-                //formula
-                if (this.Formula.SheetIndex != null && (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) && this.Formula.FormulaType != null && this.Formula.content != null && this.Formula.content != '' && this.Formula.point) {
-                    //add vào danh sách tiêu chí
-                    this.listCriteria.push({
-                        SheetId: this.Formula.SheetIndex,
-                        Range: this.Formula.Range,
-                        ExamBankId: this.selectedData.ExamBankId,
-                        DataReference: null,
-                        content: JSON.stringify([
-                            this.Formula.FormulaType,
-                            this.Formula.content,
-                        ]),
-                        PropertyName: 'Formula',
-                        TypeProperty: this.TypeProperty['Formula'],
-                        point: this.Formula.point
-                    });
-                    //clear giá trị
-                    this.Formula.content = this.formats.FormulaType = this.Formula.SheetIndex = null;
-                    this.showToast("Thiết lập tiêu chí thành công");
-                    this.saveToLocalStorage();
-                } else if (this.Formula.SheetIndex != null || (this.validateCellNoRef(this.Formula.Range) || this.validateRangeNoRef(this.Formula.Range)) || this.Formula.FormulaType != null || (this.Formula.content != null && this.Formula.content != '') || this.Formula.point) {
-                    if (this.Formula.SheetIndex == null) {
-                        this.invalidData['FormulaSheetIndex'] = 'Sheet không được để trống';
-                    }
-
-                    if (this.Formula.Range == null || String(this.Formula.Range).trim() == '') {
-                        this.invalidData['FormulaRange'] = 'Vùng không được để trống';
-                    } else {
-                        if (!this.validateRangeNoRef(this.Formula.Range)) {
-                            if (!this.validateCellNoRef(this.Formula.Range)) {
-                                this.invalidData['FormulaRange'] = 'Vùng không đúng định dạng';
-                            }
-                        }
-                    }
-
-                    if (this.Formula.FormulaType == null) {
-                        this.invalidData['FormulaType'] = 'Loại công thức không được để trống';
-                    }
-
-                    if (this.Formula.content == null || String(this.Formula.content).trim() == '') {
-                        this.invalidData['Formulacontent'] = 'Công thức không được để trống';
-                    }
-
-                    if (this.Formula.point == null) {
-                        this.invalidData['Formulapoint'] = 'Điểm không được để trống';
-                    }
-
-                }
-
-
-                var valid = this.validateCriteriaAdvancedFilterEmpty();
-                //insert advanced filter
-                if (this.AdvancedFilter.SheetIndex != null && this.validateCellNoRef(this.AdvancedFilter.Range) && this.AdvancedFilter.Range != null && this.AdvancedFilter.point != null && valid) {
-                    var content = [];
-                    for (let index = 1; index <= this.AdvancedFilter.countCriteria; index++) {
-                        content.push(
-                            {
-                                SheetIndex: this.AdvancedFilter.SheetIndexCriteria[index],
-                                TitleRange: this.AdvancedFilter.TitleRange[index],
-                                Titlecontent: this.AdvancedFilter.Titlecontent[index],
-                                Criteriacontent: this.AdvancedFilter.Criteriacontent[index],
-                                CriteriaRange: this.AdvancedFilter.CriteriaRange[index],
-                            }
-                        );
-                    }
-                    //add vào danh sách tiêu chí
-                    this.listCriteria.push({
-                        SheetId: this.AdvancedFilter.SheetIndex,
-                        Range: this.AdvancedFilter.Range,
-                        ExamBankId: this.selectedData.ExamBankId,
-                        DataReference: JSON.stringify(
-                            {
-                                sheetIndex: this.AdvancedFilter.DataSheetIndex,
-                                range: this.AdvancedFilter.DataRange,
-                            }
-                        ),
-                        content: JSON.stringify(content),
-                        PropertyName: 'AdvancedFilter',
-                        TypeProperty: this.TypeProperty['AdvancedFilter'],
-                        point: this.AdvancedFilter.point
-                    });
-                    //clear giá trị
-                    this.Formula.content = this.formats.FormulaType = this.Formula.SheetIndex = null;
-                    this.showToast("Thiết lập tiêu chí thành công");
-                    this.saveToLocalStorage();
-                } else if (this.AdvancedFilter.SheetIndex != null || this.AdvancedFilter.Range != null || this.AdvancedFilter.point != null || this.AdvancedFilter.DataRange != null || this.AdvancedFilter.DataSheetIndex != null) {
-
-                    if (this.AdvancedFilter.SheetIndex == null) {
-                        this.invalidData['SheetIndexAdvancedFilter'] = 'Sheet không được để trống';
-                    }
-
-                    if (this.AdvancedFilter.DataSheetIndex == null) {
-                        this.invalidData['DataSheetIndexAdvancedFilter'] = 'Sheet không được để trống';
-                    }
-
-                    if (this.AdvancedFilter.DataRange == null) {
-                        this.invalidData['DataRangeAdvancedFilter'] = 'Vùng không được để trống';
-                    }
-
-                    if (this.AdvancedFilter.Range == null) {
-                        this.invalidData['RangeAdvancedFilter'] = 'Vùng không được để trống';
-                    }
-                    if (this.AdvancedFilter.point == null) {
-                        this.invalidData['pointAdvancedFilter'] = 'Điểm không được để trống';
-                    }
-
-                    if (this.AdvancedFilter.Range != null && this.validateCellNoRef(this.AdvancedFilter.Range)) {
-                        this.invalidData['RangeAdvancedFilter'] = 'Vùng không đúng định dạng';
-                    }
-
-                    if (this.AdvancedFilter.DataRange != null && this.validateRangeOrCell(this.AdvancedFilter.DataRange)) {
-                        this.invalidData['DataRangeAdvancedFilter'] = 'Vùng không đúng định dạng';
-                    }
-
-                }
             } else if (this.tabViewIndex === 2) {
                 for (let property in this.generals.properties) {
                     let invalidProperty = true;
@@ -3032,7 +1883,8 @@ export default {
             var me = this;
             await configureExam(this.examBankId).then(res => {
                 me.configureExamData = res.data;
-                me.configureExamData.paragraphs = this.textWithEllipsis(res.data.paragraphs)
+                me.configureExamData.paragraphsEllipsis = this.textWithEllipsis(res.data.paragraphs)
+                me.configureExamData.paragraphs = res.data.paragraphs
                 me.totalScore = res.data.data.criterias_sum_point ?? 0;
                 me.selectedData = res.data.data;
                 me.TypeProperty = res.data.typeProperty;
@@ -3043,8 +1895,6 @@ export default {
     },
 
     async created() {
-        // console.log(this.selectedData.ExamBankId);
-        // this.optionSheet = JSON.parse(this.selectedData.SheetIndexReference)[0];
         await this.loadConfigExamData();
     },
 

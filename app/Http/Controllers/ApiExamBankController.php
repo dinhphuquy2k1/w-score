@@ -394,6 +394,7 @@ class ApiExamBankController extends Controller
             $paragraphs = explode($this->_SEPARATOR, $examBank->exam_bank_content);
             $result = [
                 'data' => $examBank->toArray(),
+                'separator' => $this->_SEPARATOR,
                 'paragraphs' => $paragraphs,
                 'typeProperty' => collect(PropertyType::getInstances())->map(function ($instance) {
                     return $instance->value;
