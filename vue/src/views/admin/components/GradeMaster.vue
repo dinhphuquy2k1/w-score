@@ -4,28 +4,8 @@
             <div class="d-flex flex-row title-box">
                 <div class="list-title flex-grow-1 text-start">Thực hiện chấm thi</div>
                 <div class="right-toolbar d-flex flex-row">
-<!--                    <Button-->
-<!--                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">-->
-<!--                        <div class="fw-semibold">Chấm thi</div>-->
-<!--                        <div class="icon-only icon-simple_cart"></div>-->
-<!--                    </Button>-->
                 </div>
             </div>
-            <!--            <div class="d-flex flex-row toolbar-box justify-content-between">-->
-            <!--                <div class="left-toolbar d-flex flex-row">-->
-            <!--                    <div class="m-search_form flex-row d-flex align-items-center d-flex d-none">-->
-            <!--                        <InputText type="search" v-model="value" class="ms-input_search w-100" placeholder="Tìm kiếm"/>-->
-            <!--                        <div class="icon24 icon search-right search"></div>-->
-            <!--                    </div>-->
-            <!--                </div>-->
-            <!--                <div class="right-toolbar d-flex flex-row">-->
-            <!--                    <Button-->
-            <!--                        class="ms-btn blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">-->
-            <!--                        <div class="icon-only icon-simple_cart"></div>-->
-            <!--                        <div class="fw-semibold">Chấm thi</div>-->
-            <!--                    </Button>-->
-            <!--                </div>-->
-            <!--            </div>-->
             <div class="flex-grow-1 flex-row row gx-0 gap-3">
                 <div class="col-3 left-grade" :class="{'collage': isCollapsed}">
                     <div class="title text-start d-flex justify-content-between">
@@ -45,8 +25,10 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
+                                    <Dropdown v-model="selectedManager" :options="examManager"
+                                              optionLabel="exam_name"
                                               placeholder="Kì thi"
+                                              @change="onChangeExamManager"
                                               class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
@@ -57,8 +39,9 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
+                                    <Dropdown v-model="selectedExamShift" :options="examShift" optionLabel="exam_shift_name"
+                                              placeholder="Ca thi"
+                                              @change="onChangeExamShift"
                                               class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
@@ -69,8 +52,8 @@
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
-                                    <Dropdown v-model="selectedCity" :options="cities" optionLabel="name"
-                                              placeholder="Kì thi"
+                                    <Dropdown v-model="selectedDepartment" :options="department" optionLabel="department_name"
+                                              placeholder="Phòng thi"
                                               class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text"></div>
@@ -420,7 +403,7 @@ import Resumable from 'resumablejs';
 import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE} from "@/common/enums";
 
-import {get, calculate} from '/api/grade-master';
+import {get, calculate, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 
 export default {
@@ -595,29 +578,7 @@ export default {
          * Sự kiện chọn ca thi
          */
         onChangeExamShift() {
-            this.valuesFile[1].FileName = this.valuesFile[0].FileName = null;
-            this.valuesFile[1].Empty = this.valuesFile[0].Empty = true;
-
-            //dữ liệu kì thi
-            var data = this.examManager.find(_item => this.selectedManager == _item.ExamId);
-            data = JSON.parse(data.ExamShift);
-            //dữ liệu ca thi
-            var result = data.filter(_item => _item.ExamShiftId == this.selectedExamShift);
-            //Mảng dữ liệu phòng thi
-            this.department = this.getUniqueItems(result, 'DepartmentId');
-            //auto focus giá trị đầu
-            this.selectedDepartment = this.department[0].DepartmentId;
-
-            //file danh sách
-            if (this.department[0].ResourcePathFileList != null) {
-                this.valuesFile[0].FileName = this.department[0].ResourcePathFileList.substring(3);
-                this.valuesFile[0].Empty = false;
-            }
-
-            if (this.department[0].ResourcePathFileAssignment != null) {
-                this.valuesFile[1].FileName = this.department[0].ResourcePathFileAssignment.substring(3);
-                this.valuesFile[1].Empty = false;
-            }
+            this.department = this.selectedExamShift.departments;
             this.loadExamResult();
         },
 
@@ -643,7 +604,7 @@ export default {
                     this.valuesFile[1].Empty = false;
                 }
             } catch (error) {
-                console.log(result, this.selectedDepartment, this.department, this.selectedExamShift, data);
+                console.log(resulgetDetailExamManagert, this.selectedDepartment, this.department, this.selectedExamShift, data);
             }
             this.loadExamResult();
         },
@@ -654,9 +615,9 @@ export default {
          */
         selectedFirst() {
             try {
-                var data = this.examManager.find(_item => this.selectedManager == _item.ExamId).ExamShift;
-                var data = JSON.parse(data);
-                this.examShift = this.getUniqueItems(data, 'ExamShiftCode');
+                this.examShift = this.selectedManager.exam_shifts;
+                console.log(this.examShift);
+                return
                 this.department = this.getUniqueItems(data, 'DepartmentId');
                 if (!this.examShift.find(_item => _item.ExamShiftId == this.selectedExamShift)) {
                     this.selectedExamShift = this.examShift[0].ExamShiftId;
@@ -808,7 +769,7 @@ export default {
          */
         async loadExamManager() {
             await getDetailExamManager().then(res => {
-                this.examManager = res;
+                this.examManager = res.data;
             }).catch(error => {
                 console.log(error);
             });
@@ -1024,7 +985,7 @@ export default {
          * Lấy thông tin chi tiết điểm của sinh viên
          */
         async loadExamResultDetail() {
-            if (JSON.stringify(this.selectedResult) != JSON.stringify(this.objCheckSelectedResult)) {
+            if (JSON.stringify(this.selectedResult) !== JSON.stringify(this.objCheckSelectedResult)) {
                 this.resultDetail = [];
                 await getExamResultDetail(this.selectedResult.StudentCode).then(res => {
                     this.visibleExamResultDetail = true;
@@ -1068,7 +1029,8 @@ export default {
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
         },
     },
-    created() {
+    async created() {
+        await this.loadExamManager();
     },
 
     mounted() {

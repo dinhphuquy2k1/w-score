@@ -18,8 +18,8 @@ export function saveExamManager(data) {
  */
 export function updateExamManager(data) {
     return request({
-        url: 'api/exams/update',
-        method: 'POST',
+        url: 'api/exams',
+        method: 'PUT',
         data: data,
     })
 }
@@ -101,7 +101,7 @@ export function deleteExamShift(data) {
  */
 export function insertExamShift(data) {
     return request({
-        url: '/exam-shifts',
+        url: 'api/exam-shifts',
         method: 'POST',
         data: data,
     })

@@ -33,6 +33,7 @@ Route::post('/login', [ApiUserController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
     Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
+    Route::get('/word/calculate', [ApiWordController::class, 'index']);
     Route::get('/departments', [ApiDepartmentController::class, 'get']);
     Route::post('/departments', [ApiDepartmentController::class, 'save']);
     Route::put('/departments/{id}', [ApiDepartmentController::class, 'update']);
@@ -47,14 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/exams/{id}', [ApiExamController::class, 'delete']);
     Route::post('/exams/getExamShifts', [ApiExamController::class, 'getExamShifts']);
     Route::get('/exam-banks', [ApiExamBankController::class, 'get']);
+    Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']);
     Route::get('/exam-banks/{id}', [ApiExamBankController::class, 'configureExam']);
     Route::post('/exam-banks', [ApiExamBankController::class, 'save']);
     Route::post('/exam-banks/saveCriteria', [ApiExamBankController::class, 'saveCriteria']);
     Route::post('/exam-banks/getCriteria', [ApiExamBankController::class, 'getCriteria']);
     Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
     Route::delete('/exam-banks/{id}', [ApiExamBankController::class, 'delete']);
-    Route::get('/exam-banks/settings', [ApiExamBankController::class, 'getSettings']);
-    Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);
     Route::post('/exam-shifts', [ApiExamShiftController::class, 'save']);
     Route::put('/exam-shifts', [ApiExamShiftController::class, 'update']);
     Route::delete('/exam-shifts', [ApiExamShiftController::class, 'delete']);

@@ -22,3 +22,10 @@ export function calculate(data) {
         data: data
     })
 }
+
+export function getDetailExamManager() {
+    return request({
+        url: 'api/word/calculate',
+        method: 'GET',
+    })
+}

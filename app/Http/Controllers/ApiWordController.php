@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamBank;
+use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
@@ -48,9 +50,16 @@ class ApiWordController extends Controller
         $this->_PATH_ZIP = storage_path($this->_PATH_ZIP);
     }
 
-    public function index(): array
+    /**
+     * @return \Illuminate\Http\JsonResponse|object
+     */
+    public function index()
     {
-        return ['test' => 'message'];
+        $examBanks = Exam::with('examShifts.departments', 'examShifts.examBanks')->get();
+        if ($examBanks) {
+            return $this->sendResponseSuccess($examBanks->toArray());
+        }
+        return $this->sendResponseSuccess([]);
     }
 
     public function uploadFile(Request $request)

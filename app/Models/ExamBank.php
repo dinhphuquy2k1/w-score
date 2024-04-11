@@ -22,9 +22,11 @@ class ExamBank extends Model
         'exam_bank_code',
     ];
 
-    public function criterias()
+    public function criterias(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Criteria::class, 'exam_bank_id');
     }
+
+
 
 }
