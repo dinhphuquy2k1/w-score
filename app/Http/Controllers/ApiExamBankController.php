@@ -499,23 +499,25 @@ class ApiExamBankController extends Controller
     {
         try {
             $attributes = $request->validate([
-                '0.*.exam_bank_id' => 'required|numeric', // 'exam_bank_id' là bắt buộc và phải là số
-                '0.*.content' => 'required', // 'content' là bắt buộc và phải là JSON
-                '0.*.page' => '',
-                '0.*.paragraph' => '',
-                '0.*.property_type' => 'required|integer',
-                '0.*.property_name' => 'required|string',
-                '0.*.priority' => 'required|integer',
-                '0.*.point' => 'required|numeric',
+                '*.exam_bank_id' => 'required|numeric', // 'exam_bank_id' là bắt buộc và phải là số
+                '*.content' => 'required', // 'content' là bắt buộc và phải là JSON
+                '*.page' => '',
+                '*.paragraph' => '',
+                '*.property_type' => 'required|integer',
+                '*.property_name' => 'required|string',
+                '*.priority' => 'required|integer',
+                '*.point' => 'required|numeric',
             ]);
 
             try {
                 DB::beginTransaction();
                 Criteria::insert($attributes);
+                $examBankId = reset($attributes)['exam_bank_id'];
+                $totalPoint = Criteria::where('exam_bank_id', $examBankId)->sum('point');
+                return $this->sendResponseSuccess(['totalPoint' => $totalPoint]);
                 DB::commit();
             }
             catch (\Throwable $th) {
-                dd($th);
                 DB::rollBack();
                 return $this->sendResponseError();
             }

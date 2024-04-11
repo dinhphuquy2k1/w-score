@@ -1666,6 +1666,7 @@ export default {
                     let point = this.formats.properties[property].point;
                     let propertyType = this.TypeProperty[property];
                     let propertyName = this.formats.properties[property].propertyName;
+                    let priority = 0;
                     let required = this.formats.properties[property].required;
                     for (let child in this.formats.properties[property]?.properties) {
                         let invalidProperty = true;
@@ -1726,6 +1727,7 @@ export default {
                             }
                             switch (content) {
                                 case this.configureExamData.applyStyleEnum['PARAGRAPH'].value:
+                                    priority = 10;
                                     if (contentChild === null) {
                                         this.invalidData[`c-${keyChild}`] = MESSAGE.INVALID_CONTENT_SETUP;
                                         invalidProperty = false;
@@ -1733,13 +1735,14 @@ export default {
                                     } else {
                                         let selectedValue = contentChild;
                                         contentChild = [];
-                                        for(let index in selectedValue) {
+                                        for (let index in selectedValue) {
                                             contentChild.push(this.configureExamData.paragraphs[index]);
                                         }
                                         contentChild = contentChild.join(this.configureExamData.separator)
                                     }
                                     break;
                                 case this.configureExamData.applyStyleEnum['OTHER'].value:
+                                    priority = 10;
                                     let valueChild = this.formats.properties[property].property.value;
                                     if (valueChild === null) {
                                         this.invalidData[`c-${keyChild}`] = MESSAGE.INVALID_CONTENT_SETUP;
@@ -1786,13 +1789,13 @@ export default {
                     if (validData && content != null && point != null) {
                         data.push({
                             exam_bank_id: this.examBankId,
-                            content: content,
+                            content: JSON.stringify(content),
                             page: 0,
                             paragraph: null,
                             property_name: propertyName,
                             property_type: propertyType,
                             point: point,
-                            priority: 0,
+                            priority: priority,
                         });
                     }
                 }
@@ -1853,12 +1856,16 @@ export default {
                     for (let child in this.formats.properties[property]?.properties) {
                         this.formats.properties[property].properties[child].content = this.formats.properties[property].properties[child].point = null;
                     }
+                    for (let child in this.formats.properties[property]?.property) {
+                        this.formats.properties[property].property.content = this.formats.properties[property].property.point = this.formats.properties[property].property.key = null;
+                    }
                 }
             } else return;
             if (this.listCriteria.length > 0) {
                 this.isLoadingSaveCritera = true;
-                saveCriteria([this.listCriteria, this.selectedData]).then(res => {
+                saveCriteria(this.listCriteria).then(res => {
                     this.listCriteria = [];
+                    this.totalScore = res.data.totalPoint;
                     this.$store.dispatch('handleSuccess', 'Thiết lập tiêu chí thành công');
                 }).catch(error => {
                     if (error.request.status === RESPONSE_STATUS.HTTP_UNPROCESSABLE_ENTITY) {
