@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/exam-banks/{id}', [ApiExamBankController::class, 'update']);
     Route::delete('/exam-banks/{id}', [ApiExamBankController::class, 'delete']);
     Route::post('/exam-shifts', [ApiExamShiftController::class, 'save']);
+    Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);
     Route::put('/exam-shifts', [ApiExamShiftController::class, 'update']);
     Route::delete('/exam-shifts', [ApiExamShiftController::class, 'delete']);
 });

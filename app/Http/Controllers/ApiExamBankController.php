@@ -116,7 +116,7 @@ class ApiExamBankController extends Controller
                 return $this->sendResponseSuccess();
             }
         } catch (\Throwable $th) {
-            return $this->sendResponseSuccess();
+            return $this->sendResponseError();
         }
     }
 

@@ -20,7 +20,7 @@ class ExamShift extends Model
 
     public function departments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Department::class, 'exam_shift_details', 'exam_shift_id', 'department_id');
+        return $this->belongsToMany(Department::class, 'exam_shift_details', 'exam_shift_id', 'department_id')->distinct();
     }
 
     public function examBanks(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
