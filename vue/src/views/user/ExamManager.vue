@@ -247,7 +247,7 @@ export default {
         async handlerDelete() {
             this.isLoadingDelete = true;
             await deleteExamManager(this.selectedData.id).then(res => {
-                this.$store.dispatch('handleSuccess', MESSAGE.HTTP_INSERT_OK);
+                this.$store.dispatch('handleSuccess', MESSAGE.HTTP_DELETE_OK);
                 this.loadExamManager();
             }).catch(error => {
                 console.log(error);

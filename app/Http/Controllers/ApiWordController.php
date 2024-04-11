@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ExamBank;
 use App\Models\Exam;
+use App\Models\ExamShiftDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
@@ -71,6 +72,8 @@ class ApiWordController extends Controller
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $fileType = $request->fileType;
+            $cakeListKey = self::CAKE_LIST_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
+            $cakeStudentKey = self::CAKE_STUDENT_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
@@ -97,7 +100,7 @@ class ApiWordController extends Controller
                     if (empty($data)) {
                         return $this->sendResponseError(['message' => 'Không có dữ liệu']);
                     }
-                    Cache::store('file')->put(self::CAKE_LIST_NAME, $data, null);
+                    Cache::store('file')->put($cakeListKey, $data, now()->addDay());
                     return $this->sendResponseSuccess([
                         'cakeListName' => self::CAKE_LIST_NAME,
                     ]);
@@ -113,7 +116,7 @@ class ApiWordController extends Controller
                     if (!File::exists($this->_PATH_EXTRACTED)) {
                         File::makeDirectory($this->_PATH_EXTRACTED, 0777, true);
                     }
-                    $listData = Cache::get(self::CAKE_LIST_NAME);
+                    $listData = Cache::get($cakeListKey);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
                     $filePath = $file->move($this->_PATH_ZIP, $file->getClientOriginalName());
                     $valid_docx = array('docx');
@@ -166,15 +169,14 @@ class ApiWordController extends Controller
                 }
 
                 if (empty($students)) {
-                    return $this->sendResponseError(['message' => 'Dữ liệu trống']);
+                    return $this->sendResponse(Response::HTTP_INTERNAL_SERVER_ERROR, ['message' => 'Dữ liệu trống']);
                 }
-                Cache::store('file')->put(self::CAKE_STUDENT_NAME, $students, null);
                 $students['files'] = [
                     'extractPath' => $extractPath,
                 ];
-                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME;
-                $students['cakeListName'] = self::CAKE_LIST_NAME;
-                Cache::store('file')->put(self::CAKE_STUDENT_NAME, $students, null);
+                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
+                $students['cakeListName'] = self::CAKE_LIST_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
+                Cache::store('file')->put($cakeStudentKey, $students, now()->addDay());
                 return $this->sendResponseSuccess($students);
             } else {
                 return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
@@ -189,13 +191,31 @@ class ApiWordController extends Controller
     public function calculate(Request $request)
     {
         $filePath = $this->_PATH_EXTRACTED;
-        $list = Cache::get(self::CAKE_LIST_NAME) ?? [];
-        $listStudent = Cache::get(self::CAKE_STUDENT_NAME) ? Cache::get(self::CAKE_STUDENT_NAME)['data'] : [];
-        if (empty($list) || empty($listStudent)) {
+        $list = Cache::get($request->cakeListName);
+        $listStudent = Cache::get($request->cakeStudentName) ? Cache::get($request->cakeStudentName)['data'] : [];
+        $departmentId = $request->departmentId;
+        $examShifId = $request->examShifId;
+        $listExamBank = DB::table('exam_banks')
+            ->join('exam_shift_details', 'exam_banks.id', '=', 'exam_shift_details.exam_bank_id')
+            ->where('exam_shift_details.exam_shift_id', '=', $examShifId)
+            ->where('exam_shift_details.department_id', '=', $departmentId)
+            ->orderBy('exam_banks.id')
+            ->distinct()
+            ->get();
+        if (empty($list) || empty($listStudent) || empty($listExamBank)) {
             return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
         }
 
-        $examBankId = 2;
+        $listExamBank = $listExamBank->toArray();
+        $ret = [];
+        foreach ($listExamBank as $exam) {
+            $this->calculateByExam($ret, $exam->exam_bank_id, $listStudent, $exam);
+        }
+        return $this->sendResponseSuccess($ret);
+    }
+
+    public function calculateByExam(&$ret, $examBankId, $listStudent, $exam)
+    {
         $criterias = Criteria::where('exam_bank_id', $examBankId)->orderBy('priority', 'DESC')->get();
         $ret = [];
         foreach ($listStudent as $student) {
@@ -203,7 +223,7 @@ class ApiWordController extends Controller
                 'studentName' => $student['studentName'],
                 'studentId' => $student['studentID'],
                 'departmentName' => '',
-                'examBankName' => 'Đề 8',
+                'examBankName' => $exam->exam_bank_name,
             ];
             $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
             // Lấy danh sách các sections trong tài liệu
@@ -300,7 +320,6 @@ class ApiWordController extends Controller
             }
             $ret[$student['studentID']]['totalPoint'] = round($ret[$student['studentID']]['totalPoint'], 2);
         }
-        return $this->sendResponseSuccess($ret);
     }
 
     /**
@@ -668,7 +687,7 @@ class ApiWordController extends Controller
                 }
                 if ($ret[$student['studentID']][$criteria->id]['flag']) {
                     foreach ($values as $value) {
-                        switch ((int)$value['key']) {
+                        switch ($value['key']) {
                             case PropertyType::FONT:
                                 $style['font'] = !empty($style['font']) ? $style['font'] : FontType::TIME_NEW_ROMAN;
                                 if ($style['font'] == $value['value']) {
@@ -732,7 +751,6 @@ class ApiWordController extends Controller
                 }
             }
         } catch (\Throwable $th) {
-            dd($th);
             \Log::info('ApiWord.checkModifyStyle', [$th]);
         }
     }

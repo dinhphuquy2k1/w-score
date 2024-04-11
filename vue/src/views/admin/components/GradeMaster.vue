@@ -7,6 +7,7 @@
                 </div>
             </div>
             <div class="flex-grow-1 flex-row row gx-0 gap-3">
+                <LoadingProgress v-if="isLoading"/>
                 <div class="col-3 left-grade" :class="{'collage': isCollapsed}">
                     <div class="title text-start d-flex justify-content-between">
                         <div class="text">Thông tin kì thi</div>
@@ -28,10 +29,13 @@
                                     <Dropdown v-model="selectedManager" :options="examManager"
                                               optionLabel="exam_name"
                                               placeholder="Kì thi"
+                                              :class="{'error': invalidData['exam']}"
                                               @change="onChangeExamManager"
                                               class="ms-category text-start"/>
                                 </div>
-                                <div class="ms-error-text"></div>
+                                <div class="ms-error-text" v-if="invalidData['exam']">
+                                    {{invalidData['exam']}}
+                                </div>
                             </div>
                             <div class="group-form_box mt-3">
                                 <div class="d-flex">
@@ -41,10 +45,13 @@
                                 <div class="">
                                     <Dropdown v-model="selectedExamShift" :options="examShift" optionLabel="exam_shift_name"
                                               placeholder="Ca thi"
+                                              :class="{'error': invalidData['exam_shift']}"
                                               @change="onChangeExamShift"
                                               class="ms-category text-start"/>
                                 </div>
-                                <div class="ms-error-text"></div>
+                                <div class="ms-error-text" v-if="invalidData['exam_shift']">
+                                    {{invalidData['exam_shift']}}
+                                </div>
                             </div>
                             <div class="group-form_box mt-3">
                                 <div class="d-flex">
@@ -54,9 +61,12 @@
                                 <div class="">
                                     <Dropdown v-model="selectedDepartment" :options="department" optionLabel="department_name"
                                               placeholder="Phòng thi"
+                                              :class="{'error': invalidData['department']}"
                                               class="ms-category text-start"/>
                                 </div>
-                                <div class="ms-error-text"></div>
+                                <div class="ms-error-text" v-if="invalidData['department']">
+                                    {{invalidData['department']}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,8 +119,6 @@
                                                                 </div>
                                                             </div>
                                                             <div class="file-caution" v-if="FileSuccess">
-                                                                <ProgressBar :value="progress" :showValue="false"
-                                                                             v-if="isLoading"></ProgressBar>
                                                                 <div class="file-caution-img">
                                                                 </div>
                                                                 <div class="file-caution-center mt-20 text-center">
@@ -137,7 +145,7 @@
                                             </div>
                                             <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
-                                                        :disabled="!fileSelected"
+                                                        :disabled="!fileSelected || isDisable"
                                                         @click="fileSelectedOnUpload = valuesFile[0], uploadEvent()"/>
                                             </div>
                                             <div class="flex pt-4 justify-content-end" v-else>
@@ -190,8 +198,8 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="file-caution" v-if="FileSuccess">
-                                                                    <ProgressBar :value="progress" :showValue="false"
-                                                                                 v-if="isLoading"></ProgressBar>
+<!--                                                                    <ProgressBar :value="progress" :showValue="false"-->
+<!--                                                                                 v-if="isLoading"></ProgressBar>-->
                                                                     <div class="file-caution-img">
                                                                     </div>
                                                                     <div class="file-caution-center mt-20">
@@ -216,7 +224,7 @@
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
                                                         @click="prevCallback, this.activeStep= 0"/>
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
-                                                        :disabled="!fileSelected"
+                                                        :disabled="!fileSelected || isDisable"
                                                         @click="fileSelectedOnUpload = valuesFile[1], uploadEvent()"/>
                                             </div>
                                         </template>
@@ -289,7 +297,6 @@
                                             <div class="flex flex-column h-12rem">
                                                 <div
                                                     class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
-                                                    Content III
                                                 </div>
                                             </div>
                                             <div class="flex pt-4 justify-content-start">
@@ -308,13 +315,13 @@
                                    class="customPanel flex1" :toggle-button-props="{ 'aria-label': 'customPanel' }">
                                 <div class="ms-panel-header">
                                     <div class="flex1"></div>
-                                    <Button class="ms-button btn primary has-tooltip" aria-label="Youtube"
-                                            v-if="examResult.length != 0" @click="exportExamResult">
-                                        <!--                                        <img alt="logo"-->
-                                        <!--                                             src="../../../../public/assets/icon/ic_export_excel.cd7bdef7.svg"-->
-                                        <!--                                             class="export-excel" />-->
-                                        <span class="px-3 text">Xuất kết quả</span>
-                                    </Button>
+<!--                                    <Button class="ms-button btn primary has-tooltip" aria-label="Youtube"-->
+<!--                                            v-if="examResult.length != 0" @click="exportExamResult">-->
+<!--                                        &lt;!&ndash;                                        <img alt="logo"&ndash;&gt;-->
+<!--                                        &lt;!&ndash;                                             src="../../../../public/assets/icon/ic_export_excel.cd7bdef7.svg"&ndash;&gt;-->
+<!--                                        &lt;!&ndash;                                             class="export-excel" />&ndash;&gt;-->
+<!--                                        <span class="px-3 text">Xuất kết quả</span>-->
+<!--                                    </Button>-->
                                 </div>
                                 <DataTable class="flex1 mt-10 flex-column" :class="{ 'loading': isLoading }"
                                            :loading="isLoading" table-class="grid-group"
@@ -340,15 +347,6 @@
                                     </Column>
                                     <Column header="Họ và tên" field="studentName" style="width: 80px;"
                                             class="text-left">
-                                        <template #body="{ data, field, slotProps }">
-                                            <div v-if="!isLoading"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
-                                        </template>
-                                    </Column>
-                                    <Column header="Phòng thi" field="departmentName" style="width: 100px;"
-                                            class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
                                             <div v-else>
@@ -402,7 +400,7 @@ import StepperPanel from 'primevue/stepperpanel';
 import Resumable from 'resumablejs';
 import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE} from "@/common/enums";
-
+import LoadingProgress from "@/components/LoadingProgress.vue";
 import {get, calculate, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 
@@ -418,7 +416,8 @@ export default {
         Column,
         FileUpload,
         Stepper,
-        StepperPanel
+        StepperPanel,
+        LoadingProgress
     },
     data() {
         return {
@@ -499,6 +498,8 @@ export default {
 
             resumable: null,
             progress: 0,
+            isDisable: false,
+            invalidData: [],
 
             examManager: [],
             selectedManager: null,
@@ -543,7 +544,6 @@ export default {
          * Sự kiện chọn kì thi
          */
         onChangeExamManager() {
-            this.isLoading = true;
             this.valuesFile[1].FileName = this.valuesFile[0].FileName = null;
             this.valuesFile[1].Empty = this.valuesFile[0].Empty = true;
             //dữ liệu kì thi
@@ -723,15 +723,39 @@ export default {
 
         },
 
+        validateExam() {
+            this.invalidData = [];
+            if (this.selectedDepartment == null) {
+                this.invalidData['department'] = 'Vui lòng chọn phòng thi';
+            }
+
+            if (this.selectedManager == null) {
+                this.invalidData['exam'] = 'Vui lòng chọn kì thi';
+            }
+
+            if (this.selectedExamShift == null) {
+                this.invalidData['exam_shift'] = 'Vui lòng chọn ca thi';
+            }
+            if (Object.keys(this.invalidData).length > 0) {
+                return false;
+            }
+            return true;
+        },
+
         /**
          * Thông tin kì thi
          */
         async loadExamManager() {
+            this.isLoading = true;
             await getDetailExamManager().then(res => {
                 this.examManager = res.data;
             }).catch(error => {
                 console.log(error);
-            });
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 300);
+            })
         },
 
 
@@ -810,14 +834,18 @@ export default {
          */
         uploadEvent() {
             try {
+                if (!this.validateExam()) {
+                    return;
+                }
+                this.isDisable = true;
                 this.progress = 0;
                 this.isLoading = true;
                 //tên kì thi
                 // this.resumable.opts.query.ExamName = this.examManager.find(_item => _item.ExamId == this.selectedManager).ExamName;
                 // cập nhật param
-                this.resumable.opts.query.departmentId = 1;
-                this.resumable.opts.query.examId = 2;
-                this.resumable.opts.query.examShiftId = 3;
+                this.resumable.opts.query.departmentId = this.selectedDepartment.id;
+                this.resumable.opts.query.examId = this.selectedManager.id;
+                this.resumable.opts.query.examShiftId = this.selectedExamShift.id;
                 this.resumable.opts.query.fileType = this.fileSelectedOnUpload.FileType;
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
@@ -829,12 +857,24 @@ export default {
          * click button chấm thi
          */
         calculate() {
+            this.isLoading = true;
             this.examResult = [];
-            calculate(this.fileInfoResponse).then(res => {
+            let params = {
+                'cakeListName': this.fileInfoResponse.cakeListName,
+                'cakeStudentName':  this.fileInfoResponse.cakeStudentName,
+                'examId': this.selectedManager.id,
+                'examShifId': this.selectedExamShift.id,
+                'departmentId': this.selectedDepartment.id
+            }
+            calculate(params).then(res => {
                 this.examResult = res.data;
             }).catch(error => {
                 console.log(error)
-            });
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 300);
+            })
         },
 
         /**
@@ -919,6 +959,7 @@ export default {
          * @param {*} response
          */
         async onFileSuccess(file, response) {
+            this.isDisable = false;
             this.progress = 100;
             this.isLoading = false;
             try {
@@ -927,17 +968,21 @@ export default {
             }catch (error) {
                 console.log(error)
             }
-            console.log(this.fileInfoResponse)
             this.activeStep++;
-            this.showToast('Tải file thành công');
+            this.$store.dispatch('handleSuccess', 'Tải file thành công');
             //cập nhật lại thông tin file trên view
             this.resumable.removeFile(file);
             this.fileSelected = null
 
         },
 
-        onFileError(file, message) {
-            console.log('File error:', file, message);
+        onFileError(file, response) {
+            this.isDisable = false;
+            this.isLoading = false;
+            if (response) {
+                response = JSON.parse(response).data?.message
+                this.$store.dispatch('handleError', response)
+            }
         },
 
         /**

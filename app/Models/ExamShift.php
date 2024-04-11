@@ -25,7 +25,7 @@ class ExamShift extends Model
 
     public function examBanks(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(ExamBank::class, 'exam_shift_details', 'exam_shift_id', 'exam_bank_id');
+        return $this->belongsToMany(ExamBank::class, 'exam_shift_details', 'exam_shift_id', 'exam_bank_id')->distinct();
     }
 
     /**

@@ -21,7 +21,7 @@ use App\Http\Controllers\ApiExamShiftController;
 */
 
 header('Access-Control-Allow-Origin: http://localhost:9091');
-header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
+header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT,DELETE');
 header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization, Content-Disposition, X-Token');
 header('Access-Control-Allow-Credentials: true');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

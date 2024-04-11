@@ -506,6 +506,7 @@ export default {
                     break;
                 // click item xóa
                 case 2:
+                    this.isPopupDelete = true;
                     break;
             }
         },

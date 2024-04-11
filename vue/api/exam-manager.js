@@ -30,7 +30,7 @@ export function updateExamManager(data) {
  */
 export function deleteExamManager(id) {
     return request({
-        url: `api/exam-manager/${id}`,
+        url: `api/exams/${id}`,
         method: 'DELETE',
     })
 }

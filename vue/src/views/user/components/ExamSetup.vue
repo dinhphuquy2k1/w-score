@@ -2175,7 +2175,7 @@ export default {
                     // có 1 thuộc tính con
                     else if (isHasChild) {
                         if (content != null && dataChild != null) {
-                            content = dataChild;
+                            content = JSON.stringify(dataChild);
                         }
                     }
 
