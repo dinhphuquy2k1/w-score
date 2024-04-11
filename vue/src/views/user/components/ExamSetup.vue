@@ -444,98 +444,6 @@
                                                     <div class="flex1">
                                                         <div class="form-group slide-detail">
                                                             <label class="top-label d-flex">
-                                                                Alignment Left
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT_LEFT.content"
-                                                                    :max-fraction-digits="5"
-                                                                    :min="0"
-                                                                    :max="100"
-                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-ALIGNMENT_LEFT`] }"
-                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`c-MODIFY_STYLE-ALIGNMENT_LEFT`]">
-                                                                {{ invalidData[`c-MODIFY_STYLE-ALIGNMENT_LEFT`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Điểm
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT_LEFT.point"
-                                                                    :max-fraction-digits="5"
-                                                                    :min="0"
-                                                                    :max="100"
-                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-ALIGNMENT_LEFT`] }"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`p-MODIFY_STYLE-ALIGNMENT_LEFT`]">
-                                                                {{ invalidData[`p-MODIFY_STYLE-ALIGNMENT_LEFT`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Alignment Right
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT_RIGHT.content"
-                                                                    :max-fraction-digits="5" :min="0"
-                                                                    :max="100"
-                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-ALIGNMENT_RIGHT`] }"
-                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData['c-MODIFY_STYLE-ALIGNMENT_RIGHT']">
-                                                                {{ invalidData['c-MODIFY_STYLE-ALIGNMENT_RIGHT'] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
-                                                                Điểm
-                                                            </label>
-                                                            <div class="flex1">
-                                                                <InputNumber
-                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT_RIGHT.point"
-                                                                    :max-fraction-digits="5" :min="0"
-                                                                    :max="100"
-                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-ALIGNMENT_RIGHT`] }"
-                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                    class="ms-point"/>
-                                                            </div>
-                                                            <div class="error-text"
-                                                                 v-if="invalidData[`p-MODIFY_STYLE-ALIGNMENT_RIGHT`]">
-                                                                {{ invalidData[`p-MODIFY_STYLE-ALIGNMENT_RIGHT`] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sp"></div>
-                                                    <div class="flex1"></div>
-                                                </div>
-                                                <div class="flex-row">
-                                                    <div class="flex1">
-                                                        <div class="form-group slide-detail">
-                                                            <label class="top-label d-flex">
                                                                 Line Spacing
                                                             </label>
                                                             <div class="flex1">
@@ -616,6 +524,100 @@
                                                             <div class="error-text"
                                                                  v-if="invalidData[`p-MODIFY_STYLE-SPECIAL_HANGING`]">
                                                                 {{ invalidData[`p-MODIFY_STYLE-SPECIAL_HANGING`] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1"></div>
+                                                </div>
+                                                <div class="flex-row">
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Alignment
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT.content"
+                                                                    :type-property="TypeProperty.TextControl"
+                                                                    property-name="Text Control" class="ms-format"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-ALIGNMENT`] }"
+                                                                    :options="configureExamData.alignment"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    showClear
+                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData['c-MODIFY_STYLE-ALIGNMENT']">
+                                                                {{ invalidData['c-MODIFY_STYLE-ALIGNMENT'] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Điểm
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALIGNMENT.point"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-ALIGNMENT`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-ALIGNMENT`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-ALIGNMENT`] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1"></div>
+                                                </div>
+                                                <div class="flex-row">
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                All Caps
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <Dropdown
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALL_CAPS.content"
+                                                                    :type-property="TypeProperty.TextControl"
+                                                                    property-name="Text Control" class="ms-format"
+                                                                    :class="{ 'error': invalidData[`c-MODIFY_STYLE-ALL_CAPS`] }"
+                                                                    :options="configureExamData.selection"
+                                                                    optionLabel="description" optionValue="value"
+                                                                    showClear
+                                                                    :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData['c-MODIFY_STYLE-ALL_CAPS']">
+                                                                {{ invalidData['c-MODIFY_STYLE-ALL_CAPS'] }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sp"></div>
+                                                    <div class="flex1">
+                                                        <div class="form-group slide-detail">
+                                                            <label class="top-label d-flex">
+                                                                Điểm
+                                                            </label>
+                                                            <div class="flex1">
+                                                                <InputNumber
+                                                                    v-model="formats.properties.MODIFY_STYLE.properties.ALL_CAPS.point"
+                                                                    :max-fraction-digits="5" :min="0"
+                                                                    :max="100"
+                                                                    :class="{ 'error': invalidData[`p-MODIFY_STYLE-ALL_CAPS`] }"
+                                                                    :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                    class="ms-point"/>
+                                                            </div>
+                                                            <div class="error-text"
+                                                                 v-if="invalidData[`p-MODIFY_STYLE-ALL_CAPS`]">
+                                                                {{ invalidData[`p-MODIFY_STYLE-ALL_CAPS`] }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -791,14 +793,14 @@
                                                         <label class="top-label d-flex">
                                                             Chiều dài
                                                         </label>
-                                                        <div class="flex1">
+                                                        <div class="d-flex">
                                                             <InputNumber
                                                                 v-model="inserts.properties.IMAGE.properties.HIGH_IMAGE.content"
                                                                 :class="{ 'error': invalidData[`c-IMAGE-HIGH_IMAGE`] }"
                                                                 :max-fraction-digits="5" :min="0"
                                                                 :max="100"
                                                                 :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                class="ms-point"/>
+                                                                class="ms-point flex-grow-1"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`c-IMAGE-HIGH_IMAGE`]">
@@ -834,14 +836,14 @@
                                                         <label class="top-label d-flex">
                                                             Chiều rộng
                                                         </label>
-                                                        <div class="flex1">
+                                                        <div class="d-flex">
                                                             <InputNumber
                                                                 v-model="inserts.properties.IMAGE.properties.WIDTH_IMAGE.content"
                                                                 :class="{ 'error': invalidData[`c-IMAGE-WIDTH_IMAGE`] }"
                                                                 :max-fraction-digits="5" :min="0"
                                                                 :max="100"
                                                                 :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
-                                                                class="ms-point"/>
+                                                                class="ms-point flex-grow-1"/>
                                                         </div>
                                                         <div class="error-text"
                                                              v-if="invalidData[`c-IMAGE-WIDTH_IMAGE`]">
@@ -879,6 +881,229 @@
                                             </div>
                                         </div>
                                     </Panel>
+                                    <Panel header="Chú thích chân trang" toggleable class="mt-4">
+                                        <div class="list-control">
+                                            <div class="flex-row">
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Nội dung
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputText v-model="inserts.properties.FOOTNOTE.content"
+                                                                       :class="{ 'error': invalidData[`c-FOOTNOTE`] }"
+                                                                       class="heigth36"
+                                                                       :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`c-FOOTNOTE`]">
+                                                            {{ invalidData[`c-FOOTNOTE`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="inserts.properties.FOOTNOTE.point"
+                                                                :class="{ 'error': invalidData[`p-FOOTNOTE`] }"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-FOOTNOTE`]">
+                                                            {{ invalidData[`p-FOOTNOTE`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Loại chú thích
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <Dropdown
+                                                                v-model="inserts.properties.FOOTNOTE.properties.FOOTNOTE_TYPE.content"
+                                                                :options="configureExamData.numberType"
+                                                                :class="{ 'error': invalidData[`c-FOOTNOTE-FOOTNOTE_TYPE`] }"
+                                                                showClear
+                                                                optionLabel="description" optionValue="value"
+                                                                :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`c-FOOTNOTE-FOOTNOTE_TYPE`]">
+                                                            {{ invalidData[`c-FOOTNOTE-FOOTNOTE_TYPE`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="inserts.properties.FOOTNOTE.properties.FOOTNOTE_TYPE.point"
+                                                                :class="{ 'error': invalidData[`p-FOOTNOTE-FOOTNOTE_TYPE`] }"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-FOOTNOTE-FOOTNOTE_TYPE`]">
+                                                            {{ invalidData[`p-FOOTNOTE-FOOTNOTE_TYPE`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-row">
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Đoạn văn áp dụng
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <Dropdown class="ms-format" showClear
+                                                                      :class="{ 'error': invalidData[`c-APPLY_STYLE-content`] }"
+                                                                      v-model="inserts.properties.FOOTNOTE.properties.FOOTNOTE_CONTENT.content"
+                                                                      :options="configureExamData.paragraphsEllipsis"
+                                                                      :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`c-FOOTNOTE-FOOTNOTE_CONTENT`]">
+                                                            {{ invalidData[`c-FOOTNOTE-FOOTNOTE_CONTENT`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="inserts.properties.FOOTNOTE.properties.FOOTNOTE_CONTENT.point"
+                                                                :class="{ 'error': invalidData[`p-FOOTNOTE-FOOTNOTE_CONTENT`] }"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-FOOTNOTE-FOOTNOTE_CONTENT`]">
+                                                            {{ invalidData[`p-FOOTNOTE-FOOTNOTE_CONTENT`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                            </div>
+                                        </div>
+                                    </Panel>
+                                    <Panel header="Footer" toggleable class="mt-4">
+                                        <div class="list-control">
+                                            <div class="flex-row">
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Nội dung
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputText v-model="inserts.properties.FOOTER_ALL.content"
+                                                                       :class="{ 'error': invalidData[`c-FOOTER_ALL`] }"
+                                                                       class="heigth36"
+                                                                       :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`c-FOOTER_ALL`]">
+                                                            {{ invalidData[`c-FOOTER_ALL`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="inserts.properties.FOOTER_ALL.point"
+                                                                :class="{ 'error': invalidData[`p-FOOTER_ALL`] }"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-FOOTER_ALL`]">
+                                                            {{ invalidData[`p-FOOTER_ALL`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1"></div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Loại footer
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <Dropdown
+                                                                v-model="inserts.properties.FOOTER_TYPE_ALL.content"
+                                                                :options="configureExamData.footerType"
+                                                                :class="{ 'error': invalidData[`c-FOOTER_TYPE_ALL`] }"
+                                                                showClear
+                                                                optionLabel="description" optionValue="value"
+                                                                :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`c-FOOTER_TYPE_ALL`]">
+                                                            {{ invalidData[`c-FOOTER_TYPE_ALL`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sp"></div>
+                                                <div class="flex1">
+                                                    <div class="form-group slide-detail">
+                                                        <label class="top-label d-flex">
+                                                            Điểm
+                                                        </label>
+                                                        <div class="flex1">
+                                                            <InputNumber
+                                                                v-model="inserts.properties.FOOTER_TYPE_ALL.point"
+                                                                :class="{ 'error': invalidData[`p-FOOTER_TYPE_ALL`] }"
+                                                                :max-fraction-digits="5" :min="0"
+                                                                :max="100"
+                                                                :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
+                                                                class="ms-point"/>
+                                                        </div>
+                                                        <div class="error-text"
+                                                             v-if="invalidData[`p-FOOTER_TYPE_ALL`]">
+                                                            {{ invalidData[`p-FOOTER_TYPE_ALL`] }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Panel>
                                 </div>
                             </div>
                         </TabPanel>
@@ -889,49 +1114,6 @@
                                         <div class="flex-column">
                                             <div class="list-control flex-row">
                                                 <div class="panel-left flex1">
-<!--                                                    <div class="flex-row">-->
-<!--                                                        <div class="flex1">-->
-<!--                                                            <div class="form-group slide-detail">-->
-<!--                                                                <label class="top-label d-flex">-->
-<!--                                                                    Page Orientation-->
-<!--                                                                </label>-->
-<!--                                                                <div class="flex1">-->
-<!--                                                                    <Dropdown-->
-<!--                                                                        v-model="generals.properties.pageOrientation.content"-->
-<!--                                                                        :options="configureExamData.pageOrientation"-->
-<!--                                                                        optionLabel="description" optionValue="value"-->
-<!--                                                                        :class="{ 'error': invalidData['contentpageOrientation'] }"-->
-
-<!--                                                                        placeholder="Select a Page Orientation"/>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="error-text"-->
-<!--                                                                     v-if="invalidData['contentpageOrientation']">-->
-<!--                                                                    {{ invalidData['contentpageOrientation'] }}-->
-<!--                                                                </div>-->
-<!--                                                            </div>-->
-<!--                                                        </div>-->
-<!--                                                        <div class="col-sp"></div>-->
-<!--                                                        <div class="flex1">-->
-<!--                                                            <div class="form-group slide-detail">-->
-<!--                                                                <label class="top-label d-flex">-->
-<!--                                                                    point-->
-<!--                                                                </label>-->
-<!--                                                                <div class="flex1">-->
-<!--                                                                    <InputNumber :max-fraction-digits="5"-->
-<!--                                                                                 v-model="generals.properties.pageOrientation.point"-->
-<!--                                                                                 :class="{ 'error': invalidData['pointpageOrientation'] }"-->
-<!--                                                                                 :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"-->
-<!--                                                                                 class="ms-point"/>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="error-text"-->
-<!--                                                                     v-if="invalidData['pointpageOrientation']">-->
-<!--                                                                    {{ invalidData['pointpageOrientation'] }}-->
-<!--                                                                </div>-->
-<!--                                                            </div>-->
-<!--                                                        </div>-->
-<!--                                                        <div class="col-sp"></div>-->
-<!--                                                        <div class="flex1"></div>-->
-<!--                                                    </div>-->
                                                     <div class="flex-row">
                                                         <div class="flex1">
                                                             <div class="form-group slide-detail">
@@ -1345,6 +1527,7 @@
                                                                         :class="{ 'error': invalidData['p-TITLE'] }"
                                                                         :max="10"
                                                                         :min="0"
+                                                                        :maxFractionDigits="5"
                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text" v-if="invalidData['p-TITLE']">
@@ -1545,6 +1728,38 @@ export default {
                         point: null,
                         propertyName: 'Image',
                     },
+                    FOOTNOTE: {
+                        properties: {
+                            INSERT_FOOTNOTE: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Insert footnote',
+                            },
+                            FOOTNOTE_CONTENT: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Footnote content',
+                            },
+                            FOOTNOTE_TYPE: {
+                                content: null,
+                                point: null,
+                                propertyName: 'Footnote type',
+                            }
+                        },
+                        content: null,
+                        point: null,
+                        propertyName: 'Foot note',
+                    },
+                    FOOTER_TYPE_ALL: {
+                        content: null,
+                        point: null,
+                        propertyName: 'Footer type',
+                    },
+                    FOOTER_ALL: {
+                        content: null,
+                        point: null,
+                        propertyName: 'Footer content',
+                    }
                 },
                 content: null,
                 point: null,
@@ -1591,15 +1806,15 @@ export default {
                                 point: null,
                                 propertyName: 'Spacing after',
                             },
-                            ALIGNMENT_LEFT: {
+                            ALIGNMENT: {
                                 content: null,
                                 point: null,
-                                propertyName: 'Alignment left',
+                                propertyName: 'Alignment',
                             },
-                            ALIGNMENT_RIGHT: {
+                            ALL_CAPS: {
                                 content: null,
                                 point: null,
-                                propertyName: 'Alignment right',
+                                propertyName: 'All caps',
                             },
                             INDENTATION_LEFT: {
                                 content: null,
@@ -1968,7 +2183,7 @@ export default {
                     if (validData && content != null && point != null) {
                         data.push({
                             exam_bank_id: this.examBankId,
-                            content: JSON.stringify(content),
+                            content: content,
                             page: 0,
                             paragraph: null,
                             property_name: propertyName,
@@ -2003,17 +2218,15 @@ export default {
                         let contentChild = this.inserts.properties[property].properties[child].content;
                         let pointChild = this.inserts.properties[property].properties[child].point;
                         if (contentChild != null || pointChild != null) {
-                            if (content != null || point != null) {
-                                if (content == null) {
-                                    this.invalidData[`c-${property}`] = this.MESSAGE.INVALID_CONTENT_SETUP;
-                                    invalidProperty = false;
-                                    validData = false;
-                                }
-                                if (point == null) {
-                                    this.invalidData[`p-${property}`] = this.MESSAGE.INVALID_POINT_SETUP;
-                                    invalidProperty = false;
-                                    validData = false;
-                                }
+                            if (content == null) {
+                                this.invalidData[`c-${property}`] = this.MESSAGE.INVALID_CONTENT_SETUP;
+                                invalidProperty = false;
+                                validData = false;
+                            }
+                            if (point == null) {
+                                this.invalidData[`p-${property}`] = this.MESSAGE.INVALID_POINT_SETUP;
+                                invalidProperty = false;
+                                validData = false;
                             }
                             if (contentChild == null) {
                                 this.invalidData[`c-${property}-${child}`] = this.MESSAGE.INVALID_CONTENT_SETUP;
@@ -2028,8 +2241,12 @@ export default {
                         }
 
 
-                        if (invalidProperty && contentChild != null && pointChild != null) {
+                        if (invalidProperty && contentChild != null && pointChild != null && content != null && point != null) {
                             point += pointChild;
+                            if (keyChild === this.TypeProperty['FOOTNOTE_CONTENT']) {
+                                const selectedIndex = this.configureExamData.paragraphsEllipsis.findIndex(option => option === contentChild);
+                                contentChild = this.configureExamData.paragraphs[selectedIndex];
+                            }
                             dataChild.push({
                                 'key': keyChild,
                                 'value': contentChild,
@@ -2043,6 +2260,12 @@ export default {
                             if (this.TypeProperty[property] === this.TypeProperty['IMAGE']) {
                                 dataChild.push({
                                     'key': this.TypeProperty['NAME_IMAGE'],
+                                    'value': content,
+                                    'point': this.inserts.properties[property].point,
+                                })
+                            } else if (this.TypeProperty[property] === this.TypeProperty['FOOTNOTE']) {
+                                dataChild.push({
+                                    'key': this.TypeProperty['INSERT_FOOTNOTE'],
                                     'value': content,
                                     'point': this.inserts.properties[property].point,
                                 })
@@ -2125,6 +2348,15 @@ export default {
                     }
                     for (let child in this.formats.properties[property]?.property) {
                         this.formats.properties[property].property.content = this.formats.properties[property].property.point = this.formats.properties[property].property.key = null;
+                    }
+                }
+                for (let property in this.inserts.properties) {
+                    this.inserts.properties[property].content = this.inserts.properties[property].point = null
+                    for (let child in this.inserts.properties[property]?.properties) {
+                        this.inserts.properties[property].properties[child].content = this.inserts.properties[property].properties[child].point = null;
+                    }
+                    for (let child in this.inserts.properties[property]?.property) {
+                        this.inserts.properties[property].property.content = this.inserts.properties[property].property.point = this.inserts.properties[property].property.key = null;
                     }
                 }
             } else return;

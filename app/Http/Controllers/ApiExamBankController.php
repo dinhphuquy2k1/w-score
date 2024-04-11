@@ -25,6 +25,8 @@ use App\Enums\FontColor;
 use App\Enums\FontType;
 use App\Enums\NumberingType;
 use App\Enums\ApplyStyle;
+use App\Enums\SelectionType;
+use App\Enums\FooterType;
 
 class ApiExamBankController extends Controller
 {
@@ -391,6 +393,8 @@ class ApiExamBankController extends Controller
             if (empty($examBank)) {
                 return $this->sendResponseError();
             }
+            // làm tròn điểm
+            $examBank->criterias_sum_point = round($examBank->criterias_sum_point, 3);
             $paragraphs = explode($this->_SEPARATOR, $examBank->exam_bank_content);
             $result = [
                 'data' => $examBank->toArray(),
@@ -449,10 +453,49 @@ class ApiExamBankController extends Controller
                 })->toArray(),
                 'numberType' => collect(NumberingType::getInstances())->values()->map(function ($instance) {
                     return [
-                        'value' => $instance->description,
+                        'value' => $instance->value,
                         'description' => $instance->value,
                     ];
                 })->toArray(),
+                'alignment' => collect([PropertyType::ALIGNMENT_LEFT, PropertyType::ALIGNMENT_CENTERD, PropertyType::ALIGNMENT_RIGHT, PropertyType::ALIGNMENT_JUSTIFITED])->map(function ($value) {
+                    switch ($value) {
+                        case PropertyType::ALIGNMENT_LEFT:
+                            $description = 'Căn trái';
+                            break;
+                        case PropertyType::ALIGNMENT_RIGHT:
+                            $description = 'Căn phải';
+                            break;
+                        case PropertyType::ALIGNMENT_CENTERD:
+                            $description = 'Căn giữa';
+                            break;
+                        case PropertyType::ALIGNMENT_JUSTIFITED:
+                            $description = 'Căn đều 2 bên';
+                            break;
+                        default:
+                            $description = '';
+                            break;
+                    }
+                    return [
+                        'value' => $value,
+                        'description' => $description
+                    ];
+                }),
+                'footerType' => collect(FooterType::getInstances())->values()->map(function ($instance) {
+                    return [
+                        'value' => $instance->value,
+                        'description' => $instance->description,
+                    ];
+                })->toArray(),
+                'selection' => collect(SelectionType::getInstances())
+                    ->reject(function ($instance) {
+                        return in_array($instance->value, [SelectionType::FALSE, SelectionType::DEFAULT]);
+                    })->values()
+                    ->map(function ($instance) {
+                        return [
+                            'value' => $instance->description,
+                            'description' => $instance->value,
+                        ];
+                    }),
                 'fontStyling' => collect(FontStyleType::getInstances())->values()->map(function ($instance) {
                     return [
                         'value' => $instance->value,
@@ -485,7 +528,7 @@ class ApiExamBankController extends Controller
             ];
             return $this->sendResponseSuccess($result);
 
-        } catch (\Throwable $th){
+        } catch (\Throwable $th) {
             return $this->sendResponseError();
         }
     }
@@ -513,16 +556,14 @@ class ApiExamBankController extends Controller
                 DB::beginTransaction();
                 Criteria::insert($attributes);
                 $examBankId = reset($attributes)['exam_bank_id'];
-                $totalPoint = Criteria::where('exam_bank_id', $examBankId)->sum('point');
+                $totalPoint = round(Criteria::where('exam_bank_id', $examBankId)->sum('point'), 3);
                 DB::commit();
                 return $this->sendResponseSuccess(['totalPoint' => $totalPoint]);
-            }
-            catch (\Throwable $th) {
+            } catch (\Throwable $th) {
                 DB::rollBack();
                 return $this->sendResponseError();
             }
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             dd($th);
             return $this->sendResponseError();
         }
@@ -538,8 +579,7 @@ class ApiExamBankController extends Controller
         $criterias = Criteria::where('exam_bank_id', $request->id)->get();
         if ($criterias) {
             return $this->sendResponseSuccess($criterias->toArray());
-        }
-        else{
+        } else {
             return $this->sendResponseError();
         }
     }

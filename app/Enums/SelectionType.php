@@ -9,9 +9,9 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class FooterType extends Enum
+final class SelectionType extends Enum
 {
-    const BLANK = 'Blank';
-    const DEFAULT = 'default';
-    const WHISP = 'Whisp';
+    const DEFAULT = '';
+    const TRUE = 'Có';
+    const FALSE = 'Không';
 }
