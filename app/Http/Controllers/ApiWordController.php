@@ -35,6 +35,8 @@ class ApiWordController extends Controller
     public $_PATH_EXTRACTED = 'app/extracted';
     public $_PATH_ZIP = 'app/temp';
     private const CAKE_LIST_NAME = 'cache_list';
+
+    private $_SEPARATOR = 'ーー';
     private const CAKE_STUDENT_NAME = 'cache_student';
     private $paragraphWithout = []; // các đoạn văn bản bỏ qua khi check áp dụng văn bản toàn bộ
 
@@ -411,7 +413,7 @@ class ApiWordController extends Controller
     {
         if (!empty($student['style']) && !empty($criteria->content)) {
             $content = json_decode($criteria->content, true);
-            $paragraphs = explode(',', $content['value']);
+            $paragraphs = explode($this->_SEPARATOR, $content['value']);
             $this->paragraphWithout = array_merge($this->paragraphWithout, $paragraphs);
             $ret[$student['studentID']][$criteria->id]['realPoint'] = $criteria->point;
             $ret[$student['studentID']][$criteria->id]['flag'] = true;
@@ -533,7 +535,7 @@ class ApiWordController extends Controller
         try {
             if (!empty($images) && !empty($criteria->content)) {
                 $content = json_decode($criteria->content, true);
-                $key = pathinfo($content['name'], PATHINFO_FILENAME);
+                $key = pathinfo($content['key'], PATHINFO_FILENAME);
                 // mặc định cho điểm tên
                 foreach ($content['value'] as $item) {
                     switch ((int)$item['key']) {

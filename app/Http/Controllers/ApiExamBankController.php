@@ -514,8 +514,8 @@ class ApiExamBankController extends Controller
                 Criteria::insert($attributes);
                 $examBankId = reset($attributes)['exam_bank_id'];
                 $totalPoint = Criteria::where('exam_bank_id', $examBankId)->sum('point');
-                return $this->sendResponseSuccess(['totalPoint' => $totalPoint]);
                 DB::commit();
+                return $this->sendResponseSuccess(['totalPoint' => $totalPoint]);
             }
             catch (\Throwable $th) {
                 DB::rollBack();
