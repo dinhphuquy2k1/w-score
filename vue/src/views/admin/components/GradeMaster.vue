@@ -540,28 +540,6 @@ export default {
         },
 
         /**
-         * Hiển thị toast message
-         * @param {*} message
-         */
-        showToast(message, severity = 'success') {
-            this.$toast.add({severity: severity, summary: 'Thông báo', detail: message, life: 3000});
-        },
-
-        /**
-         * Lấy ra các phần tử không trùng lặp trong mảng
-         * @param {*} data Mảng
-         * @param {*} propName Phần tử cần lấy
-         */
-        getUniqueItems(data, propName) {
-            return data.reduce((acc, curr) => {
-                if (!acc.some(item => item[propName] === curr[propName])) {
-                    acc.push(curr);
-                }
-                return acc;
-            }, []);
-        },
-
-        /**
          * Sự kiện chọn kì thi
          */
         onChangeExamManager() {
@@ -571,7 +549,7 @@ export default {
             //dữ liệu kì thi
 
             this.selectedFirst();
-            this.loadExamResult();
+            // this.loadExamResult();
         },
 
         /**
@@ -579,7 +557,7 @@ export default {
          */
         onChangeExamShift() {
             this.department = this.selectedExamShift.departments;
-            this.loadExamResult();
+            // this.loadExamResult();
         },
 
         /**
@@ -616,27 +594,8 @@ export default {
         selectedFirst() {
             try {
                 this.examShift = this.selectedManager.exam_shifts;
-                console.log(this.examShift);
-                return
-                this.department = this.getUniqueItems(data, 'DepartmentId');
-                if (!this.examShift.find(_item => _item.ExamShiftId == this.selectedExamShift)) {
-                    this.selectedExamShift = this.examShift[0].ExamShiftId;
-                }
-
-                var index = this.department.findIndex(_item => _item.DepartmentId == this.selectedDepartment);
-                if (index == -1) {
-                    this.selectedDepartment = this.department[0].DepartmentId;
-                }
-
-                if (this.department[index] != null && this.department[index].ResourcePathFileList != null) {
-                    this.valuesFile[0].FileName = this.department[index].ResourcePathFileList.substring(3);
-                    this.valuesFile[0].Empty = false;
-                }
-
-                if (this.department[index] != null && this.department[index].ResourcePathFileAssignment != null) {
-                    this.valuesFile[1].FileName = this.department[index].ResourcePathFileAssignment.substring(3);
-                    this.valuesFile[1].Empty = false;
-                }
+                this.selectedExamShift = null;
+                this.selectedDepartment = null;
             } catch (error) {
                 console.log(error);
             }
