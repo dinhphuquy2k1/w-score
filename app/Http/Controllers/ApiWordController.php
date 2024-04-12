@@ -69,16 +69,20 @@ class ApiWordController extends Controller
     {
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
         if (!$receiver->isUploaded()) {
-            // file not uploaded
+            return $this->sendResponseError(['message'=> 'Lỗi tải file']);
         }
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $subjectLine = $request->subjectLine;
-
             $fileType = $request->fileType;
-            $cakeListKey = self::CAKE_LIST_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
-            $cakeStudentKey = self::CAKE_STUDENT_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
+            $cakeListKey = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+            $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
+                $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
+                File::deleteDirectory($this->_PATH_ZIP . $subPath);
+                File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
+                mkdir($this->_PATH_ZIP . $subPath,0777,true);
+                mkdir($this->_PATH_EXTRACTED . $subPath,0777,true);
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
                 if ($fileType == FileType::LIST) {
@@ -110,18 +114,13 @@ class ApiWordController extends Controller
                         'cakeListName' => self::CAKE_LIST_NAME,
                     ]);
                 } else {
-                    $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
                     // folder lưu file tải lên
                     //xóa các file trước đó
-                    File::deleteDirectory($this->_PATH_ZIP.$subPath);
-                    File::deleteDirectory($this->_PATH_EXTRACTED.$subPath);
-                    mkdir($this->_PATH_ZIP.$subPath,0777,true);  //tạo các thư mục lưu trữ bài
-                    mkdir($this->_PATH_EXTRACTED.$subPath,0777,true);
                     $listData = Cache::get($cakeListKey);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
-                    $filePath = $file->move($this->_PATH_ZIP.$subPath, $file->getClientOriginalName());
+                    $filePath = $file->move($this->_PATH_ZIP . $subPath, $file->getClientOriginalName());
                     $valid_docx = array('docx');
-                    $extractPath = $this->_PATH_EXTRACTED.$subPath;
+                    $extractPath = $this->_PATH_EXTRACTED . $subPath;
                     $zip = new ZipArchive;
                     $res = $zip->open($filePath);
                     if ($res === TRUE) {
@@ -175,8 +174,8 @@ class ApiWordController extends Controller
                 $students['files'] = [
                     'extractPath' => $extractPath,
                 ];
-                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
-                $students['cakeListName'] = self::CAKE_LIST_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
+                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+                $students['cakeListName'] = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
                 Cache::store('file')->put($cakeStudentKey, $students, now()->addDay());
                 return $this->sendResponseSuccess($students);
             } else {
@@ -221,8 +220,7 @@ class ApiWordController extends Controller
                 DB::commit();
                 return $this->sendResponseSuccess($result);
             }
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return $this->sendResponseError();
         }
     }

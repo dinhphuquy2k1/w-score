@@ -370,7 +370,7 @@
                                             <div> {{ slotProps.index + 1 }}</div>
                                         </template>
                                     </Column>
-                                    <Column header="Số báo danh" field="student_code" style="width: 40px;"
+                                    <Column header="Số báo danh" field="candidate_number" style="width: 40px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -597,7 +597,7 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
-            activeStep: 3,
+            activeStep: 0,
             fileInfoResponse: [],
 
             resultDetail: [],
@@ -965,11 +965,11 @@ export default {
             this.isLoading = true;
             this.examResult = [];
             let params = {
-                'cakeListName': 'cache_list-1-1-1',
-                'cakeStudentName': 'cache_student-1-1-1',
-                'examId': 1,
-                'examShifId': 1,
-                'departmentId': 1
+                'cakeListName': this.fileInfoResponse.cakeListName,
+                'cakeStudentName': this.fileInfoResponse.cakeStudentName,
+                'examId': this.selectedManager.id,
+                'examShifId': this.selectedExamShift.id,
+                'departmentId': this.selectedDepartment.id
             }
             calculate(params).then(res => {
                 this.examResult = res.data;
