@@ -367,13 +367,10 @@
 
                                     <Column header="STT" style="width: 40px;" class="text-center">
                                         <template #body="slotProps">
-                                            <div v-if="!isLoading"> {{ slotProps.index + 1 }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
+                                            <div> {{ slotProps.index + 1 }}</div>
                                         </template>
                                     </Column>
-                                    <Column header="Số báo danh" field="studentId" style="width: 40px;"
+                                    <Column header="Số báo danh" field="student_code" style="width: 40px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -382,7 +379,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Họ và tên" field="studentName" style="width: 80px;"
+                                    <Column header="Họ và tên" field="student_name" style="width: 80px;"
                                             class="text-left">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -391,7 +388,7 @@
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column header="Tổng điểm" field="totalPoint" style="width: 50px;"
+                                    <Column header="Tổng điểm" field="total" style="width: 50px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -421,6 +418,74 @@
             </div>
         </div>
     </div>
+    <Dialog v-model:visible="visibleExamResultDetail" modal
+            :header="selectedResult ? `Điểm chi tiết ${selectedResult.student_name}` : ''" :style="{ width: '70vw' }" scrollable
+            closeIcon="close-button">
+        <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading" table-class="grid-group"
+                   :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : resultDetail"
+                   tableStyle="min-width: 100%" rowHover>
+            <Column header="STT" style="width: 15px;" class="text-left">
+                <template #body="slotProps">
+                    <div v-if="!isLoading"> {{ slotProps.index + 1 }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Mã sinh viên" field="student_code" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Đề thi" field="exam_bank_name" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Phòng thi" field="department_name" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Tiêu chí" field="property_name" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Điểm tiêu chí" field="point" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+            <Column header="Điểm đạt được" field="real_point" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div v-if="!isLoading"> {{ data[field] }}</div>
+                    <div v-else>
+                        <Skeleton height="18px" class="mb-2"></Skeleton>
+                    </div>
+                </template>
+            </Column>
+        </DataTable>
+        <template #footer>
+            <Button label="Đóng" class="text-white ms-button text-white btn w-100 danger"
+                    @click="visibleExamResultDetail = false, selectedResult = null" />
+        </template>
+    </Dialog>
 </template>
 
 <script>
@@ -435,10 +500,12 @@ import FileUpload from 'primevue/fileupload';
 import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
 import Resumable from 'resumablejs';
+import Dialog from 'primevue/dialog';
 import * as XLSX from 'xlsx';
 import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE, MESSAGE} from "@/common/enums";
 import LoadingProgress from "@/components/LoadingProgress.vue";
+import {getExamResultDetail} from "../../../../api/exam-result";
 import {get, calculate, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 import InputNumber from 'primevue/inputnumber';
@@ -461,7 +528,8 @@ export default {
         Stepper,
         StepperPanel,
         LoadingProgress,
-        InputNumber
+        InputNumber,
+        Dialog
 
     },
     data() {
@@ -529,7 +597,7 @@ export default {
             totalSize: 0,
             dialogVisible: false,
             totalSizePercent: 0,
-            activeStep: 0,
+            activeStep: 3,
             fileInfoResponse: [],
 
             resultDetail: [],
@@ -897,11 +965,11 @@ export default {
             this.isLoading = true;
             this.examResult = [];
             let params = {
-                'cakeListName': this.fileInfoResponse.cakeListName,
-                'cakeStudentName': this.fileInfoResponse.cakeStudentName,
-                'examId': this.selectedManager.id,
-                'examShifId': this.selectedExamShift.id,
-                'departmentId': this.selectedDepartment.id
+                'cakeListName': 'cache_list-1-1-1',
+                'cakeStudentName': 'cache_student-1-1-1',
+                'examId': 1,
+                'examShifId': 1,
+                'departmentId': 1
             }
             calculate(params).then(res => {
                 this.examResult = res.data;
@@ -1032,9 +1100,10 @@ export default {
         async loadExamResultDetail() {
             if (JSON.stringify(this.selectedResult) !== JSON.stringify(this.objCheckSelectedResult)) {
                 this.resultDetail = [];
-                await getExamResultDetail(this.selectedResult.StudentCode).then(res => {
+                console.log(this.selectedResult);
+                await getExamResultDetail({'student_code': this.selectedResult.student_code, 'exam_shift_detail_id': this.selectedResult.exam_shift_detail_id}).then(res => {
                     this.visibleExamResultDetail = true;
-                    this.resultDetail = res;
+                    this.resultDetail = res.data;
                     console.log(res);
                 }).catch(error => {
                     this.showToast("Đã xảy ra lỗi, vui lòng liên hệ với nhà phát triển");

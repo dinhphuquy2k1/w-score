@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiExamResultController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiWordController;
@@ -59,4 +60,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/exam-shifts/checkCodeExits', [ApiExamShiftController::class, 'checkExamShiftCodeExits']);
     Route::put('/exam-shifts', [ApiExamShiftController::class, 'update']);
     Route::delete('/exam-shifts', [ApiExamShiftController::class, 'delete']);
+    Route::post('/exam-results', [ApiExamResultController::class, 'getExamResultDetail']);
 });
