@@ -71,6 +71,8 @@ class ApiWordController extends Controller
         }
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
+            $subjectLine = $request->subjectLine;
+
             $fileType = $request->fileType;
             $cakeListKey = self::CAKE_LIST_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
             $cakeStudentKey = self::CAKE_STUDENT_NAME.'-'.$request->examId.'-'.$request->examShiftId.'-'.$request->departmentId;
@@ -79,17 +81,18 @@ class ApiWordController extends Controller
                 // file danh sách
                 if ($fileType == FileType::LIST) {
                     $spreadsheet = IOFactory::load($file);
-                    $sheet = $spreadsheet->getActiveSheet();
+                    $sheet = $spreadsheet->getSheet($request->sheetIndex);
                     // Lấy dữ liệu từ các ô trong sheet
                     $data = [];
                     foreach ($sheet->getRowIterator() as $index => $row) {
-                        $rowData = [];
-                        if ($index != self::START_ROW) {
+                        if ($index > $subjectLine - 1) {
+                            $candidateNumber = $sheet->getCell("A{$index}")->getValue();
                             $studentCode = $sheet->getCell("B{$index}")->getValue();
                             $studentName = $sheet->getCell("C{$index}")->getValue();
                             $department = $sheet->getCell("D{$index}")->getValue();
                             if ($studentCode && $studentName) {
                                 $data[$studentCode] = [
+                                    'candidateNumber' => $candidateNumber,
                                     'studentCode' => $studentCode,
                                     'studentName' => $studentName,
                                     'department' => $department,
@@ -97,30 +100,27 @@ class ApiWordController extends Controller
                             }
                         }
                     }
-                    if (empty($data)) {
-                        return $this->sendResponseError(['message' => 'Không có dữ liệu']);
-                    }
                     Cache::store('file')->put($cakeListKey, $data, now()->addDay());
+                    if (empty($data)) {
+                        return $this->sendResponseSuccess([]);
+                    }
                     return $this->sendResponseSuccess([
                         'cakeListName' => self::CAKE_LIST_NAME,
                     ]);
                 } else {
+                    $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
                     // folder lưu file tải lên
                     //xóa các file trước đó
-                    File::deleteDirectory($this->_PATH_ZIP);
-                    File::deleteDirectory($this->_PATH_EXTRACTED);
+                    File::deleteDirectory($this->_PATH_ZIP.$subPath);
+                    File::deleteDirectory($this->_PATH_EXTRACTED.$subPath);
                     // Tạo thư mục nếu chưa tồn tại
-                    if (!File::exists($this->_PATH_ZIP)) {
-                        File::makeDirectory($this->_PATH_ZIP, 0777, true);
-                    }
-                    if (!File::exists($this->_PATH_EXTRACTED)) {
-                        File::makeDirectory($this->_PATH_EXTRACTED, 0777, true);
-                    }
+                    File::ensureDirectoryExists($this->_PATH_ZIP.$subPath, 0777, true);
+                    File::ensureDirectoryExists($this->_PATH_EXTRACTED.$subPath, 0777, true);
                     $listData = Cache::get($cakeListKey);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
-                    $filePath = $file->move($this->_PATH_ZIP, $file->getClientOriginalName());
+                    $filePath = $file->move($this->_PATH_ZIP.$subPath, $file->getClientOriginalName());
                     $valid_docx = array('docx');
-                    $extractPath = $this->_PATH_EXTRACTED;
+                    $extractPath = $this->_PATH_EXTRACTED.$subPath;
                     $zip = new ZipArchive;
                     $res = $zip->open($filePath);
                     if ($res === TRUE) {
@@ -169,7 +169,7 @@ class ApiWordController extends Controller
                 }
 
                 if (empty($students)) {
-                    return $this->sendResponse(Response::HTTP_INTERNAL_SERVER_ERROR, ['message' => 'Dữ liệu trống']);
+                    return $this->sendResponseSuccess();
                 }
                 $students['files'] = [
                     'extractPath' => $extractPath,
