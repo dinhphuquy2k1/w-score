@@ -10,6 +10,7 @@
                 </div>
             </div>
             <div class="flex-grow-1 flex-row row gx-0 gap-3">
+                <TheLoadingProgress v-if="isLoading"/>
                 <div class="col-3 left-grade" :class="{'collage': isCollapsed}">
                     <div class="title text-start d-flex justify-content-between">
                         <div class="text">Thông tin kì thi</div>
@@ -24,8 +25,7 @@
                         <div class="left-grade-content">
                             <div class="group-form_box">
                                 <div class="d-flex">
-                                    <div class="label">Kì thi</div>
-                                    <span class="required">*</span>
+                                    <div class="label">1. Thông tin kì thi</div>
                                 </div>
                                 <div class="">
                                 </div>
@@ -33,17 +33,10 @@
                             </div>
                             <div class="group-form_box mt-3">
                                 <div class="d-flex">
-                                    <div class="label">Ca thi</div>
-                                    <span class="required">*</span>
-                                </div>
-                                <div class="">
-                                </div>
-                                <div class="ms-error-text"></div>
-                            </div>
-                            <div class="group-form_box mt-3">
-                                <div class="d-flex">
-                                    <div class="label">Phòng thi thi</div>
-                                    <span class="required">*</span>
+                                    <div class="label">2. Thông tin ca thi</div>
+                                    <div class="icon16 icon-note has-tooltip"
+                                         v-tooltip.top="{ value: 'Ca thi là bắt buộc', escape: true, class: 'custom-error' }">
+                                    </div>
                                 </div>
                                 <div class="">
                                 </div>
@@ -167,14 +160,14 @@
                                             invalidExamManager['ExamShift']
                                         }}</span></div>
                                     <Button @click="showExamShiftDialogVisible(), modeModalExamShift = FormMode.INSERT"
-                                            class="primary custom-btn text-link  d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-1">
+                                            class="primary custom-btn text-link  d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-1 mb-2">
                                         <div class="icon24 icon-add-blue"></div>
                                         <div class="fw-semibold">Thêm ca thi</div>
                                     </Button>
                                 </div>
                                 <DataTable class="flex1" rowHover table-class="grid-group"
                                            :class="{ 'loading': isLoading }" :loading="isLoading"
-                                           :value="isLoading ? Array.from({ length: 5 }, () => ({ ...objectLoading })) : listExamShift"
+                                           :value="listExamShift"
                                            @rowDblclick="onRowSelectExamShift($event.data), modeExamShiftModal = FormMode.UPDATE, showExamShiftDialogVisible()">
                                     <template #empty>
                                         <div>
@@ -184,47 +177,34 @@
                                     <Column field="exam_shift_name" dataKey="id" header="Tên ca thi"
                                             style="min-width: 300px;">
                                         <template #body="{ data, field, slotProps, index }">
-                                            <div v-if="!isLoadingExamShift"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
+                                            <div> {{ data[field] }}</div>
                                         </template>
                                     </Column>
                                     <Column field="exam_shift_code" dataKey="id" header="Mã ca thi"
                                             style="min-width: 160px;">
                                         <template #body="{ data, field }">
-                                            <div v-if="!isLoadingExamShift"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
+                                            <div> {{ data[field] }}</div>
                                         </template>
                                     </Column>
                                     <Column field="start_date" dataKey="id" header="Ngày bắt đầu"
                                             style="min-width: 180px;">
                                         <template #body="{ data, field }">
-                                            <div v-if="!isLoadingExamShift"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
+                                            <div> {{ data[field] }}</div>
                                         </template>
                                     </Column>
                                     <Column field="end_date" dataKey="id" header="Ngày kết thúc"
                                             style="min-width: 180px;">
                                         <template #body="{ data, field }">
-                                            <div v-if="!isLoadingExamShift"> {{ data[field] }}</div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                                            </div>
+                                            <div> {{ data[field] }}</div>
                                         </template>
 
                                     </Column>
                                     <Column alignFrozen="right" style="width: 90px;" frozen header="Thao tác">
                                         <template #body="slotProps">
-                                            <div class="row-actions" style="width: 100%;"
-                                                 v-if="!isLoadingExamShift">
+                                            <div class="row-actions" style="width: 100%;">
                                                 <div class="position-relative">
                                                     <div class="item"
-                                                         @click="modeModal = FormMode.UPDATE, onRowSelectExamShift(slotProps.data), showExamManager()">
+                                                         @click="modeExamShiftModal = FormMode.UPDATE, onRowSelectExamShift(slotProps.data), showExamShiftDialogVisible()">
                                                         <div class="v-popover popover">
                                                             <div class="trigger">
                                                                 <div class="icon24 edit"></div>
@@ -238,9 +218,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div v-else>
-                                                <Skeleton height="18px" class="mb-2"></Skeleton>
                                             </div>
                                         </template>
                                     </Column>
@@ -427,7 +404,7 @@
         </template>
     </Dialog>
 
-    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa kì thi">
+    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa ca thi">
         <TheLoadingProgress v-if="isLoadingDelete"/>
         <div class="w-full flex flex-column" style="line-height: 1.5;">
             <span>Ca thi <b>{{
@@ -437,8 +414,14 @@
                 không?</span>
         </div>
         <template #footer>
-            <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa kì thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button
+                class="ms-btn secondary d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2" @click="isPopupDelete = false">
+                <div class="">Không</div>
+            </Button>
+            <Button @click="handlerDelete"
+                    class="ms-btn danger d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
+                <div class="">Xóa đề thi</div>
+            </Button>
         </template>
     </Dialog>
 </template>

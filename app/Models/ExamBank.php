@@ -27,6 +27,9 @@ class ExamBank extends Model
         return $this->hasMany(Criteria::class, 'exam_bank_id');
     }
 
-
+    public function departments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Department::class, 'exam_shift_details', 'exam_bank_id', 'department_id')->distinct();
+    }
 
 }

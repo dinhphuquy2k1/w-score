@@ -40,7 +40,7 @@ class ApiExamBankController extends Controller
 
     public function get()
     {
-        return $this->sendResponseSuccess(ExamBank::all()->toArray());
+        return $this->sendResponseSuccess(ExamBank::with('departments', 'criterias')->get()->toArray());
     }
 
     /**
@@ -377,7 +377,7 @@ class ApiExamBankController extends Controller
 
     public function getSettings()
     {
-        return $this->sendResponseSuccess(ExamBank::all()->toArray());
+        return $this->sendResponseSuccess(ExamBank::has('criterias')->get()->toArray());
     }
 
     /**

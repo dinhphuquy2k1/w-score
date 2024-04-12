@@ -39,7 +39,7 @@ class ApiDepartmentController extends Controller
 
     public function get()
     {
-        return $this->sendResponseSuccess(Department::all()->toArray());
+        return $this->sendResponseSuccess(Department::with('examShifts')->get()->toArray());
     }
 
     /**

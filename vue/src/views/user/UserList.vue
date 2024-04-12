@@ -199,15 +199,6 @@
         </template>
     </Dialog>
 
-    <Dialog v-model:visible="warningVisible" modal closeOnEscape :style="{ width: '25vw', height: '20vh' }"
-            header="Thông báo">
-        <div class="w-full flex flex-column">
-            <span> Đề thi <b>{{ selectedData.ExamBankName }}</b> đang được sử dụng. Bạn không thể xóa.</span>
-        </div>
-        <template #footer>
-            <Button label="Đóng" class="ms-button btn detail-button secondary" @click="warningVisible = false"/>
-        </template>
-    </Dialog>
 </template>
 
 <script>

@@ -62,8 +62,8 @@ export function checkExamShiftCodeExits(data) {
  */
 export function updateExamShift(data) {
     return request({
-        url: 'api/exam-manager/update-examshift',
-        method: 'POST',
+        url: 'api/exam-shifts',
+        method: 'PUT',
         data: data,
     })
 }
@@ -88,7 +88,7 @@ export function getExamShifts(data) {
  */
 export function deleteExamShift(data) {
     return request({
-        url: '/exam-shifts',
+        url: 'api/exam-shifts',
         method: 'DELETE',
         data: data,
     })

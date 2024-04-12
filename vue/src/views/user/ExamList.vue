@@ -47,7 +47,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="exam_bank_name" style="width: 30vw;" header="Tên đề thi">
+                    <Column field="exam_bank_name" style="width: 25vw;" header="Tên đề thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -55,7 +55,7 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="exam_bank_code" dataKey="id" header="Mã đề thi">
+                    <Column field="exam_bank_code" style="width: 20vw;" dataKey="id" header="Mã đề thi">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading"> {{ data[field] }}</div>
                             <div v-else>
@@ -63,10 +63,29 @@
                             </div>
                         </template>
                     </Column>
-                    <Column dataKey="id" header="Trạng thái" style="width: 200px;">
+                    <Column dataKey="id" header="Trạng thái dề thi" style="width: 200px;">
                         <template #body="{ data, field, slotProps }">
                             <div v-if="!isLoading">
-                                <div class="d-flex status-ctn max-content" v-if="data['is_exist']"
+                                <div class="d-flex status-ctn max-content" v-if="data['criterias'].length > 0"
+                                     style="background-color: rgb(229, 250, 237);">
+                                    <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
+                                    <div class="status-text" style="color: rgb(0, 200, 83);">Đã thiết lập</div>
+                                </div>
+                                <div class="d-flex status-ctn max-content" v-else
+                                     style="background-color: rgb(254, 243, 231);">
+                                    <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
+                                    <div class="status-text" style="color: rgb(243, 141, 21);">Chưa thiết lập</div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column dataKey="id" header="Trạng thái sử dụng" style="width: 200px;">
+                        <template #body="{ data, field, slotProps }">
+                            <div v-if="!isLoading">
+                                <div class="d-flex status-ctn max-content" v-if="data['departments'].length > 0"
                                      style="background-color: rgb(229, 250, 237);">
                                     <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
                                     <div class="status-text" style="color: rgb(0, 200, 83);">Đang sử dụng</div>
@@ -116,8 +135,14 @@
             <span> Bạn có chắc chắn muốn xóa đề thi <b>{{ selectedData.exam_bank_code }}</b> không?</span>
         </div>
         <template #footer>
-            <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa phòng thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button
+                    class="ms-btn secondary d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2" @click="isPopupDelete = false">
+                <div class="">Không</div>
+            </Button>
+            <Button @click="handlerDelete"
+                class="ms-btn danger d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
+                <div class="">Xóa đề thi</div>
+            </Button>
         </template>
     </Dialog>
 
@@ -223,7 +248,7 @@
                 <div class="flex1"></div>
                 <Button
                     @click="isShowModal = false, selectedData = defaultData"
-                    class="ms-btn secondary blue me-3 d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
+                    class="ms-btn secondary blue me-2 d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
                     <div class="">Đóng</div>
                 </Button>
                 <Button @click="doSave" @keyup.enter.prevent="doSave"
@@ -240,7 +265,11 @@
             <span> Đề thi <b>{{ selectedData.exam_bank_name }}</b> đang được sử dụng. Bạn không thể xóa.</span>
         </div>
         <template #footer>
-            <Button label="Đóng" class="ms-button btn detail-button secondary" @click="warningVisible = false"/>
+            <Button
+                @click="warningVisible = false"
+                class="ms-btn secondary blue d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
+                <div class="">Đóng</div>
+            </Button>
         </template>
     </Dialog>
     <ExamSetup :selectedData="selectedData" v-if="isconfigureExam"/>
@@ -506,6 +535,11 @@ export default {
                     break;
                 // click item xóa
                 case 2:
+                    console.log(this.selectedData)
+                    if (this.selectedData.departments.length > 0) {
+                        this.warningVisible = true;
+                        return
+                    }
                     this.isPopupDelete = true;
                     break;
             }
@@ -680,6 +714,7 @@ export default {
          */
         onRowSelect(data) {
             this.modeModal = this.FormMode.UPDATE;
+            this.isShowModal = true;
             this.objSelectedData = {...data};
             this.selectedData = {...data};
             this.file.fileSize = this.selectedData.file_size

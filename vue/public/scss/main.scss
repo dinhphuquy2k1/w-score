@@ -135,6 +135,14 @@ body {
         border: 1px solid #e0e0e0;
     }
 
+    &.danger {
+        color: #fff;
+        background: #ef5350 !important;
+        &:hover {
+            background: #e54340 !important;
+        }
+    }
+
     .icon-only {
         width: 24px;
         background-repeat: no-repeat;
@@ -419,7 +427,7 @@ ol, ul, dl {
     padding: 0 16px;
     line-height: 1.5;
     align-items: center;
-    width: max-content;
+    width: 150px;
 }
 
 .status-ctn .status-dot {
