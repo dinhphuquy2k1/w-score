@@ -4,7 +4,7 @@
       <div class="left-side d-flex">
         <div class="logo-content d-flex justify-content-start">
           <div class="nav-logo"></div>
-          <div class="logo-title">Brand</div>
+          <div class="logo-title">Word Score</div>
         </div>
       </div>
       <div class="right-side d-flex">
