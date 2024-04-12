@@ -62,25 +62,6 @@
                             </div>
                         </template>
                     </Column>
-                    <Column dataKey="id" header="Trạng thái" style="width: 200px;">
-                        <template #body="{ data, field, slotProps }">
-                            <div v-if="!isLoading">
-                                <div class="d-flex status-ctn max-content" v-if="data['is_exist']"
-                                     style="background-color: rgb(229, 250, 237);">
-                                    <div class="status-dot" style="background-color: rgb(0, 200, 83);"></div>
-                                    <div class="status-text" style="color: rgb(0, 200, 83);">Đang sử dụng</div>
-                                </div>
-                                <div class="d-flex status-ctn max-content" v-else
-                                     style="background-color: rgb(254, 243, 231);">
-                                    <div class="status-dot" style="background-color: rgb(243, 141, 21);"></div>
-                                    <div class="status-text" style="color: rgb(243, 141, 21);">Không sử dụng</div>
-                                </div>
-                            </div>
-                            <div v-else>
-                                <Skeleton height="18px" class="mb-2"></Skeleton>
-                            </div>
-                        </template>
-                    </Column>
                     <Column alignFrozen="right" style="width: 100px; text-align: center;" frozen header="Thao tác">
                         <template #body="slotProps">
                             <div class="row-actions flex-row" v-if="!isLoading">
