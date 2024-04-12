@@ -1861,13 +1861,6 @@ export default {
                         propertyName: 'File Name',
                     },
 
-                    pageOrientation: {
-                        content: null,
-                        point: null,
-                        type: 'Option',
-                        propertyName: 'Page Orientation',
-                    },
-
                     PAGE_SIZE: {
                         content: null,
                         point: null,
@@ -2064,6 +2057,7 @@ export default {
                     let required = this.formats.properties[property].required;
                     for (let child in this.formats.properties[property]?.properties) {
                         let invalidProperty = true;
+                        let key = this.TypeProperty[child];
                         isHasChilds = true;
                         let contentChild = this.formats.properties[property].properties[child].content;
                         let pointChild = this.formats.properties[property].properties[child].point;
@@ -2083,10 +2077,13 @@ export default {
                                 validData = false;
                             }
                         }
+                        if (this.TypeProperty[child] === this.TypeProperty['ALIGNMENT']) {
+                            key = this.formats.properties.MODIFY_STYLE.properties.ALIGNMENT.content;
+                        }
                         if (invalidProperty && contentChild != null && pointChild != null) {
                             point += pointChild;
                             dataChild.push({
-                                'key': this.TypeProperty[child],
+                                'key': key,
                                 'value': contentChild,
                                 'point': pointChild,
                             })
