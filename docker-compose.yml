@@ -9,6 +9,8 @@ services:
             - ./docker/config/php:/usr/local/etc/
         ports:
             - 9000:80
+        depends_on:
+            -   mysql_db
 
 #    client:
 #        container_name: w-frontend

@@ -21,7 +21,7 @@
    build app
 
     ``` sh
-    docker-compose up -d
+    make setup
     ```
 
     ``` sh

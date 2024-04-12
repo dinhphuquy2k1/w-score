@@ -30,10 +30,3 @@ RUN docker-php-ext-install gettext intl pdo_mysql gd
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
 
-# Sao chép tệp composer.json từ máy local vào container
-COPY composer.json composer.lock .
-
-# Chạy Composer install trong container
-RUN composer update --no-plugins --no-scripts
-
-RUN composer install --no-scripts
