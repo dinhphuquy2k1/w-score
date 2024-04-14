@@ -598,6 +598,7 @@ class ApiWordController extends Controller
     {
         try {
             if (!empty($images) && !empty($criteria->content)) {
+                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
                 $content = json_decode($criteria->content, true);
                 $key = pathinfo($content['key'], PATHINFO_FILENAME);
                 // mặc định cho điểm tên
