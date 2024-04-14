@@ -3,6 +3,7 @@
         <div class="form-list flex-column flex1">
             <div class="flex-column flex1">
                 <div class="flex-row title-box">
+                    <TheLoadingProgress v-if="isLoadingSaveCritera"/>
                     <div class="list-title flex1">Thiết lập đề</div>
                     <div class="flex-row mr-12">
                         <Button @click="previewExam"
@@ -16,7 +17,6 @@
                     </div>
                 </div>
                 <div class="box list-content flex1 flex-column">
-                    <TheLoadingProgress v-if="isLoadingSaveCritera"/>
                     <TabView @tab-change="tabViewIndex = $event.index">
                         <TabPanel header="Định dạng">
                             <div class="form-content flex-row">

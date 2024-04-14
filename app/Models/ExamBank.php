@@ -24,7 +24,7 @@ class ExamBank extends Model
 
     public function criterias(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Criteria::class, 'exam_bank_id');
+        return $this->hasMany(Criteria::class, 'exam_bank_id')->orderBy('priority', 'DESC');
     }
 
     public function departments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

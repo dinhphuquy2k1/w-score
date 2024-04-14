@@ -58,7 +58,7 @@ class ApiWordController extends Controller
      */
     public function index()
     {
-        $examBanks = Exam::with('examShifts.departments', 'examShifts.examBanks')->get();
+        $examBanks = Exam::with('examShifts.departments', 'examShifts.examBanks.criterias', 'examShifts.examShiftDetails')->get();
         if ($examBanks) {
             return $this->sendResponseSuccess($examBanks->toArray());
         }
@@ -69,20 +69,22 @@ class ApiWordController extends Controller
     {
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
         if (!$receiver->isUploaded()) {
-            return $this->sendResponseError(['message'=> 'Lỗi tải file']);
+            return $this->sendResponseError(['message' => 'Lỗi tải file']);
         }
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $subjectLine = $request->subjectLine;
             $fileType = $request->fileType;
+            $listExamBank = $request->examBanks ? json_decode($request->examBanks, true) : [];
+            $countExam = count($listExamBank);
             $cakeListKey = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
                 $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
                 File::deleteDirectory($this->_PATH_ZIP . $subPath);
                 File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
-                mkdir($this->_PATH_ZIP . $subPath,0777,true);
-                mkdir($this->_PATH_EXTRACTED . $subPath,0777,true);
+                mkdir($this->_PATH_ZIP . $subPath, 0777, true);
+                mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
                 if ($fileType == FileType::LIST) {
@@ -95,13 +97,15 @@ class ApiWordController extends Controller
                             $candidateNumber = $sheet->getCell("A{$index}")->getValue();
                             $studentCode = $sheet->getCell("B{$index}")->getValue();
                             $studentName = $sheet->getCell("C{$index}")->getValue();
-                            $department = $sheet->getCell("D{$index}")->getValue();
-                            if ($studentCode && $studentName) {
+                            if ($studentCode && $studentName && $candidateNumber && (int)$candidateNumber > 0) {
+                                $index = ($candidateNumber - 1) % $countExam;
                                 $data[$studentCode] = [
                                     'candidateNumber' => $candidateNumber,
                                     'studentCode' => $studentCode,
                                     'studentName' => $studentName,
-                                    'department' => $department,
+                                    'departmentName' => $request->department_name,
+                                    'examBankName' => $listExamBank[$index]['exam_bank_name'],
+                                    'examBankId' => $listExamBank[$index]['id'],
                                 ];
                             }
                         }
@@ -149,10 +153,13 @@ class ApiWordController extends Controller
                                             if ($pathTo === "P") {
                                                 if (in_array(strtolower($ext), $valid_docx) && array_key_exists($studentID, $listData)) {
                                                     //thông tin sinh viên
-                                                    $students['data'][$studentID] = [
+                                                    $students['data'][$listData[$studentID]['candidateNumber']] = [
                                                         'studentName' => $listData[$studentID]['studentName'],
                                                         'studentID' => $studentID,
                                                         'candidateNumber' => $listData[$studentID]['candidateNumber'],
+                                                        'examBankId' => $listData[$studentID]['examBankId'],
+                                                        'examBankName' => $listData[$studentID]['examBankName'],
+                                                        'departmentName' => $request->departmentName,
                                                         'studentAssignment' => [$fileChild],
                                                         'style' => $this->getListStyles($extractPath . '/' . $fileParent . '/' . $fileChild),
                                                         'path' => $extractPath . '/' . $fileParent,
@@ -191,88 +198,89 @@ class ApiWordController extends Controller
      */
     public function calculate(Request $request)
     {
-        $filePath = $this->_PATH_EXTRACTED;
         $list = Cache::get($request->cakeListName);
         $listStudent = Cache::get($request->cakeStudentName) ? Cache::get($request->cakeStudentName)['data'] : [];
-        $departmentId = $request->departmentId;
-        $examShifId = $request->examShifId;
-        $listExamBank = DB::table('exam_shift_details')
-            ->join('exam_banks', 'exam_banks.id', '=', 'exam_shift_details.exam_bank_id')
-            ->join('departments', 'departments.id', '=', 'exam_shift_details.department_id')
-            ->join('exam_shifts', 'exam_shifts.id', '=', 'exam_shift_details.exam_shift_id')
-            ->where('exam_shift_details.exam_shift_id', '=', $examShifId)
-            ->where('exam_shift_details.department_id', '=', $departmentId)
-            ->orderBy('exam_banks.id')
-            ->distinct()
-            ->select('exam_banks.id as exam_bank_id', 'exam_banks.exam_bank_name', 'exam_shift_details.id', 'departments.department_name', 'exam_shifts.exam_shift_name')
-            ->get();
-        if (empty($list) || empty($listStudent) || empty($listExamBank)) {
+        $listExamBank = $request->listExamBank;
+        $listExamShiftDetail = $request->examShift['exam_shift_details'];
+        $examShiftName = $request->examShift['exam_shift_name'];
+        if (empty($list) || empty($listStudent) || empty($listExamBank) || empty($listExamShiftDetail)) {
             return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
         }
-
-        $listExamBank = $listExamBank->toArray();
+        $listExamShiftDetail = collect($listExamShiftDetail)->keyBy('exam_bank_id')->toArray();
+        $listExamBank = collect($listExamBank)->keyBy('id')->toArray();
         $result = [];
         try {
             foreach ($listExamBank as $exam) {
                 DB::beginTransaction();
-                ExamResult::where('exam_shift_detail_id', $exam->id)->delete();
-                ExamResultDetail::where('exam_shift_detail_id', $exam->id)->delete();
-                $this->calculateByExam($result, $exam->exam_bank_id, $listStudent, $exam);
+                $exam_shift_detail_id = $listExamShiftDetail[$exam['id']]['id'];
+                ExamResult::where('exam_shift_detail_id', $exam_shift_detail_id)->delete();
+                ExamResultDetail::where('exam_shift_detail_id', $exam_shift_detail_id)->delete();
+                $this->calculateByExam($result, $listStudent, $exam, $request->department, $listExamShiftDetail, $listExamBank, $examShiftName);
                 DB::commit();
                 return $this->sendResponseSuccess($result);
             }
         } catch (\Throwable $th) {
+            dd($th);
             return $this->sendResponseError();
         }
     }
 
-    public function calculateByExam(&$result, $examBankId, $listStudent, $exam)
+    /**
+     * @param array $result
+     * @param array $listStudent
+     * @param array $exam
+     * @param array $department
+     * @param array $listExamShiftDetail
+     * @param string $examShiftName
+     * @return void
+     */
+    public function calculateByExam(array &$result, array $listStudent, array $exam, array $department, array $listExamShiftDetail, array $listExamBank, string $examShiftName)
     {
         $listExam = []; //danh sách thông tin các bài thi
         $listExamDetail = [];  //danh sách chi tiết về bài thi
-        $criterias = Criteria::where('exam_bank_id', $examBankId)->orderBy('priority', 'DESC')->get();
         $ret = [];
         foreach ($listStudent as $student) {
-            $ret[$student['studentID']]['info'] = [
+            $ret[$student['candidateNumber']]['info'] = [
                 'student_name' => $student['studentName'],
                 'student_code' => $student['studentID'],
-                'exam_shift_detail_id' => $exam->id,
+                'exam_shift_detail_id' => $listExamShiftDetail[$exam['id']]['id'],
                 'candidate_number' => $student['candidateNumber'],
-                'department_name' => $exam->department_name,
+                'department_name' => $department['department_name'],
                 'total' => 0,
                 'note' => '',
             ];
+            $criterias = $listExamBank[$student['examBankId']]['criterias'];
             $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
             // Lấy danh sách các sections trong tài liệu
             $sections = $phpWord->getSections();
             [$images, $footnotes, $footers] = $this->getListData($sections);
             foreach ($criterias as $criteria) {
-                $ret[$student['studentID']]['criterias'][$criteria->id] = [
-                    'point' => $criteria->point,
-                    'real_point' => $criteria->point,
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']] = [
+                    'point' => $criteria['point'],
+                    'real_point' => 0,
                     'flag' => true,
-                    'property_name' => $criteria->property_name,
+                    'property_name' => $criteria['property_name'],
                     'candidate_number' => $student['candidateNumber'],
-                    'exam_shift_detail_id' => $exam->id,
-                    'exam_shift_name' => $exam->exam_shift_name,
-                    'department_name' => $exam->department_name,
-                    'exam_bank_name' => $exam->exam_bank_name,
+                    'exam_shift_detail_id' => $exam['id'],
+                    'exam_shift_name' => $examShiftName,
+                    'department_name' => $department['department_name'],
+                    'exam_bank_name' => $student['examBankName'],
                     'student_code' => $student['studentID'],
                 ];
-                switch ($criteria->property_type) {
+                switch ($criteria['property_type']) {
                     case PropertyType::PAGE_SIZE_ALL:
                         foreach ($sections as $section) {
                             // page size trong bài thi
                             $pageSize = $section->getStyle()->getPaperSize();
                             // page size trong DB
-                            $typeSize = PageSize::getKey((int)$criteria->content);
+                            $typeSize = PageSize::getKey((int)$criteria['content']);
                             if ($pageSize != $typeSize) {
                                 $this->setPointFail($ret, $student, $criteria);
                             }
                         }
                         break;
                     case PropertyType::HEADER_ALL:
-                        $value = $criteria->content;
+                        $value = $criteria['content'];
                         $headerName = '';
                         foreach ($sections as $section) {
                             $headers = $section->getHeaders();
@@ -338,13 +346,14 @@ class ApiWordController extends Controller
                     default:
                         break;
                 }
-                $ret[$student['studentID']]['info']['total'] += $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'];
+                $ret[$student['candidateNumber']]['info']['total'] += $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'];
             }
-            $ret[$student['studentID']]['info']['total'] = round($ret[$student['studentID']]['info']['total'], 3);
-            $listExam[] = $ret[$student['studentID']]['info'];
-            $listExamDetail[] = $ret[$student['studentID']]['criterias'];
-            $ret[$student['studentID']]['info']['exam_shift_detail_id'] = $exam->id;
-            $result[] = $ret[$student['studentID']]['info'];
+            $ret[$student['candidateNumber']]['info']['total'] = round($ret[$student['candidateNumber']]['info']['total'], 3);
+            $listExam[$student['candidateNumber']] = $ret[$student['candidateNumber']]['info'];
+            $listExamDetail[] = $ret[$student['candidateNumber']]['criterias'];
+            $ret[$student['candidateNumber']]['info']['exam_shift_detail_id'] = $exam['id'];
+            $ret[$student['candidateNumber']]['info']['exam_bank_name'] = $student['examBankName'];
+            $result[] = $ret[$student['candidateNumber']]['info'];
         }
         try {
             DB::begintransaction();
@@ -438,7 +447,7 @@ class ApiWordController extends Controller
     public function checkFooterTypeAll(Criteria $criteria, array $footers, array $student, array &$ret)
     {
         foreach ($footers as $footer) {
-            if ($footer['footerType'] != $criteria->content) {
+            if ($footer['footerType'] != $criteria['content']) {
                 $this->setPointFail($ret, $student, $criteria);
                 break;
             }
@@ -456,13 +465,13 @@ class ApiWordController extends Controller
     {
         foreach ($footers as $footer) {
             try {
-                $content = $criteria->content;
+                $content = $criteria['content'];
                 if (!str_contains($this->stripUnicode($footer['footerName']), $this->stripUnicode($content))) {
                     $this->setPointFail($ret, $student, $criteria);
                     break;
                 }
             } catch (\Throwable $th) {
-                dd($criteria->content);
+                dd($criteria['content']);
             }
         }
     }
@@ -475,18 +484,18 @@ class ApiWordController extends Controller
      */
     public function checkApplyStyle(Criteria $criteria, array $student, array &$ret)
     {
-        if (!empty($student['style']) && !empty($criteria->content)) {
-            $content = json_decode($criteria->content, true);
+        if (!empty($student['style']) && !empty($criteria['content'])) {
+            $content = json_decode($criteria['content'], true);
             $paragraphs = explode($this->_SEPARATOR, $content['value']);
             $this->paragraphWithout = array_merge($this->paragraphWithout, $paragraphs);
-            $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = $criteria->point;
-            $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = true;
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = $criteria['point'];
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = true;
             // duyệt từng đoạn văn bản cần áp dụng style
             foreach ($paragraphs as $paragraph) {
                 foreach ($student['style'] as $style) {
                     // kiểm tra trong file word có chứa đoạn văn ko, nếu có thì kiểm tra tên có trùng khớp
                     if (str_contains($this->stripUnicode($paragraph), $this->stripUnicode($style['text'])) && $content['key'] != $style['style']['name']) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
                         break;
                     }
                 }
@@ -505,7 +514,7 @@ class ApiWordController extends Controller
         if ($student['style']) {
             $paragraphWithout = implode(',', $this->paragraphWithout);
             foreach ($student['style'] as $style) {
-                if (!str_contains($this->stripUnicode($style['text']), $this->stripUnicode($paragraphWithout)) && $criteria->content != $style['style']['name']) {
+                if (!str_contains($this->stripUnicode($style['text']), $this->stripUnicode($paragraphWithout)) && $criteria['content'] != $style['style']['name']) {
                     break;
                 }
             }
@@ -522,16 +531,16 @@ class ApiWordController extends Controller
     public function checkFootNote(Criteria $criteria, array $footnotes, array $student, array &$ret)
     {
         try {
-            $content = json_decode($criteria->content, true);
+            $content = json_decode($criteria['content'], true);
             foreach ($footnotes as $footnote) {
                 if (str_contains($this->stripUnicode($content['key']), $this->stripUnicode($footnote['content']))) {
                     foreach ($content['value'] as $item) {
                         if ((int)$item['key'] == PropertyType::FOOTNOTE_TYPE) {
                             if ($footnote['numberingType'] == $item['value']) {
-                                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                             }
                         } elseif ((int)$item['key'] == PropertyType::INSERT_FOOTNOTE || (int)$item['key'] == PropertyType::FOOTNOTE_CONTENT) {
-                            $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+                            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                         }
                     }
                     break;
@@ -588,29 +597,29 @@ class ApiWordController extends Controller
 
     /**
      * @param array $student
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $ret
      * @param array $images
      * @return void
      */
     public
-    function checkImages(array $student, Criteria $criteria, array &$ret, array $images)
+    function checkImages(array $student, array $criteria, array &$ret, array $images)
     {
         try {
-            if (!empty($images) && !empty($criteria->content)) {
-                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
-                $content = json_decode($criteria->content, true);
+            if (!empty($images) && !empty($criteria['content'])) {
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
+                $content = json_decode($criteria['content'], true);
                 $key = pathinfo($content['key'], PATHINFO_FILENAME);
                 // mặc định cho điểm tên
                 foreach ($content['value'] as $item) {
                     switch ((int)$item['key']) {
                         case PropertyType::NAME_IMAGE:
-                            $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+                            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                             break;
                         case PropertyType::WIDTH_IMAGE:
                             foreach ($images as $image) {
                                 if ($image['width'] == $item['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                                     break;
                                 }
                             }
@@ -618,7 +627,7 @@ class ApiWordController extends Controller
                         case PropertyType::HIGH_IMAGE:
                             foreach ($images as $image) {
                                 if ($image['height'] == $item['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                                     break;
                                 }
                             }
@@ -629,16 +638,16 @@ class ApiWordController extends Controller
 //                    foreach ($content['value'] as $item) {
 //                        switch ((int)$item['key']) {
 //                            case PropertyType::NAME_IMAGE:
-//                                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+//                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
 //                                break;
 //                            case PropertyType::WIDTH_IMAGE:
 //                                if ($images[$key]['width'] == $item['value']) {
-//                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+//                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
 //                                }
 //                                break;
 //                            case PropertyType::HIGH_IMAGE:
 //                                if ($images[$key]['height'] == $item['value']) {
-//                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $item['point'];
+//                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
 //                                }
 //                                break;
 //                        }
@@ -659,8 +668,8 @@ class ApiWordController extends Controller
     public
     function setPointFail(array &$ret, array $student, $criteria)
     {
-        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-        $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
     }
 
     /**
@@ -675,7 +684,7 @@ class ApiWordController extends Controller
     {
         $value = 0;
         foreach ($sections as $section) {
-            switch ((int)$criteria->property_type) {
+            switch ((int)$criteria['property_type']) {
                 case PropertyType::MARGIN_LEFT_ALL:
                     $value = round($section->getStyle()->getMarginLeft() / 569, 1);
                     break;
@@ -689,9 +698,9 @@ class ApiWordController extends Controller
                     $value = round($section->getStyle()->getMarginBottom() / 569, 1);
                     break;
             }
-            if ((double)$value != (double)$criteria->content) {
-                $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+            if ((double)$value != (double)$criteria['content']) {
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
             }
         }
     }
@@ -706,64 +715,64 @@ class ApiWordController extends Controller
     function checkModifyStyle($criteria, $student, &$ret)
     {
         try {
-            $content = json_decode($criteria->content, true);
-            $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+            $content = json_decode($criteria['content'], true);
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
             $key = $content['key'];
             $values = $content['value'] ?? [];
             $style = [];
             if (!empty($student['style'])) {
-                $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
                 foreach ($student['style'] as $item) {
                     // Kiểm tra nếu style có font là Times New Roman
                     if ($item['style']['name'] == $key) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = true;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = true;
                         $style = $item['style'];
                         break;
                     }
                 }
-                if ($ret[$student['studentID']]['criterias'][$criteria->id]['flag']) {
+                if ($ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag']) {
                     foreach ($values as $value) {
                         switch ($value['key']) {
                             case PropertyType::FONT:
                                 $style['font'] = !empty($style['font']) ? $style['font'] : FontType::TIME_NEW_ROMAN;
                                 if ($style['font'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::FONT_SIZE:
                                 if ($style['font_size'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::FONT_STYLE:
                                 if ($style['font_style'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::FONT_COLOR:
                                 if ($style['font_color'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::SPACING_BEFORE:
                                 if ($style['space_before'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::SPACING_AFTER:
                                 if ($style['space_after'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::SPECIAL_HANGING:
                                 if ($style['indent_hanging'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::INDENTATION_LEFT:
                                 if ($style['indent_left'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::ALIGNMENT_CENTERD:
@@ -771,16 +780,16 @@ class ApiWordController extends Controller
                             case PropertyType::NUMBERING:
                             case PropertyType::ALIGNMENT_JUSTIFITED:
                             case PropertyType::ALL_CAPS:
-                                $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 break;
                             case PropertyType::ALIGNMENT_LEFT:
                                 if (!$style['alignment']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                             case PropertyType::LINE_SPACING:
                                 if ($style['line_spacing_value'] == $value['value']) {
-                                    $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] += $value['point'];
+                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
                                 }
                                 break;
                         }
@@ -802,39 +811,39 @@ class ApiWordController extends Controller
     public
     function checkInfos($criteria, $student, &$ret, $value)
     {
-        $content = json_decode($criteria->content, true);
+        $content = json_decode($criteria['content'], true);
         if (is_array($content) && !array_key_exists($content['key'], $content) && !array_key_exists($content['value'], $content)) {
             switch ((int)$content['key']) {
                 case InfoType::STUDENT_NAME:
                     if (!str_contains($this->stripUnicode($value), $this->stripUnicode($student['studentName']))) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = false;
                     }
                     break;
                 case InfoType::STUDENT_CODE:
                     if (!str_contains($this->stripUnicode($value), $this->stripUnicode($student['studentID']))) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = false;
                     }
                     break;
                 case InfoType::STUDENT_CODE_NAME:
                     $this->stripUnicode($student['studentName']);
 
                     if (!str_contains($this->stripUnicode($value), $this->stripUnicode($student['studentName'])) || !str_contains($this->stripUnicode($value), $this->stripUnicode($student['studentID']))) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = false;
                     }
                     break;
                 case InfoType::OTHER:
                     if (!str_contains($this->stripUnicode($value), $this->stripUnicode($content['value']))) {
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-                        $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+                        $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
                     }
                     break;
             }
         } else {
-            $ret[$student['studentID']]['criterias'][$criteria->id]['flag'] = false;
-            $ret[$student['studentID']]['criterias'][$criteria->id]['real_point'] = 0;
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag'] = false;
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
         }
     }
 

@@ -29,6 +29,7 @@
                                     <Dropdown v-model="selectedManager" :options="examManager"
                                               optionLabel="exam_name"
                                               placeholder="Kì thi"
+                                              :disabled="this.activeStep !== 0"
                                               :class="{'error': invalidData['exam']}"
                                               @change="onChangeExamManager"
                                               class="ms-category text-start"/>
@@ -46,6 +47,7 @@
                                     <Dropdown v-model="selectedExamShift" :options="examShift"
                                               optionLabel="exam_shift_name"
                                               placeholder="Ca thi"
+                                              :disabled="activeStep !== 0"
                                               :class="{'error': invalidData['exam_shift']}"
                                               @change="onChangeExamShift"
                                               class="ms-category text-start"/>
@@ -56,18 +58,28 @@
                             </div>
                             <div class="group-form_box mt-3">
                                 <div class="d-flex">
-                                    <div class="label">Phòng thi thi</div>
+                                    <div class="label">Phòng thi</div>
                                     <span class="required">*</span>
                                 </div>
                                 <div class="">
                                     <Dropdown v-model="selectedDepartment" :options="department"
                                               optionLabel="department_name"
+                                              @change="onChangeDepartment"
                                               placeholder="Phòng thi"
+                                              :disabled="activeStep !== 0"
                                               :class="{'error': invalidData['department']}"
                                               class="ms-category text-start"/>
                                 </div>
                                 <div class="ms-error-text" v-if="invalidData['department']">
                                     {{ invalidData['department'] }}
+                                </div>
+                            </div>
+                            <div class="group-form_box mt-4">
+                                <div class="flex-grow-1 d-flex justify-content-center">
+                                    <Button @click="refineExam" :disabled="selectedExamShift == null || activeStep != 0"
+                                            class="ms-btn secondary d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
+                                        <div class="">Tinh chỉnh đề thi</div>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -80,7 +92,7 @@
                                    class="customPanel flex1" :toggle-button-props="{ 'aria-label': 'customPanel' }">
                                 <Stepper linear :activeStep="activeStep">
                                     <StepperPanel header="File danh sách thi">
-                                        <template #content="{ nextCallback }">
+                                        <template #content="{ index, nextCallback }">
                                             <input type="file" hidden ref="file" accept=".xlsx" id="assetsFieldHandle"
                                                    @change="onChangeFile($event, valuesFile[0])">
                                             <div class="flex-grow-1 d-flex" @dragover="dragover" @dragleave="dragleave"
@@ -89,22 +101,24 @@
                                                     <div class="d-flex flex-grow-1">
                                                         <div
                                                             class="upload-container flex-grow-1 d-flex justify-content-center align-items-center"
-                                                            v-if="!fileSelected">
+                                                            v-if="!this.valuesFile[0].FileSelected">
                                                             <div class="no-file d-flex file-xlsx">
                                                             </div>
                                                         </div>
                                                         <div class="import-attachment-container flex1"
-                                                             v-if="fileSelected">
+                                                             v-if="this.valuesFile[0].FileSelected">
                                                             <div class="file-info d-flex">
                                                                 <div class="d-flex text-truncate">
                                                                     <div class="file-icon text-left "
                                                                          style="width: 20px;"></div>
                                                                     <div class="file-name text-left">
-                                                                        {{ fileSelected.name }}
+                                                                        {{ this.valuesFile[0].FileSelected.name }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="file-size text-left">
-                                                                    {{ formatSize(fileSelected.size) }}
+                                                                    {{
+                                                                        formatSize(this.valuesFile[0].FileSelected.size)
+                                                                    }}
                                                                 </div>
                                                                 <div
                                                                     class="file-accepted text-left d-flex justify-content-between">
@@ -144,7 +158,7 @@
                                                     </div>
                                                 </label>
                                             </div>
-                                            <div class="form-group flex-row mt-3" v-if="fileSelected">
+                                            <div class="form-group flex-row mt-3" v-if="valuesFile[0].FileSelected">
                                                 <div class="flex1 mr-10">
                                                     <div class="form-group-label d-flex label-form">
                                                         Sheet danh sách
@@ -154,6 +168,7 @@
                                                         <Dropdown v-model="selectedSheet" :options="sheetOptions"
                                                                   optionLabel="sheetName"
                                                                   placeholder="Sheet danh sách"
+                                                                  @change="changeSheetIndex"
                                                                   :class="{'error': invalidData['selectedSheet']}"
                                                                   class="ms-category text-start"/>
                                                         <div class="error-text" v-if="invalidData['selectedSheet']">
@@ -168,12 +183,13 @@
                                                     </div>
                                                     <div class="ms-input d-flex flex-column ms-editor w-100">
                                                         <InputNumber
-                                                        v-model="subjectLine"
-                                                        :class="{ 'error': invalidData[`subjectLine`] }"
-                                                        :min="0"
-                                                        :max="100"
-                                                        :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
-                                                        class="ms-point flex-grow-1"/>
+                                                            v-model="subjectLine"
+                                                            :class="{ 'error': invalidData[`subjectLine`] }"
+                                                            :min="0"
+                                                            :max="100"
+                                                            @input="changeSheetIndex"
+                                                            :placeholder="MESSAGE.INPUT_PLACEHOLDER_SETUP"
+                                                            class="ms-point flex-grow-1"/>
                                                         <div class="error-text" v-if="invalidData['subjectLine']">
                                                             {{ invalidData['subjectLine'] }}
                                                         </div>
@@ -182,12 +198,8 @@
                                             </div>
                                             <div class="flex pt-4 justify-content-end" v-if="!isNextStepper">
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
-                                                        :disabled="!fileSelected"
-                                                        @click="fileSelectedOnUpload = valuesFile[0], uploadEvent()"/>
-                                            </div>
-                                            <div class="flex pt-4 justify-content-end" v-else>
-                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
-                                                        @click="fileSelectedOnUpload = valuesFile[0], nextCallback()"/>
+                                                        :disabled="!valuesFile[0].FileSelected"
+                                                        @click="fileSelectedOnUpload = valuesFile[0], changeStepperIndex(index)"/>
                                             </div>
                                         </template>
                                     </StepperPanel>
@@ -203,22 +215,24 @@
                                                         <div class="d-flex flex-grow-1">
                                                             <div
                                                                 class="upload-container flex-grow-1 d-flex justify-content-center align-items-center"
-                                                                v-if="!fileSelected">
+                                                                v-if="!valuesFile[1].FileSelected">
                                                                 <div class="no-file d-flex file-zip">
                                                                 </div>
                                                             </div>
                                                             <div class="import-attachment-container flex1"
-                                                                 v-if="fileSelected">
+                                                                 v-if="valuesFile[1].FileSelected">
                                                                 <div class="file-info d-flex">
                                                                     <div class="d-flex text-truncate">
                                                                         <div class="file-icon text-left "
                                                                              style="width: 20px;"></div>
                                                                         <div class="file-name text-left">
-                                                                            {{ fileSelected.name }}
+                                                                            {{ valuesFile[1].FileSelected.name }}
                                                                         </div>
                                                                     </div>
                                                                     <div class="file-size text-left">
-                                                                        {{ formatSize(fileSelected.size) }}
+                                                                        {{
+                                                                            formatSize(valuesFile[1].FileSelected.size)
+                                                                        }}
                                                                     </div>
                                                                     <div class="file-accepted text-left d-flex">
                                                                         <div class="icon-success"
@@ -237,7 +251,13 @@
                                                                 <div class="file-caution" v-if="FileSuccess">
                                                                     <div class="file-caution-img">
                                                                     </div>
-                                                                    <div class="file-caution-center mt-20">
+                                                                    <div class="file-caution-center mt-20 text-center">
+                                                                        Lưu ý
+                                                                        <span data-v-6d95cd2a="" data-v-30ce9692=""
+                                                                              style="color: red;">*</span>
+                                                                        : Bạn vui lòng kiểm tra lại danh sách
+                                                                        <br>
+                                                                        trước khi thực hiện chấm.
                                                                     </div>
                                                                 </div>
                                                                 <div class="file-error" v-else>
@@ -259,7 +279,7 @@
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
                                                         @click="prevCallback, this.activeStep= 0"/>
                                                 <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
-                                                        :disabled="!fileSelected"
+                                                        :disabled="!valuesFile[1].FileSelected"
                                                         @click="fileSelectedOnUpload = valuesFile[1], uploadEvent()"/>
                                             </div>
                                         </template>
@@ -301,7 +321,8 @@
                                                             </div>
                                                         </template>
                                                     </Column>
-                                                    <Column header="Phòng thi" field="department" style="width: 100px;"
+                                                    <Column header="Phòng thi" field="departmentName"
+                                                            style="width: 100px;"
                                                             class="text-center">
                                                         <template #body="{ data, field, slotProps }">
                                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -310,7 +331,7 @@
                                                             </div>
                                                         </template>
                                                     </Column>
-                                                    <Column header="Đề thi" field="studentName" style="width: 50px;"
+                                                    <Column header="Đề thi" field="examBankName" style="width: 50px;"
                                                             class="text-center">
                                                         <template #body="{ data, field, slotProps }">
                                                             <div v-if="!isLoading"> {{ data[field] }}</div>
@@ -388,6 +409,15 @@
                                             </div>
                                         </template>
                                     </Column>
+                                    <Column header="Đề thi" field="exam_bank_name" style="width: 80px;"
+                                            class="text-left">
+                                        <template #body="{ data, field, slotProps }">
+                                            <div v-if="!isLoading"> {{ data[field] }}</div>
+                                            <div v-else>
+                                                <Skeleton height="18px" class="mb-2"></Skeleton>
+                                            </div>
+                                        </template>
+                                    </Column>
                                     <Column header="Tổng điểm" field="total" style="width: 50px;"
                                             class="text-center">
                                         <template #body="{ data, field, slotProps }">
@@ -419,9 +449,11 @@
         </div>
     </div>
     <Dialog v-model:visible="visibleExamResultDetail" modal
-            :header="selectedResult ? `Điểm chi tiết ${selectedResult.student_name}` : ''" :style="{ width: '70vw' }" scrollable
+            :header="selectedResult ? `Điểm chi tiết ${selectedResult.student_name}` : ''" :style="{ width: '70vw' }"
+            scrollable
             closeIcon="close-button">
-        <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading" table-class="grid-group"
+        <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
+                   table-class="grid-group"
                    :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : resultDetail"
                    tableStyle="min-width: 100%" rowHover>
             <Column header="STT" style="width: 15px;" class="text-left">
@@ -483,7 +515,45 @@
         </DataTable>
         <template #footer>
             <Button label="Đóng" class="text-white ms-button text-white btn w-100 danger"
-                    @click="visibleExamResultDetail = false, selectedResult = null" />
+                    @click="visibleExamResultDetail = false, selectedResult = null"/>
+        </template>
+    </Dialog>
+
+    <Dialog v-model:visible="visibleRefineExam" modal
+            header="Tinh chỉnh đề thi" :style="{ width: '60vw' }"
+            scrollable
+            closeIcon="close-button">
+        <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
+                   table-class="grid-group"
+                   :reorderableColumns="true" @rowReorder="onRowReorder"
+                   :value="listExamBankForExamShift"
+                   tableStyle="min-width: 100%" rowHover>
+            <Column rowReorder headerStyle="width: 1.5rem" :reorderableColumn="false"/>
+            <Column header="STT" style="width: 15px;" class="text-left">
+                <template #body="slotProps">
+                    <div> {{ slotProps.index + 1 }}</div>
+                </template>
+            </Column>
+            <Column header="Mã đề thi" field="exam_bank_code" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div> {{ data[field] }}</div>
+                </template>
+            </Column>
+            <Column header="Tên đề thi" field="exam_bank_name" style="width: 100px;" class="text-left">
+                <template #body="{ data, field, slotProps }">
+                    <div> {{ data[field] }}</div>
+                </template>
+            </Column>
+        </DataTable>
+        <template #footer>
+            <div class="d-flex flex-row">
+                <div class="flex1"></div>
+                <Button
+                    class="ms-btn secondary d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2 me-2"
+                    @click="visibleRefineExam = false">
+                    <div class="">Đóng</div>
+                </Button>
+            </div>
         </template>
     </Dialog>
 </template>
@@ -509,6 +579,7 @@ import {getExamResultDetail} from "../../../../api/exam-result";
 import {get, calculate, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 import InputNumber from 'primevue/inputnumber';
+
 export default {
     computed: {
         MESSAGE() {
@@ -541,6 +612,7 @@ export default {
                     Resource: 'Chưa có file danh sách thi. Tải lên để thực hiện chấm',
                     Empty: true,
                     FileSelected: null,
+                    FileSelectedOld: null,
                     ResourcePath: null,
                     FileName: null,
                     FileType: FILE_TYPE.LIST,
@@ -553,6 +625,7 @@ export default {
                     Resource: 'Chưa có file bài thi. Tải lên để thực hiện chấm',
                     Empty: true,
                     FileSelected: null,
+                    FileSelectedOld: null,
                     ResourcePath: null,
                     FileName: null,
                     FileType: FILE_TYPE.EXAM,
@@ -615,6 +688,9 @@ export default {
             resumable: null,
             progress: 0,
             invalidData: [],
+            listExamBankForExamShift: [],
+            isDisableInfo: false,
+            visibleRefineExam: false,
 
             examManager: [],
             selectedManager: null,
@@ -672,34 +748,13 @@ export default {
          */
         onChangeExamShift() {
             this.department = this.selectedExamShift.departments;
-            // this.loadExamResult();
+            this.listExamBankForExamShift = this.selectedExamShift.exam_banks;
         },
 
         /**
          * Sự kiện chọn phòng thi
          */
         onChangeDepartment() {
-            this.examResult = []; //kết quả thi
-            this.valuesFile[1].FileName = this.valuesFile[0].FileName = null;
-            this.valuesFile[1].Empty = this.valuesFile[0].Empty = true;
-
-            var data = this.examManager.find(_item => this.selectedManager == _item.ExamId);
-            data = JSON.parse(data.ExamShift);
-            var result = data.find(_item => this.selectedDepartment == _item.DepartmentId && this.selectedExamShift == _item.ExamShiftId);
-            try {
-                if (result.ResourcePathFileList != null) {
-                    this.valuesFile[0].FileName = String(result.ResourcePathFileList).substring(3);
-                    this.valuesFile[0].Empty = false;
-                }
-
-                if (result.ResourcePathFileAssignment != null) {
-                    this.valuesFile[1].FileName = String(result.ResourcePathFileAssignment).substring(3);
-                    this.valuesFile[1].Empty = false;
-                }
-            } catch (error) {
-                console.log(resulgetDetailExamManagert, this.selectedDepartment, this.department, this.selectedExamShift, data);
-            }
-            this.loadExamResult();
         },
 
         /**
@@ -725,9 +780,6 @@ export default {
             event.preventDefault();
             this.$refs.file.files = event.dataTransfer.files;
             this.onChangeFile(event, data); // Trigger the onChange event manually
-            // Clean up
-            event.currentTarget.classList.add('bg-gray-100');
-            event.currentTarget.classList.remove('bg-green-300');
         },
 
         /**
@@ -849,6 +901,21 @@ export default {
             })
         },
 
+        changeStepperIndex() {
+            this.uploadEvent(this.activeStep);
+        },
+
+        /**
+         * Click button tinh chỉnh đề thi
+         */
+        refineExam() {
+            this.visibleRefineExam = true;
+        },
+
+        onRowReorder(event) {
+            this.listExamBankForExamShift = event.value;
+            this.$toast.add({severity: 'success', summary: 'Rows Reordered', life: 3000});
+        },
 
         /**
          * Xuất kết quả
@@ -891,6 +958,7 @@ export default {
                 this.FileSuccess = true;
                 //xlsx
                 if (data.FileType === FILE_TYPE.LIST) {
+                    this.valuesFile[0].FileSelected = this.fileSelected;
                     var validExts = new Array(".xlsx", ".xls");
                     var fileExt = this.fileSelected.name;
                     this.sheetOptions = [];
@@ -923,6 +991,7 @@ export default {
                     var validExts = new Array(".zip");
                     var fileExt = this.fileSelected.name;
                     fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+                    this.valuesFile[1].FileSelected = this.fileSelected;
                     if (validExts.indexOf(fileExt) < 0) {
                         this.contentDialog = ' File bài thi chỉ hỗ trợ định dạng *.zip';
                         this.dialogVisible = true;
@@ -933,15 +1002,28 @@ export default {
         },
 
         /**
+         * sự kiện đối giá trị sheet danh sách
+         */
+        changeSheetIndex() {
+            if (this.activeStep === 0) {
+                this.valuesFile[this.activeStep].FileSelectedOld = null;
+                this.fileSelected = this.valuesFile[this.activeStep].FileSelected;
+            }
+        },
+
+        /**
          * Click nút upload
          */
-        uploadEvent() {
+        uploadEvent(index) {
             try {
                 if (!this.validateExam()) {
                     return;
                 }
+                if (this.valuesFile[this.activeStep].FileSelectedOld === this.valuesFile[this.activeStep].FileSelected) {
+                    this.activeStep++;
+                    return;
+                }
                 this.isDisable = true;
-                this.progress = 0;
                 this.isLoading = true;
                 //tên kì thi
                 // this.resumable.opts.query.ExamName = this.examManager.find(_item => _item.ExamId == this.selectedManager).ExamName;
@@ -952,9 +1034,19 @@ export default {
                 this.resumable.opts.query.fileType = this.fileSelectedOnUpload.FileType;
                 this.resumable.opts.query.subjectLine = this.subjectLine;
                 this.resumable.opts.query.sheetIndex = this.selectedSheet.sheetIndex;
+                this.resumable.opts.query.departmentName = this.selectedDepartment.department_name;
+                let listExamBank = [];
+                this.listExamBankForExamShift.forEach(item => {
+                    let newItem = {
+                        id: item.id,
+                        exam_bank_name: item.exam_bank_name
+                    };
+                    listExamBank.push(newItem);
+                });
+                this.resumable.opts.query.examBanks = JSON.stringify(listExamBank);
                 this.resumable.addFile(this.fileSelected);
             } catch (error) {
-
+                console.log(error)
             }
         },
 
@@ -968,8 +1060,9 @@ export default {
                 'cakeListName': this.fileInfoResponse.cakeListName,
                 'cakeStudentName': this.fileInfoResponse.cakeStudentName,
                 'examId': this.selectedManager.id,
-                'examShifId': this.selectedExamShift.id,
-                'departmentId': this.selectedDepartment.id
+                'department': this.selectedDepartment,
+                'listExamBank': this.listExamBankForExamShift,
+                'examShift': this.selectedExamShift,
             }
             calculate(params).then(res => {
                 this.examResult = res.data;
@@ -998,7 +1091,7 @@ export default {
             }).then(res => {
                 this.examResult = res;
             }).catch(error => {
-                this.showToast("Đã xảy ra lỗi, vui lòng liên hệ với nhà phát triển");
+                this.$store.dispatch('handleServerError');
                 console.log(error);
             }).finally(() => {
                 setTimeout(() => {
@@ -1067,6 +1160,9 @@ export default {
             this.isDisable = false;
             this.progress = 100;
             this.isLoading = false;
+            if (this.activeStep === 0 || this.activeStep === 1) {
+                this.valuesFile[this.activeStep].FileSelectedOld = this.fileSelected;
+            }
             try {
                 console.log(JSON.parse(response))
                 this.fileInfoResponse = JSON.parse(response).data;
@@ -1098,19 +1194,24 @@ export default {
          * Lấy thông tin chi tiết điểm của sinh viên
          */
         async loadExamResultDetail() {
+            this.visibleExamResultDetail = true;
             if (JSON.stringify(this.selectedResult) !== JSON.stringify(this.objCheckSelectedResult)) {
                 this.resultDetail = [];
-                console.log(this.selectedResult);
-                await getExamResultDetail({'student_code': this.selectedResult.student_code, 'exam_shift_detail_id': this.selectedResult.exam_shift_detail_id}).then(res => {
-                    this.visibleExamResultDetail = true;
+                this.isLoading = true;
+                await getExamResultDetail({
+                    'student_code': this.selectedResult.student_code,
+                    'exam_shift_detail_id': this.selectedResult.exam_shift_detail_id
+                }).then(res => {
                     this.resultDetail = res.data;
                     console.log(res);
                 }).catch(error => {
                     this.showToast("Đã xảy ra lỗi, vui lòng liên hệ với nhà phát triển");
                     console.log(error);
-                });
-            } else {
-                this.visibleExamResultDetail = true;
+                }).finally(() => {
+                    setTimeout(() => {
+                        this.isLoading = false;
+                    }, 300);
+                })
             }
             this.objCheckSelectedResult = {...this.selectedResult}
         },
