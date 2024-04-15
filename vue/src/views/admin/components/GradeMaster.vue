@@ -453,9 +453,16 @@
             scrollable
             closeIcon="close-button">
         <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
-                   table-class="grid-group"
+                   rowGroupMode="rowspan" groupRowsBy="parent_criteria_id" sortMode="single" sortField="parent_criteria_id" :sortOrder="1"
                    :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : resultDetail"
                    tableStyle="min-width: 100%" rowHover>
+            <Column field="parent_criteria_id" header="Tiêu chí" style="min-width: 200px">
+                <template #body="slotProps">
+                    <div class="flex align-items-center gap-2">
+                        <span>{{ slotProps.data.parent_criteria_name }}</span>
+                    </div>
+                </template>
+            </Column>
             <Column header="STT" style="width: 15px;" class="text-left">
                 <template #body="slotProps">
                     <div v-if="!isLoading"> {{ slotProps.index + 1 }}</div>

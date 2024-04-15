@@ -172,7 +172,7 @@
                     @click="isShowModal = false">
                     <div class="">Đóng</div>
                 </Button>
-                <Button @click="doSave" @keyup.enter="doSave" :disabled="isDisabled"
+                <Button @click="doSave" @keyup.enter.prevent="doSave" :disabled="isDisabled"
                         class="ms-btn primary blue d-flex justify-content-center flex-grow-1 ms-btn_search ps-3 pe-3 gap-2">
                     <div class="fw-semibold">Lưu</div>
                 </Button>

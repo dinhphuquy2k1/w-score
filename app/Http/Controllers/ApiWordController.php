@@ -254,19 +254,24 @@ class ApiWordController extends Controller
             // Lấy danh sách các sections trong tài liệu
             $sections = $phpWord->getSections();
             [$images, $footnotes, $footers] = $this->getListData($sections);
-            foreach ($criterias as $criteria) {
-                $ret[$student['candidateNumber']]['criterias'][$criteria['id']] = [
+            foreach ($criterias as $index => $criteria) {
+                $itemCriteria = [
                     'point' => $criteria['point'],
                     'real_point' => 0,
                     'flag' => true,
                     'property_name' => $criteria['property_name'],
                     'candidate_number' => $student['candidateNumber'],
                     'exam_shift_detail_id' => $exam['id'],
+                    'criteria_id' => "{$student['studentID']}{$index}",
+                    'parent_criteria_id' => $criteria['id'],
+                    'has_child' => false,
+                    'parent_criteria_name' => $criteria['property_name'],
                     'exam_shift_name' => $examShiftName,
                     'department_name' => $department['department_name'],
                     'exam_bank_name' => $student['examBankName'],
                     'student_code' => $student['studentID'],
                 ];
+                $ret[$student['candidateNumber']]['criterias'][$criteria['id']] = $itemCriteria;
                 switch ($criteria['property_type']) {
                     case PropertyType::PAGE_SIZE_ALL:
                         foreach ($sections as $section) {
@@ -310,7 +315,7 @@ class ApiWordController extends Controller
                             $this->setPointFail($ret, $student, $criteria);
                         } else {
                             $this->setPointFail($ret, $student, $criteria);
-                            $this->checkFootNote($criteria, $footnotes, $student, $ret);
+                            $this->checkFootNote($criteria, $footnotes, $student, $ret, $itemCriteria);
                         }
                         break;
                     case PropertyType::APPLY_STYLE:
@@ -329,11 +334,11 @@ class ApiWordController extends Controller
                         if (!$images) {
                             $this->setPointFail($ret, $student, $criteria);
                         } else {
-                            $this->checkImages($student, $criteria, $ret, $images);
+                            $this->checkImages($student, $criteria, $ret, $images, $itemCriteria);
                         }
                         break;
                     case PropertyType::MODIFY_STYLE:
-                        $this->checkModifyStyle($criteria, $student, $ret);
+                        $this->checkModifyStyle($criteria, $student, $ret, $itemCriteria);
                         break;
                     case PropertyType::TITLE:
                         $title = $phpWord->getDocInfo()->getTitle();
@@ -438,13 +443,13 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $footers
      * @param array $student
      * @param array $ret
      * @return void
      */
-    public function checkFooterTypeAll(Criteria $criteria, array $footers, array $student, array &$ret)
+    public function checkFooterTypeAll(array $criteria, array $footers, array $student, array &$ret)
     {
         foreach ($footers as $footer) {
             if ($footer['footerType'] != $criteria['content']) {
@@ -455,13 +460,13 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $footers
      * @param array $student
      * @param array $ret
      * @return void
      */
-    public function checkFooterAll(Criteria $criteria, array $footers, array $student, array &$ret)
+    public function checkFooterAll(array $criteria, array $footers, array $student, array &$ret)
     {
         foreach ($footers as $footer) {
             try {
@@ -477,12 +482,12 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $student
      * @param array $ret
      * @return void
      */
-    public function checkApplyStyle(Criteria $criteria, array $student, array &$ret)
+    public function checkApplyStyle(array $criteria, array $student, array &$ret)
     {
         if (!empty($student['style']) && !empty($criteria['content'])) {
             $content = json_decode($criteria['content'], true);
@@ -504,12 +509,12 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $student
      * @param array $ret
      * @return void
      */
-    public function checkApplyStyleAll(Criteria $criteria, array $student, array &$ret)
+    public function checkApplyStyleAll(array $criteria, array $student, array &$ret)
     {
         if ($student['style']) {
             $paragraphWithout = implode(',', $this->paragraphWithout);
@@ -522,29 +527,31 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param Criteria $criteria
+     * @param array $criteria
      * @param array $footnotes
      * @param array $student
      * @param array $ret
+     * @param array $itemCriteria
      * @return void
      */
-    public function checkFootNote(Criteria $criteria, array $footnotes, array $student, array &$ret)
+    public function checkFootNote(array $criteria, array $footnotes, array $student, array &$ret, array $itemCriteria)
     {
         try {
             $content = json_decode($criteria['content'], true);
             foreach ($footnotes as $footnote) {
-                if (str_contains($this->stripUnicode($content['key']), $this->stripUnicode($footnote['content']))) {
-                    foreach ($content['value'] as $item) {
+                foreach ($content['value'] as $item) {
+                    $this->setCriteriaChildren($itemCriteria, $student, $ret, $item, $criteria);
+                    if (str_contains($this->stripUnicode($content['key']), $this->stripUnicode($footnote['content']))) {
                         if ((int)$item['key'] == PropertyType::FOOTNOTE_TYPE) {
                             if ($footnote['numberingType'] == $item['value']) {
                                 $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
-                            }
+                            } else $this->setCriteriaRealPointChildFail($item, $criteria, $student, $ret);
                         } elseif ((int)$item['key'] == PropertyType::INSERT_FOOTNOTE || (int)$item['key'] == PropertyType::FOOTNOTE_CONTENT) {
                             $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                         }
                     }
-                    break;
                 }
+                break;
             }
         } catch (\Throwable $th) {
             \Log::info('ApiWord.checkFootNote', [$th]);
@@ -600,18 +607,19 @@ class ApiWordController extends Controller
      * @param array $criteria
      * @param array $ret
      * @param array $images
+     * @param array $itemCriteria
      * @return void
      */
-    public
-    function checkImages(array $student, array $criteria, array &$ret, array $images)
+    public function checkImages(array $student, array $criteria, array &$ret, array $images, array $itemCriteria)
     {
         try {
-            if (!empty($images) && !empty($criteria['content'])) {
-                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
-                $content = json_decode($criteria['content'], true);
-                $key = pathinfo($content['key'], PATHINFO_FILENAME);
-                // mặc định cho điểm tên
-                foreach ($content['value'] as $item) {
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] = 0;
+            $content = json_decode($criteria['content'], true);
+            $key = pathinfo($content['key'], PATHINFO_FILENAME);
+            // mặc định cho điểm tên
+            foreach ($content['value'] as $item) {
+                $this->setCriteriaChildren($itemCriteria, $student, $ret, $item, $criteria);
+                if (!empty($images)) {
                     switch ((int)$item['key']) {
                         case PropertyType::NAME_IMAGE:
                             $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
@@ -622,18 +630,23 @@ class ApiWordController extends Controller
                                     $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                                     break;
                                 }
+                                else $this->setCriteriaRealPointChildFail($item, $criteria, $student, $ret);
                             }
                             break;
                         case PropertyType::HIGH_IMAGE:
+                            $inValid = true;
                             foreach ($images as $image) {
                                 if ($image['height'] == $item['value']) {
                                     $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
+                                    $inValid = false;
                                     break;
                                 }
                             }
+                            if ($inValid) $this->setCriteriaRealPointChildFail($item, $criteria, $student, $ret);
                             break;
                     }
                 }
+            }
 //                if (array_key_exists($key, $images)) {
 //                    foreach ($content['value'] as $item) {
 //                        switch ((int)$item['key']) {
@@ -653,7 +666,6 @@ class ApiWordController extends Controller
 //                        }
 //                    }
 //                }
-            }
         } catch (\Throwable $th) {
             \Log::info('ApiWord.checkImages', [$th]);
         }
@@ -706,13 +718,47 @@ class ApiWordController extends Controller
     }
 
     /**
-     * @param $criteria
-     * @param $student
-     * @param $ret
+     * @param array $itemCriteria
+     * @param array $student
+     * @param array $ret
+     * @param array $value
      * @return void
      */
-    public
-    function checkModifyStyle($criteria, $student, &$ret)
+    public function setCriteriaChildren(array $itemCriteria, array $student, array &$ret, array $value, array $criteria)
+    {
+        try {
+            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['has_child'] = true;
+            $itemCriteria['parent_criteria_id'] = $itemCriteria['criteria_id'];
+            $itemCriteria['point'] = $value['point'];
+            $itemCriteria['real_point'] = $value['point'];
+            $itemCriteria['property_name'] = PropertyType::getDescription((int)$value['key']);
+            $itemCriteria['criteria_id'] = $value['key'];
+            $ret[$student['candidateNumber']]['criterias']["{$criteria['id']}{$itemCriteria['criteria_id']}"] = $itemCriteria;
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+    }
+
+    /**
+     * @param array $value
+     * @param array $criteria
+     * @param array $student
+     * @param array $ret
+     * @return void
+     */
+    public function setCriteriaRealPointChildFail(array $value, array $criteria, array $student, array &$ret)
+    {
+        $ret[$student['candidateNumber']]['criterias']["{$criteria['id']}{$value['key']}"]['real_point'] = 0;
+    }
+
+    /**
+     * @param array $criteria
+     * @param array $student
+     * @param array $ret
+     * @param array $itemCriteria
+     * @return void
+     */
+    public function checkModifyStyle(array $criteria, array $student, array &$ret, array $itemCriteria)
     {
         try {
             $content = json_decode($criteria['content'], true);
@@ -731,68 +777,71 @@ class ApiWordController extends Controller
                         break;
                     }
                 }
-                if ($ret[$student['candidateNumber']]['criterias'][$criteria['id']]['flag']) {
-                    foreach ($values as $value) {
-                        switch ($value['key']) {
-                            case PropertyType::FONT:
-                                $style['font'] = !empty($style['font']) ? $style['font'] : FontType::TIME_NEW_ROMAN;
-                                if ($style['font'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::FONT_SIZE:
-                                if ($style['font_size'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::FONT_STYLE:
-                                if ($style['font_style'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::FONT_COLOR:
-                                if ($style['font_color'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::SPACING_BEFORE:
-                                if ($style['space_before'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::SPACING_AFTER:
-                                if ($style['space_after'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::SPECIAL_HANGING:
-                                if ($style['indent_hanging'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::INDENTATION_LEFT:
-                                if ($style['indent_left'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::ALIGNMENT_CENTERD:
-                            case PropertyType::ALIGNMENT_RIGHT:
-                            case PropertyType::NUMBERING:
-                            case PropertyType::ALIGNMENT_JUSTIFITED:
-                            case PropertyType::ALL_CAPS:
+            }
+            foreach ($values as $value) {
+                $this->setCriteriaChildren($itemCriteria, $student, $ret, $value, $criteria);
+                if (!empty($style)) {
+                    switch ($value['key']) {
+                        case PropertyType::FONT:
+                            $style['font'] = !empty($style['font']) ? $style['font'] : FontType::TIME_NEW_ROMAN;
+                            if ($style['font'] == $value['value']) {
                                 $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                break;
-                            case PropertyType::ALIGNMENT_LEFT:
-                                if (!$style['alignment']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                            case PropertyType::LINE_SPACING:
-                                if ($style['line_spacing_value'] == $value['value']) {
-                                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
-                                }
-                                break;
-                        }
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::FONT_SIZE:
+                            if ($style['font_size'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::FONT_STYLE:
+                            if ($style['font_style'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::FONT_COLOR:
+                            if ($style['font_color'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::SPACING_BEFORE:
+                            if ($style['space_before'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::SPACING_AFTER:
+                            if ($style['space_after'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::SPECIAL_HANGING:
+                            if ($style['indent_hanging'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::INDENTATION_LEFT:
+                            if ($style['indent_left'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::ALIGNMENT_CENTERD:
+                        case PropertyType::ALIGNMENT_RIGHT:
+                        case PropertyType::NUMBERING:
+                        case PropertyType::ALIGNMENT_JUSTIFITED:
+                        case PropertyType::ALL_CAPS:
+                            $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            break;
+                        case PropertyType::ALIGNMENT_LEFT:
+                            if (!$style['alignment']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::LINE_SPACING:
+                            if ($style['line_spacing_value'] == $value['value']) {
+                                $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $value['point'];
+                            } else $this->setCriteriaRealPointChildFail($value, $criteria, $student, $ret);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

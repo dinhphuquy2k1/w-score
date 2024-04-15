@@ -15,7 +15,7 @@ class ApiExamResultController extends Controller
             'exam_shift_detail_id' => 'required|integer',
         ]);
 
-        $ret = ExamResultDetail::where('exam_shift_detail_id', $request->exam_shift_detail_id)->where('student_code', $request->student_code)->get()->toArray();
+        $ret = ExamResultDetail::where('exam_shift_detail_id', $request->exam_shift_detail_id)->where('student_code', $request->student_code)->where('has_child', false)->get()->toArray();
         return $this->sendResponseSuccess($ret);
     }
 }
