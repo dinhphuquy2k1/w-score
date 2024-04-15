@@ -96,12 +96,18 @@
         <TheLoadingProgress v-if="isLoadingDelete"/>
         <div class="w-full flex flex-column" style="line-height: 1.5;">
                 <span> Kì thi có rất nhiều dữ liệu liên quan, bạn có chắc chắn muốn xóa kì thi <b>{{
-                        selectedData.ExamName
-                    }} không?</b></span>
+                        selectedData.exam_name
+                    }}</b> không?</span>
         </div>
         <template #footer>
-            <Button label="Không" class="ms-button btn detail-button secondary" @click="isPopupDelete = false"/>
-            <Button label="Xóa kì thi" class="ms-button btn w-100 danger" @click="handlerDelete"/>
+            <Button
+                class="ms-btn secondary d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2" @click="isPopupDelete = false">
+                <div class="">Không</div>
+            </Button>
+            <Button @click="handlerDelete"
+                    class="ms-btn danger d-flex justify-content-center ms-btn_search ps-3 pe-3 gap-2">
+                <div class="">Xóa kì thi</div>
+            </Button>
         </template>
     </Dialog>
 </template>

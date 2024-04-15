@@ -129,7 +129,7 @@
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa kì thi">
+    <Dialog v-model:visible="isPopupDelete" modal closeOnEscape :style="{ width: '25vw' }" header="Xóa đề thi">
         <TheLoadingProgress v-if="isLoadingDelete"/>
         <div class="w-full flex flex-column" style="line-height: 1.5;">
             <span> Bạn có chắc chắn muốn xóa đề thi <b>{{ selectedData.exam_bank_code }}</b> không?</span>
