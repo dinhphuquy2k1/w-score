@@ -519,10 +519,15 @@
         </template>
     </Dialog>
 
-    <Dialog v-model:visible="visibleRefineExam" modal
-            header="Tinh chỉnh đề thi" :style="{ width: '60vw' }"
+    <Dialog v-model:visible="visibleRefineExam" modal :style="{ width: '60vw' }"
             scrollable
             closeIcon="close-button">
+        <template #header>
+            <div class="inline-flex align-items-center justify-content-center gap-2">
+                <span class="fw-bold fs-16">Tinh chỉnh đề thi</span>
+                <div class="mt-2 fw-lighter">Thực hiện sắp xếp đề thi tương ứng với danh sách thi</div>
+            </div>
+        </template>
         <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
                    table-class="grid-group"
                    :reorderableColumns="true" @rowReorder="onRowReorder"

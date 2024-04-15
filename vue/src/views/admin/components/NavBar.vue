@@ -46,7 +46,7 @@ export default {
                 {
                     label: 'Tổng quan',
                     icon: 'icon icon-dashboard',
-                    route: '/exam-list',
+                    route: '/',
                 },
                 {
                     label: 'Ngân hàng đề thi',
