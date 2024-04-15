@@ -151,7 +151,7 @@ class ApiExamController extends Controller
             $examShift = DB::table('exam_shifts')->whereIn('exam_id', [$id]);
             $examShiftDetail = DB::table('exam_shift_details')->whereIn('exam_shift_id', $examShift->pluck('id')->toArray());
             $examResult = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
-            $examResultDetail = DB::table('exam_results')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
+            $examResultDetail = DB::table('exam_result_details')->whereIn('exam_shift_detail_id', $examShiftDetail->pluck('id')->toArray());
             DB::beginTransaction();
             //xóa kết quả chi tiết của bài thi
             $examResultDetail->delete();
