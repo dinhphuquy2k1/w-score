@@ -449,7 +449,7 @@
         </div>
     </div>
     <Dialog v-model:visible="visibleExamResultDetail" modal
-            :header="selectedResult ? `Điểm chi tiết ${selectedResult.student_name}` : ''" :style="{ width: '70vw' }"
+            :header="selectedResult ? `Điểm chi tiết ${selectedResult.student_name}` : ''" :style="{ width: '75vw' }"
             scrollable
             closeIcon="close-button">
         <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
@@ -587,7 +587,7 @@ import * as XLSX from 'xlsx';
 import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE, MESSAGE} from "@/common/enums";
 import LoadingProgress from "@/components/LoadingProgress.vue";
-import {getExamResultDetail} from "../../../../api/exam-result";
+import {getExamResultDetail, getExamResult} from "../../../../api/exam-result";
 import {get, calculate, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 import InputNumber from 'primevue/inputnumber';
@@ -749,8 +749,8 @@ export default {
         onChangeExamManager() {
             this.valuesFile[1].FileName = this.valuesFile[0].FileName = null;
             this.valuesFile[1].Empty = this.valuesFile[0].Empty = true;
+            this.selectedExamShift = null;
             //dữ liệu kì thi
-
             this.selectedFirst();
             // this.loadExamResult();
         },
@@ -760,13 +760,15 @@ export default {
          */
         onChangeExamShift() {
             this.department = this.selectedExamShift.departments;
+            this.selectedDepartment = null;
             this.listExamBankForExamShift = this.selectedExamShift.exam_banks;
         },
 
         /**
          * Sự kiện chọn phòng thi
          */
-        onChangeDepartment() {
+        async onChangeDepartment() {
+            await this.loadExamResult()
         },
 
         /**
@@ -1097,11 +1099,11 @@ export default {
                 return;
             }
             await getExamResult({
-                ExamId: this.selectedManager,
-                DepartmentId: this.selectedDepartment,
-                ExamShiftId: this.selectedExamShift
+                examId: this.selectedManager.id,
+                departmentId: this.selectedDepartment.id,
+                examShiftId: this.selectedExamShift.id
             }).then(res => {
-                this.examResult = res;
+                this.examResult = res.data;
             }).catch(error => {
                 this.$store.dispatch('handleServerError');
                 console.log(error);
@@ -1258,6 +1260,8 @@ export default {
     },
     async created() {
         await this.loadExamManager();
+        //lấy kết quả chấm
+        await this.loadExamResult();
     },
 
     mounted() {
