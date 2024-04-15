@@ -391,10 +391,12 @@ class ApiWordController extends Controller
                     $footerType = $footer->getType() == FooterType::DEFAULT ? FooterType::BLANK : $footer->getType();
                 }
 
-                $footers[] = [
-                    'footerName' => $footerName,
-                    'footerType' => $footerType,
-                ];
+                if (!empty($footerName)) {
+                    $footers[] = [
+                        'footerName' => $footerName,
+                        'footerType' => $footerType,
+                    ];
+                }
             }
 
 
