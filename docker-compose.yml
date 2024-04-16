@@ -19,6 +19,8 @@ services:
             MYSQL_DATABASE: word_score
         ports:
             - 3007:3306
+        volumes:
+            - ./docker/mysql:/var/lib/mysql
 
     phpmyadmin:
         container_name: w-phpmyadmin
