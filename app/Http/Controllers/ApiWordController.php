@@ -81,10 +81,6 @@ class ApiWordController extends Controller
             $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
                 $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
-                File::deleteDirectory($this->_PATH_ZIP . $subPath);
-                File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
-                is_dir($this->_PATH_ZIP . $subPath) ?: mkdir($this->_PATH_ZIP . $subPath, 0777, true);
-                is_dir($this->_PATH_EXTRACTED . $subPath) ?: mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
                 if ($fileType == FileType::LIST) {
@@ -122,6 +118,10 @@ class ApiWordController extends Controller
                     //xóa các file trước đó
                     $listData = Cache::get($cakeListKey);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
+                    File::deleteDirectory($this->_PATH_ZIP . $subPath);
+                    File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
+                    mkdir($this->_PATH_ZIP . $subPath, 0777, true);
+                    mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
                     $filePath = $file->move($this->_PATH_ZIP . $subPath, $file->getClientOriginalName());
                     $valid_docx = array('docx');
                     $extractPath = $this->_PATH_EXTRACTED . $subPath;
