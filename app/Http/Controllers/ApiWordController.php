@@ -83,8 +83,6 @@ class ApiWordController extends Controller
                 $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
                 File::deleteDirectory($this->_PATH_ZIP . $subPath);
                 File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
-                mkdir($this->_PATH_ZIP . $subPath, 0777, true);
-                mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
                 if ($fileType == FileType::LIST) {
