@@ -211,13 +211,14 @@ class ApiWordController extends Controller
         $listExamShiftDetail = collect($listExamShiftDetail)->keyBy('exam_bank_id')->toArray();
         $listExamBank = collect($listExamBank)->keyBy('id')->toArray();
         $result = [];
+        $listCandidateNumber = [];
         try {
             foreach ($listExamBank as $exam) {
                 DB::beginTransaction();
                 $exam_shift_detail_id = $listExamShiftDetail[$exam['id']]['id'];
                 ExamResult::where('exam_shift_detail_id', $exam_shift_detail_id)->delete();
                 ExamResultDetail::where('exam_shift_detail_id', $exam_shift_detail_id)->delete();
-                $this->calculateByExam($result, $listStudent, $exam, $request->department, $listExamShiftDetail, $listExamBank, $examShiftName);
+                $this->calculateByExam($result, $listStudent, $exam, $request->department, $listExamShiftDetail, $listExamBank, $examShiftName, $listCandidateNumber);
                 DB::commit();
                 return $this->sendResponseSuccess($result);
             }
@@ -233,134 +234,139 @@ class ApiWordController extends Controller
      * @param array $exam
      * @param array $department
      * @param array $listExamShiftDetail
+     * @param array $listExamBank
      * @param string $examShiftName
+     * @param array $listCandidateNumber
      * @return void
      */
-    public function calculateByExam(array &$result, array $listStudent, array $exam, array $department, array $listExamShiftDetail, array $listExamBank, string $examShiftName)
+    public function calculateByExam(array &$result, array $listStudent, array $exam, array $department, array $listExamShiftDetail, array $listExamBank, string $examShiftName, array &$listCandidateNumber)
     {
         $listExam = []; //danh sách thông tin các bài thi
         $listExamDetail = [];  //danh sách chi tiết về bài thi
         $ret = [];
         foreach ($listStudent as $student) {
-            $ret[$student['candidateNumber']]['info'] = [
-                'student_name' => $student['studentName'],
-                'student_code' => $student['studentID'],
-                'exam_shift_detail_id' => $listExamShiftDetail[$exam['id']]['id'],
-                'candidate_number' => $student['candidateNumber'],
-                'department_name' => $department['department_name'],
-                'total' => 0,
-                'note' => '',
-            ];
-            $criterias = $listExamBank[$student['examBankId']]['criterias'];
-            $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
-            // Lấy danh sách các sections trong tài liệu
-            $sections = $phpWord->getSections();
-            [$images, $footnotes, $footers] = $this->getListData($sections);
-            foreach ($criterias as $index => $criteria) {
-                $itemCriteria = [
-                    'point' => $criteria['point'],
-                    'real_point' => 0,
-                    'flag' => true,
-                    'property_name' => $criteria['property_name'],
-                    'candidate_number' => $student['candidateNumber'],
-                    'exam_shift_detail_id' => $exam['id'],
-                    'criteria_id' => "{$student['studentID']}{$index}",
-                    'parent_criteria_id' => $criteria['id'],
-                    'has_child' => false,
-                    'parent_criteria_name' => $criteria['property_name'],
-                    'exam_shift_name' => $examShiftName,
-                    'department_name' => $department['department_name'],
-                    'exam_bank_name' => $student['examBankName'],
+            if (!array_key_exists($student['candidateNumber'], $listCandidateNumber)) {
+                $ret[$student['candidateNumber']]['info'] = [
+                    'student_name' => $student['studentName'],
                     'student_code' => $student['studentID'],
+                    'exam_shift_detail_id' => $listExamShiftDetail[$exam['id']]['id'],
+                    'candidate_number' => $student['candidateNumber'],
+                    'department_name' => $department['department_name'],
+                    'total' => 0,
+                    'note' => '',
                 ];
-                $ret[$student['candidateNumber']]['criterias'][$criteria['id']] = $itemCriteria;
-                switch ($criteria['property_type']) {
-                    case PropertyType::PAGE_SIZE_ALL:
-                        foreach ($sections as $section) {
-                            // page size trong bài thi
-                            $pageSize = $section->getStyle()->getPaperSize();
-                            // page size trong DB
-                            $typeSize = PageSize::getKey((int)$criteria['content']);
-                            if ($pageSize != $typeSize) {
-                                $this->setPointFail($ret, $student, $criteria);
+                $criterias = $listExamBank[$student['examBankId']]['criterias'];
+                $phpWord = PHPIOFactory::load($student['path'] . '/' . $student['studentAssignment'][0]);
+                // Lấy danh sách các sections trong tài liệu
+                $sections = $phpWord->getSections();
+                [$images, $footnotes, $footers] = $this->getListData($sections);
+                foreach ($criterias as $index => $criteria) {
+                    $itemCriteria = [
+                        'point' => $criteria['point'],
+                        'real_point' => 0,
+                        'flag' => true,
+                        'property_name' => $criteria['property_name'],
+                        'candidate_number' => $student['candidateNumber'],
+                        'exam_shift_detail_id' => $exam['id'],
+                        'criteria_id' => "{$student['studentID']}{$index}",
+                        'parent_criteria_id' => $criteria['id'],
+                        'has_child' => false,
+                        'parent_criteria_name' => $criteria['property_name'],
+                        'exam_shift_name' => $examShiftName,
+                        'department_name' => $department['department_name'],
+                        'exam_bank_name' => $student['examBankName'],
+                        'student_code' => $student['studentID'],
+                    ];
+                    $ret[$student['candidateNumber']]['criterias'][$criteria['id']] = $itemCriteria;
+                    switch ($criteria['property_type']) {
+                        case PropertyType::PAGE_SIZE_ALL:
+                            foreach ($sections as $section) {
+                                // page size trong bài thi
+                                $pageSize = $section->getStyle()->getPaperSize();
+                                // page size trong DB
+                                $typeSize = PageSize::getKey((int)$criteria['content']);
+                                if ($pageSize != $typeSize) {
+                                    $this->setPointFail($ret, $student, $criteria);
+                                }
                             }
-                        }
-                        break;
-                    case PropertyType::HEADER_ALL:
-                        $value = $criteria['content'];
-                        $headerName = '';
-                        foreach ($sections as $section) {
-                            $headers = $section->getHeaders();
-                            if (count($headers) > 0) {
-                                foreach ($headers as $header) {
-                                    $elements = $header->getElements();
-                                    foreach ($elements as $element) {
-                                        if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                                            $headerName .= $element->getText();
+                            break;
+                        case PropertyType::HEADER_ALL:
+                            $value = $criteria['content'];
+                            $headerName = '';
+                            foreach ($sections as $section) {
+                                $headers = $section->getHeaders();
+                                if (count($headers) > 0) {
+                                    foreach ($headers as $header) {
+                                        $elements = $header->getElements();
+                                        foreach ($elements as $element) {
+                                            if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                                                $headerName .= $element->getText();
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (!str_contains($this->stripUnicode($value), $this->stripUnicode($headerName))) {
-                            $this->setPointFail($ret, $student, $criteria);
-                        }
-                        break;
-                    case PropertyType::FOOTER_TYPE_ALL:
-                        $this->checkFooterTypeAll($criteria, $footers, $student, $ret);
-                        break;
-                    case PropertyType::FOOTER_ALL:
-                        $this->checkFooterAll($criteria, $footers, $student, $ret);
-                        break;
-                    case PropertyType::FOOTNOTE:
-                        if (empty($footnotes)) {
-                            $this->setPointFail($ret, $student, $criteria);
-                        } else {
-                            $this->setPointFail($ret, $student, $criteria);
-                            $this->checkFootNote($criteria, $footnotes, $student, $ret, $itemCriteria);
-                        }
-                        break;
-                    case PropertyType::APPLY_STYLE:
-                        $this->checkApplyStyle($criteria, $student, $ret);
-                        break;
-                    case PropertyType::APPLY_STYLE_ALL:
-                        $this->checkApplyStyleAll($criteria, $student, $ret);
-                        break;
-                    case PropertyType::MARGIN_LEFT_ALL:
-                    case PropertyType::MARGIN_RIGHT_ALL:
-                    case PropertyType::MARGIN_TOP_ALL:
-                    case PropertyType::MARGIN_BOTTOM_ALL:
-                        $this->checkMarginAll($sections, $criteria, $student, $ret);
-                        break;
-                    case PropertyType::IMAGE:
-                        if (!$images) {
-                            $this->setPointFail($ret, $student, $criteria);
-                        } else {
-                            $this->checkImages($student, $criteria, $ret, $images, $itemCriteria);
-                        }
-                        break;
-                    case PropertyType::MODIFY_STYLE:
-                        $this->checkModifyStyle($criteria, $student, $ret, $itemCriteria);
-                        break;
-                    case PropertyType::TITLE:
-                        $title = $phpWord->getDocInfo()->getTitle();
-                        $this->checkInfos($criteria, $student, $ret, $title);
-                        break;
-                    case PropertyType::AUTHOR:
-                        $author = $phpWord->getDocInfo()->getCreator();
-                        $this->checkInfos($criteria, $student, $ret, $author);
-                        break;
-                    default:
-                        break;
+                            if (!str_contains($this->stripUnicode($value), $this->stripUnicode($headerName))) {
+                                $this->setPointFail($ret, $student, $criteria);
+                            }
+                            break;
+                        case PropertyType::FOOTER_TYPE_ALL:
+                            $this->checkFooterTypeAll($criteria, $footers, $student, $ret);
+                            break;
+                        case PropertyType::FOOTER_ALL:
+                            $this->checkFooterAll($criteria, $footers, $student, $ret);
+                            break;
+                        case PropertyType::FOOTNOTE:
+                            if (empty($footnotes)) {
+                                $this->setPointFail($ret, $student, $criteria);
+                            } else {
+                                $this->setPointFail($ret, $student, $criteria);
+                                $this->checkFootNote($criteria, $footnotes, $student, $ret, $itemCriteria);
+                            }
+                            break;
+                        case PropertyType::APPLY_STYLE:
+                            $this->checkApplyStyle($criteria, $student, $ret);
+                            break;
+                        case PropertyType::APPLY_STYLE_ALL:
+                            $this->checkApplyStyleAll($criteria, $student, $ret);
+                            break;
+                        case PropertyType::MARGIN_LEFT_ALL:
+                        case PropertyType::MARGIN_RIGHT_ALL:
+                        case PropertyType::MARGIN_TOP_ALL:
+                        case PropertyType::MARGIN_BOTTOM_ALL:
+                            $this->checkMarginAll($sections, $criteria, $student, $ret);
+                            break;
+                        case PropertyType::IMAGE:
+                            if (!$images) {
+                                $this->setPointFail($ret, $student, $criteria);
+                            } else {
+                                $this->checkImages($student, $criteria, $ret, $images, $itemCriteria);
+                            }
+                            break;
+                        case PropertyType::MODIFY_STYLE:
+                            $this->checkModifyStyle($criteria, $student, $ret, $itemCriteria);
+                            break;
+                        case PropertyType::TITLE:
+                            $title = $phpWord->getDocInfo()->getTitle();
+                            $this->checkInfos($criteria, $student, $ret, $title);
+                            break;
+                        case PropertyType::AUTHOR:
+                            $author = $phpWord->getDocInfo()->getCreator();
+                            $this->checkInfos($criteria, $student, $ret, $author);
+                            break;
+                        default:
+                            break;
+                    }
+                    $ret[$student['candidateNumber']]['info']['total'] += $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'];
                 }
-                $ret[$student['candidateNumber']]['info']['total'] += $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'];
+                $ret[$student['candidateNumber']]['info']['total'] = round($ret[$student['candidateNumber']]['info']['total'], 3);
+                $listExam[$student['candidateNumber']] = $ret[$student['candidateNumber']]['info'];
+                $listExamDetail[] = $ret[$student['candidateNumber']]['criterias'];
+                $ret[$student['candidateNumber']]['info']['exam_shift_detail_id'] = $exam['id'];
+                $ret[$student['candidateNumber']]['info']['exam_bank_name'] = $student['examBankName'];
+                $listCandidateNumber[$student['candidateNumber']] = $student['candidateNumber'];
+                $result[] = $ret[$student['candidateNumber']]['info'];
             }
-            $ret[$student['candidateNumber']]['info']['total'] = round($ret[$student['candidateNumber']]['info']['total'], 3);
-            $listExam[$student['candidateNumber']] = $ret[$student['candidateNumber']]['info'];
-            $listExamDetail[] = $ret[$student['candidateNumber']]['criterias'];
-            $ret[$student['candidateNumber']]['info']['exam_shift_detail_id'] = $exam['id'];
-            $ret[$student['candidateNumber']]['info']['exam_bank_name'] = $student['examBankName'];
-            $result[] = $ret[$student['candidateNumber']]['info'];
         }
         try {
             DB::begintransaction();
@@ -633,8 +639,7 @@ class ApiWordController extends Controller
                                 if ($image['width'] == $item['value']) {
                                     $ret[$student['candidateNumber']]['criterias'][$criteria['id']]['real_point'] += $item['point'];
                                     break;
-                                }
-                                else $this->setCriteriaRealPointChildFail($item, $criteria, $student, $ret);
+                                } else $this->setCriteriaRealPointChildFail($item, $criteria, $student, $ret);
                             }
                             break;
                         case PropertyType::HIGH_IMAGE:
