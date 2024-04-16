@@ -74,8 +74,6 @@ class ApiWordController extends Controller
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
-            File::chmod($this->_PATH_ZIP . $subPath, 0777);
-            File::chmod($this->_PATH_EXTRACTED . $subPath, 0777);
             File::deleteDirectory($this->_PATH_ZIP . $subPath);
             File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
             $subjectLine = $request->subjectLine;
