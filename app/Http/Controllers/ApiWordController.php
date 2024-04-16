@@ -73,6 +73,11 @@ class ApiWordController extends Controller
         }
         $fileReceived = $receiver->receive(); // receive file
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
+            $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
+            File::chmod($this->_PATH_ZIP . $subPath, 0777);
+            File::chmod($this->_PATH_EXTRACTED . $subPath, 0777);
+            File::deleteDirectory($this->_PATH_ZIP . $subPath);
+            File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
             $subjectLine = $request->subjectLine;
             $fileType = $request->fileType;
             $listExamBank = $request->examBanks ? json_decode($request->examBanks, true) : [];
@@ -80,9 +85,6 @@ class ApiWordController extends Controller
             $cakeListKey = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
-                $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
-                File::deleteDirectory($this->_PATH_ZIP . $subPath);
-                File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
                 mkdir($this->_PATH_ZIP . $subPath, 0777, true);
                 mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
                 $file = $fileReceived->getFile(); // get file
