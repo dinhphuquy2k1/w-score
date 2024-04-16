@@ -221,7 +221,9 @@ export default {
                         label: '',
                         data: [0, 0],
                         backgroundColor: [
+                            'rgb(255, 109, 0)',
                             'rgba(255, 159, 64)',
+                            'rgb(68, 138, 255)',
                             '#5b4dff',
                         ],
                         minBarLength: 2,
