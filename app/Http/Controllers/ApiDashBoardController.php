@@ -19,8 +19,10 @@ class ApiDashBoardController extends Controller
             'countExam' => Exam::count(),
             'countExamBank' => ExamBank::count(),
             'bankStatistics' => [
-                ExamBank::has('criterias')->count(),
                 ExamBank::doesntHave('criterias')->count(),
+                ExamBank::has('criterias')->count(),
+                ExamBank::doesntHave('departments')->count(),
+                ExamBank::has('departments')->count(),
             ],
             'examStatistics' => DB::table('exam_results')
                 ->select(

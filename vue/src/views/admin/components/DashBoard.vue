@@ -215,7 +215,7 @@ export default {
             },
 
             chartDataExam: {
-                labels: ['Đề thi chưa được thiết lập', 'Đề thi được sử dụng'],
+                labels: ['Chưa thiết lập', 'Đã thiết lập', 'Không sử dụng' ,'Đang sử dụng'],
                 datasets: [
                     {
                         label: '',
