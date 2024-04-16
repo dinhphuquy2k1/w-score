@@ -154,7 +154,7 @@ router.beforeEach((to, from, next) => {
         }
     } else {
         if (Auth.check()) {
-            next('/departments');
+            next('/');
             return;
         } else {
             next();
