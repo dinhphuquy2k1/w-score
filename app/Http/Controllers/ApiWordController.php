@@ -267,7 +267,7 @@ class ApiWordController extends Controller
                         'flag' => true,
                         'property_name' => $criteria['property_name'],
                         'candidate_number' => $student['candidateNumber'],
-                        'exam_shift_detail_id' => $exam['id'],
+                        'exam_shift_detail_id' => $listExamShiftDetail[$exam['id']]['id'],
                         'criteria_id' => "{$student['studentID']}{$index}",
                         'parent_criteria_id' => $criteria['id'],
                         'has_child' => false,
@@ -362,7 +362,7 @@ class ApiWordController extends Controller
                 $ret[$student['candidateNumber']]['info']['total'] = round($ret[$student['candidateNumber']]['info']['total'], 3);
                 $listExam[$student['candidateNumber']] = $ret[$student['candidateNumber']]['info'];
                 $listExamDetail[] = $ret[$student['candidateNumber']]['criterias'];
-                $ret[$student['candidateNumber']]['info']['exam_shift_detail_id'] = $exam['id'];
+                $ret[$student['candidateNumber']]['info']['exam_shift_detail_id'] = $listExamShiftDetail[$exam['id']]['id'];
                 $ret[$student['candidateNumber']]['info']['exam_bank_name'] = $student['examBankName'];
                 $listCandidateNumber[$student['candidateNumber']] = $student['candidateNumber'];
                 $result[] = $ret[$student['candidateNumber']]['info'];
