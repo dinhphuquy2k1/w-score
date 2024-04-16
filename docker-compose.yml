@@ -14,21 +14,21 @@ services:
         networks:
             - w-score
 
-    client:
-        container_name: w-frontend
-        build:
-            context: ./vue
-            dockerfile: ../docker/Frontend
-        volumes:
-            - ./vue/:/var/www/html/
-            - /var/www/html/node_modules
-        ports:
-            - "9091:9091"
-        depends_on:
-            - server
-        restart: always
-        networks:
-            - w-score
+#    client:
+#        container_name: w-frontend
+#        build:
+#            context: ./vue
+#            dockerfile: ../docker/Frontend
+#        volumes:
+#            - ./vue/:/var/www/html/
+#            - /var/www/html/node_modules
+#        ports:
+#            - "9091:9091"
+#        depends_on:
+#            - server
+#        restart: always
+#        networks:
+#            - w-score
 
     mysql_db:
         container_name: w-mysql
