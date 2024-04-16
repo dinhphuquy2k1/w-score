@@ -14,4 +14,5 @@ final class FooterType extends Enum
     const BLANK = 'Blank';
     const DEFAULT = 'default';
     const WHISP = 'Whisp';
+    const GRID = 'Grid';
 }
