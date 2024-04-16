@@ -17,5 +17,4 @@ COPY . .
 # here also if you use npm then npm run build
 RUN npm run build
 
-EXPOSE 9090
 CMD [ "npm", "run", "serve" ]

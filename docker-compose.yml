@@ -8,23 +8,27 @@ services:
             - ./:/var/www/html
             - ./docker/config/php:/usr/local/etc/
         ports:
-            - 9000:80
+            - 9000:8080
         depends_on:
-            -   mysql_db
+            - mysql_db
+        networks:
+            - w-score
 
-#    client:
-#        container_name: w-frontend
-#        build:
-#            context: ./vue
-#            dockerfile: ../docker/Frontend
-#        volumes:
-#            - ./vue/:/var/www/html/
-#            - /var/www/html/node_modules
-#        ports:
-#            - "9090:8080"
-#        depends_on:
-#            - server
-#        restart: always
+    client:
+        container_name: w-frontend
+        build:
+            context: ./vue
+            dockerfile: ../docker/Frontend
+        volumes:
+            - ./vue/:/var/www/html/
+            - /var/www/html/node_modules
+        ports:
+            - "9091:9091"
+        depends_on:
+            - server
+        restart: always
+        networks:
+            - w-score
 
     mysql_db:
         container_name: w-mysql
@@ -34,6 +38,8 @@ services:
             MYSQL_DATABASE: word_score
         ports:
             - 3007:3306
+        networks:
+            - w-score
 
     phpmyadmin:
         container_name: w-phpmyadmin
@@ -42,3 +48,9 @@ services:
             - 9001:80
         environment:
             - PMA_ARBITRARY=1
+        networks:
+            - w-score
+
+networks:
+    w-score:
+        driver: bridge
