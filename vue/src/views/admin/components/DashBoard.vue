@@ -131,6 +131,8 @@ import Chart from 'primevue/chart';
 import Button from "primevue/button";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import TheLoadingProgress from "@/components/LoadingProgress.vue";
+import {get} from '/api/dash-board'
+
 export default {
     components: {
         Chart,
@@ -274,6 +276,29 @@ export default {
                 }
             }
         }
+    },
+    methods: {
+        async loadData() {
+            this.isLoading = true;
+            await get().then(res => {
+                let data = res.data;
+                this.countUser = data.countUser
+                this.countDepartment = data.countDepartment
+                this.countExam = data.countExam
+                this.countExamBank = data.countExamBank
+                this.chartDataExam.datasets[0].data = data.bankStatistics
+                this.chartData.datasets[0].data = [data.examStatistics.score_range_0_5, data.examStatistics.score_range_5_6_5, data.examStatistics.score_range_6_5_8, data.examStatistics.score_range_8_9, data.examStatistics.score_range_9_10];
+            }).catch(error => {
+                console.log(error)
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 300);
+            })
+        }
+    },
+    async created() {
+        await this.loadData();
     }
 }
 </script>

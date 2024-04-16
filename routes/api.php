@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\ApiExamController;
 use App\Http\Controllers\ApiExamBankController;
 use App\Http\Controllers\ApiExamShiftController;
+use App\Http\Controllers\ApiDashBoardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [ApiUserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/dashboard', [ApiDashBoardController::class, 'index']);
     Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
     Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
     Route::get('/word/calculate', [ApiWordController::class, 'index']);
