@@ -49,8 +49,8 @@ class ApiWordController extends Controller
 
     public function __construct()
     {
-        $this->_PATH_EXTRACTED = storage_path($this->_PATH_EXTRACTED);
-        $this->_PATH_ZIP = storage_path($this->_PATH_ZIP);
+        $this->_PATH_EXTRACTED = public_path($this->_PATH_EXTRACTED);
+        $this->_PATH_ZIP = public_path($this->_PATH_ZIP);
     }
 
     /**
