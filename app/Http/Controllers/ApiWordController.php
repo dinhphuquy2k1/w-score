@@ -78,9 +78,9 @@ class ApiWordController extends Controller
             $listExamBank = $request->examBanks ? json_decode($request->examBanks, true) : [];
             $countExam = count($listExamBank);
             $cakeListKey = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
-            $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
             if ($fileType == FileType::EXAM || $fileType == FileType::LIST) {
                 $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
+                $fileName = "{$request->examId}{$request->examShiftId}{$request->departmentId}.zip";
                 $file = $fileReceived->getFile(); // get file
                 // file danh sách
                 if ($fileType == FileType::LIST) {
@@ -119,77 +119,150 @@ class ApiWordController extends Controller
                     $listData = Cache::get($cakeListKey);
                     // Di chuyển tệp đã tải lên vào thư mục tạm
                     File::deleteDirectory($this->_PATH_ZIP . $subPath);
-                    File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
+//                    File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
                     mkdir($this->_PATH_ZIP . $subPath, 0777, true);
-                    mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
-                    $filePath = $file->move($this->_PATH_ZIP . $subPath, $file->getClientOriginalName());
-                    $valid_docx = array('docx');
-                    $extractPath = $this->_PATH_EXTRACTED . $subPath;
-                    $zip = new ZipArchive;
-                    $res = $zip->open($filePath);
-                    if ($res === TRUE) {
-                        // Extract file
-                        $zip->extractTo($extractPath);
-                        $zip->close();
-                    } else {
-                        return $this->sendResponseError(['message' => 'Lỗi giải nén']);
-                    }
-
-                    $handleParent = opendir($extractPath);
-                    $students = [];
-                    $pathTo = "P";
-                    if ($handleParent) {
-                        //đọc folder bài tải lên
-                        while (($fileParent = readdir($handleParent)) !== FALSE) {
-                            if (!in_array($fileParent, array('.', '..')) && !is_dir($extractPath . $fileParent)) {
-                                //đọc từng folder con để lấy ra bài word | excel | pp tương ứng
-                                $dirChild = $extractPath . '/' . $fileParent;
-                                $parts = explode('_', $fileParent);
-                                $studentID = $parts[0];                                       //mã sinh viên
-                                if (is_dir($dirChild) && $handleChild = opendir($dirChild)) {
-                                    while (($fileChild = readdir($handleChild)) !== FALSE) {
-                                        if (!in_array($fileChild, array('.', '..')) && !is_dir($dirChild . $fileChild)) {
-                                            $ext = strtolower(pathinfo($fileChild, PATHINFO_EXTENSION));
-                                            if ($pathTo === "P") {
-                                                if (in_array(strtolower($ext), $valid_docx) && array_key_exists($studentID, $listData)) {
-                                                    //thông tin sinh viên
-                                                    $students['data'][$listData[$studentID]['candidateNumber']] = [
-                                                        'studentName' => $listData[$studentID]['studentName'],
-                                                        'studentID' => $studentID,
-                                                        'candidateNumber' => $listData[$studentID]['candidateNumber'],
-                                                        'examBankId' => $listData[$studentID]['examBankId'],
-                                                        'examBankName' => $listData[$studentID]['examBankName'],
-                                                        'departmentName' => $request->departmentName,
-                                                        'studentAssignment' => [$fileChild],
-                                                        'style' => $this->getListStyles($extractPath . '/' . $fileParent . '/' . $fileChild),
-                                                        'path' => $extractPath . '/' . $fileParent,
-                                                    ];
-                                                }
-                                            }
-                                        }
-                                    }
-                                    closedir($handleChild);
-                                }
-                            }
-                        }
-                        closedir($handleParent);
-                    }
+//                    mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
+                    $file->move($this->_PATH_ZIP . $subPath, $file->getClientOriginalName());
+//                    $valid_docx = array('docx');
+//                    $extractPath = $this->_PATH_EXTRACTED . $subPath;
+//                    $zip = new ZipArchive;
+//                    $res = $zip->open($filePath);
+//                    if ($res === TRUE) {
+//                        // Extract file
+//                        $zip->extractTo($extractPath);
+//                        $zip->close();
+//                    } else {
+//                        return $this->sendResponseError(['message' => 'Lỗi giải nén']);
+//                    }
+//
+//                    $handleParent = opendir($extractPath);
+//                    $students = [];
+//                    $pathTo = "P";
+//                    if ($handleParent) {
+//                        //đọc folder bài tải lên
+//                        while (($fileParent = readdir($handleParent)) !== FALSE) {
+//                            if (!in_array($fileParent, array('.', '..')) && !is_dir($extractPath . $fileParent)) {
+//                                //đọc từng folder con để lấy ra bài word | excel | pp tương ứng
+//                                $dirChild = $extractPath . '/' . $fileParent;
+//                                $parts = explode('_', $fileParent);
+//                                $studentID = $parts[0];                                       //mã sinh viên
+//                                if (is_dir($dirChild) && $handleChild = opendir($dirChild)) {
+//                                    while (($fileChild = readdir($handleChild)) !== FALSE) {
+//                                        if (!in_array($fileChild, array('.', '..')) && !is_dir($dirChild . $fileChild)) {
+//                                            $ext = strtolower(pathinfo($fileChild, PATHINFO_EXTENSION));
+//                                            if ($pathTo === "P") {
+//                                                if (in_array(strtolower($ext), $valid_docx) && array_key_exists($studentID, $listData)) {
+//                                                    //thông tin sinh viên
+//                                                    $students['data'][$listData[$studentID]['candidateNumber']] = [
+//                                                        'studentName' => $listData[$studentID]['studentName'],
+//                                                        'studentID' => $studentID,
+//                                                        'candidateNumber' => $listData[$studentID]['candidateNumber'],
+//                                                        'examBankId' => $listData[$studentID]['examBankId'],
+//                                                        'examBankName' => $listData[$studentID]['examBankName'],
+//                                                        'departmentName' => $request->departmentName,
+//                                                        'studentAssignment' => [$fileChild],
+//                                                        'style' => $this->getListStyles($extractPath . '/' . $fileParent . '/' . $fileChild),
+//                                                        'path' => $extractPath . '/' . $fileParent,
+//                                                    ];
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                    closedir($handleChild);
+//                                }
+//                            }
+//                        }
+//                        closedir($handleParent);
+//                    }
                 }
 
-                if (empty($students)) {
-                    return $this->sendResponseSuccess();
-                }
-                $students['files'] = [
-                    'extractPath' => $extractPath,
-                ];
-                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
-                $students['cakeListName'] = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
-                Cache::store('file')->put($cakeStudentKey, $students, now()->addDay());
-                return $this->sendResponseSuccess($students);
+//                if (empty($students)) {
+//                    return $this->sendResponseSuccess();
+//                }
+//                $students['files'] = [
+//                    'extractPath' => $extractPath,
+//                ];
+//                $students['cakeStudentName'] = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+//                $students['cakeListName'] = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+//                Cache::store('file')->put($cakeStudentKey, $students, now()->addDay());
+                return $this->sendResponseSuccess(['filePath' => $this->_PATH_ZIP . $subPath . '/' . $file->getClientOriginalName()]);
             } else {
                 return $this->sendResponseError(['message' => 'Đã xảy ra lỗi']);
             }
         }
+    }
+
+    public function extracted(Request $request)
+    {
+        $cakeListKey = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+        $cakeStudentKey = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+        $subPath = "/{$request->examId}{$request->examShiftId}{$request->departmentId}";
+        $filePath = $request->filePath;
+        $listData = Cache::get($cakeListKey);
+        File::deleteDirectory($this->_PATH_EXTRACTED . $subPath);
+        mkdir($this->_PATH_EXTRACTED . $subPath, 0777, true);
+        $valid_docx = array('docx');
+        $extractPath = $this->_PATH_EXTRACTED . $subPath;
+        $zip = new ZipArchive;
+        $res = $zip->open($filePath);
+        if ($res === TRUE) {
+            // Extract file
+            $zip->extractTo($extractPath);
+            $zip->close();
+        } else {
+            return $this->sendResponseError(['message' => 'Lỗi giải nén']);
+        }
+
+        $handleParent = opendir($extractPath);
+        $students = [];
+        $pathTo = "P";
+        if ($handleParent) {
+            //đọc folder bài tải lên
+            while (($fileParent = readdir($handleParent)) !== FALSE) {
+                if (!in_array($fileParent, array('.', '..')) && !is_dir($extractPath . $fileParent)) {
+                    //đọc từng folder con để lấy ra bài word | excel | pp tương ứng
+                    $dirChild = $extractPath . '/' . $fileParent;
+                    $parts = explode('_', $fileParent);
+                    $studentID = $parts[0];                                       //mã sinh viên
+                    if (is_dir($dirChild) && $handleChild = opendir($dirChild)) {
+                        while (($fileChild = readdir($handleChild)) !== FALSE) {
+                            if (!in_array($fileChild, array('.', '..')) && !is_dir($dirChild . $fileChild)) {
+                                $ext = strtolower(pathinfo($fileChild, PATHINFO_EXTENSION));
+                                if ($pathTo === "P") {
+                                    if (in_array(strtolower($ext), $valid_docx) && array_key_exists($studentID, $listData)) {
+                                        //thông tin sinh viên
+                                        $students['data'][$listData[$studentID]['candidateNumber']] = [
+                                            'studentName' => $listData[$studentID]['studentName'],
+                                            'studentID' => $studentID,
+                                            'candidateNumber' => $listData[$studentID]['candidateNumber'],
+                                            'examBankId' => $listData[$studentID]['examBankId'],
+                                            'examBankName' => $listData[$studentID]['examBankName'],
+                                            'departmentName' => $request->departmentName,
+                                            'studentAssignment' => [$fileChild],
+                                            'style' => $this->getListStyles($extractPath . '/' . $fileParent . '/' . $fileChild),
+                                            'path' => $extractPath . '/' . $fileParent,
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                        closedir($handleChild);
+                    }
+                }
+            }
+            closedir($handleParent);
+        }
+
+        if (empty($students)) {
+            return $this->sendResponseSuccess();
+        }
+        $students['files'] = [
+            'extractPath' => $extractPath,
+        ];
+        $students['cakeStudentName'] = self::CAKE_STUDENT_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+        $students['cakeListName'] = self::CAKE_LIST_NAME . '-' . $request->examId . '-' . $request->examShiftId . '-' . $request->departmentId;
+        Cache::store('file')->put($cakeStudentKey, $students, now()->addDay());
+        return $this->sendResponseSuccess($students);
     }
 
     /**

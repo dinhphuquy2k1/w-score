@@ -23,6 +23,14 @@ export function calculate(data) {
     })
 }
 
+export function extracted(data) {
+    return request({
+        url: 'api/word/extracted',
+        method: 'POST',
+        data: data
+    })
+}
+
 export function getDetailExamManager() {
     return request({
         url: 'api/word/calculate',

@@ -345,7 +345,7 @@
                                             <div class="flex pt-4 justify-content-between">
                                                 <Button label="Back" severity="secondary" icon="pi pi-arrow-left"
                                                         @click="prevCallback"/>
-                                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right"
+                                                <Button label="Tiếp tục" icon="pi pi-arrow-right" iconPos="right"
                                                         @click="nextCallback"/>
                                             </div>
                                         </template>
@@ -453,7 +453,8 @@
             scrollable
             closeIcon="close-button">
         <DataTable class="flex1 flex-column" :class="{ 'loading': isLoading }" :loading="isLoading"
-                   rowGroupMode="rowspan" groupRowsBy="parent_criteria_id" sortMode="single" sortField="parent_criteria_id" :sortOrder="1"
+                   rowGroupMode="rowspan" groupRowsBy="parent_criteria_id" sortMode="single"
+                   sortField="parent_criteria_id" :sortOrder="1"
                    :value="isLoading ? Array.from({ length: 8 }, () => ({ ...this.department })) : resultDetail"
                    tableStyle="min-width: 100%" rowHover>
             <Column field="parent_criteria_id" header="Tiêu chí" style="width: 100px;">
@@ -588,7 +589,7 @@ import ProgressBar from 'primevue/progressbar';
 import {FILE_TYPE, MESSAGE} from "@/common/enums";
 import LoadingProgress from "@/components/LoadingProgress.vue";
 import {getExamResultDetail, getExamResult} from "../../../../api/exam-result";
-import {get, calculate, getDetailExamManager} from '/api/grade-master';
+import {get, calculate, extracted, getDetailExamManager} from '/api/grade-master';
 import Auth from "../../../../api/utils/auth";
 import InputNumber from 'primevue/inputnumber';
 
@@ -649,6 +650,7 @@ export default {
             selectedSheet: null,
             subjectLine: 2,
             isNextStepper: false,
+            filePath: null,
             columnsFile: [
                 {field: 'STT', header: 'STT'},
                 {field: 'Type', header: 'Loại file'},
@@ -1090,6 +1092,34 @@ export default {
         },
 
         /**
+         * click button chấm thi
+         */
+        extracted() {
+            this.isLoading = true;
+            this.examResult = [];
+            console.log(this.filePath);
+            let params = {
+                'examId': this.selectedManager.id,
+                'department': this.selectedDepartment,
+                'listExamBank': this.listExamBankForExamShift,
+                'examShift': this.selectedExamShift,
+                'filePath': this.filePath,
+                'departmentId': this.selectedDepartment.id,
+                'examShiftId': this.selectedExamShift.id,
+                'departmentName': this.selectedDepartment.department_name,
+            }
+            extracted(params).then(res => {
+                this.fileInfoResponse = res.data;
+            }).catch(error => {
+                console.log(error)
+            }).finally(() => {
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 300);
+            })
+        },
+
+        /**
          * Lấy kết quả chấm
          */
         async loadExamResult() {
@@ -1173,15 +1203,20 @@ export default {
         async onFileSuccess(file, response) {
             this.isDisable = false;
             this.progress = 100;
-            this.isLoading = false;
             if (this.activeStep === 0 || this.activeStep === 1) {
                 this.valuesFile[this.activeStep].FileSelectedOld = this.fileSelected;
             }
             try {
                 console.log(JSON.parse(response))
-                this.fileInfoResponse = JSON.parse(response).data;
+                this.filePath = JSON.parse(response).data.filePath;
+                console.log(this.filePath)
             } catch (error) {
                 console.log(error)
+            }
+            if (this.activeStep === 0) {
+                this.isLoading = false;
+            } else if (this.activeStep === 1) {
+                await this.extracted();
             }
             this.activeStep++;
             this.$store.dispatch('handleSuccess', 'Tải file thành công');

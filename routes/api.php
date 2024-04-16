@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard', [ApiDashBoardController::class, 'index']);
     Route::post('/word/upload-file', [ApiWordController::class, 'uploadFile']);
     Route::post('/word/calculate', [ApiWordController::class, 'calculate']);
+    Route::post('/word/extracted', [ApiWordController::class, 'extracted']);
     Route::get('/word/calculate', [ApiWordController::class, 'index']);
     Route::get('/departments', [ApiDepartmentController::class, 'get']);
     Route::post('/departments', [ApiDepartmentController::class, 'save']);
