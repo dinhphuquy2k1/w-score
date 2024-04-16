@@ -263,7 +263,7 @@ class ApiWordController extends Controller
                 foreach ($criterias as $index => $criteria) {
                     $itemCriteria = [
                         'point' => $criteria['point'],
-                        'real_point' => 0,
+                        'real_point' => $criteria['point'],
                         'flag' => true,
                         'property_name' => $criteria['property_name'],
                         'candidate_number' => $student['candidateNumber'],
@@ -283,9 +283,9 @@ class ApiWordController extends Controller
                             foreach ($sections as $section) {
                                 // page size trong bài thi
                                 $pageSize = $section->getStyle()->getPaperSize();
+                                $test[] = $pageSize;
                                 // page size trong DB
-                                $typeSize = PageSize::getKey((int)$criteria['content']);
-                                if ($pageSize != $typeSize) {
+                                if ($pageSize != $criteria['content']) {
                                     $this->setPointFail($ret, $student, $criteria);
                                 }
                             }

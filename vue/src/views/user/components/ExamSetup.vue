@@ -1122,16 +1122,16 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <Dropdown
-                                                                        v-model="generals.properties.PAGE_SIZE.content"
+                                                                        v-model="generals.properties.PAGE_SIZE_ALL.content"
                                                                         :options="configureExamData.pageSize"
-                                                                        :class="{ 'error': invalidData['c-PAGE_SIZE'] }"
+                                                                        :class="{ 'error': invalidData['c-PAGE_SIZE_ALL'] }"
                                                                         optionLabel="description" optionValue="value"
                                                                         showClear
                                                                         :placeholder="MESSAGE.DROPDOWN_PLACEHOLDER_SETUP"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['c-PAGE_SIZE']">
-                                                                    {{ invalidData['c-PAGE_SIZE'] }}
+                                                                     v-if="invalidData['c-PAGE_SIZE_ALL']">
+                                                                    {{ invalidData['c-PAGE_SIZE_ALL'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1143,15 +1143,15 @@
                                                                 </label>
                                                                 <div class="flex1">
                                                                     <InputNumber
-                                                                        v-model="generals.properties.PAGE_SIZE.point"
+                                                                        v-model="generals.properties.PAGE_SIZE_ALL.point"
                                                                         :max-fraction-digits="5"
-                                                                        :class="{ 'error': invalidData['p-PAGE_SIZE'] }"
+                                                                        :class="{ 'error': invalidData['p-PAGE_SIZE_ALL'] }"
                                                                         :placeholder="MESSAGE.INPUT_NUMBER_PLACEHOLDER_SETUP"
                                                                         class="ms-point"/>
                                                                 </div>
                                                                 <div class="error-text"
-                                                                     v-if="invalidData['p-PAGE_SIZE']">
-                                                                    {{ invalidData['p-PAGE_SIZE'] }}
+                                                                     v-if="invalidData['p-PAGE_SIZE_ALL']">
+                                                                    {{ invalidData['p-PAGE_SIZE_ALL'] }}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1861,11 +1861,11 @@ export default {
                         propertyName: 'File Name',
                     },
 
-                    PAGE_SIZE: {
+                    PAGE_SIZE_ALL: {
                         content: null,
                         point: null,
                         type: 'Option',
-                        propertyName: 'Page Size',
+                        propertyName: 'Page Size All',
                     },
 
                     MARGIN_TOP_ALL: {
